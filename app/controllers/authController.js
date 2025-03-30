@@ -94,8 +94,6 @@ exports.adminLogin = [loginLimiter, async (req, res) => {
 exports.userLogin = async (req, res) => {
     const { username, password } = req.body;
 
-    console.log(username, password);
-
     try {
         // Find the user
         const user = await User.findOne({
