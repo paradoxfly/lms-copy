@@ -1,0 +1,102 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Dashboard - Book Order
+    link(href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css", rel="stylesheet")
+    script(src="https://unpkg.com/lucide@latest/dist/umd/lucide.js")
+    style.
+      body {
+        background-color: #f5f5f5;
+        margin: 0;
+        padding: 0;
+      }
+      .sidebar {
+        background-color: #7e77f8;
+        transition: width 0.3s;
+      }
+      .sidebar-button:hover {
+        background-color: #6c67e6;
+      }
+      .success-icon-outer {
+        background-color: rgba(59, 202, 227, 0.2);
+      }
+      .success-icon-inner {
+        background-color: #3bcae3;
+      }
+      .view-uploads-btn {
+        background-color: #3bcae3;
+      }
+      .view-uploads-btn:hover {
+        background-color: #2bb8d1;
+      }
+
+  body.flex.h-screen
+    // Sidebar
+    #sidebar.sidebar.flex.flex-col.items-center.w-20.h-screen
+      button#toggleSidebar.p-4.text-white.hover-bg-6c67e6.w-full.flex.justify-center.sidebar-button
+        i(data-lucide="menu")
+      
+      .flex.flex-col.items-center.gap-8.mt-8
+        button.text-white.p-3.rounded-md.sidebar-button
+          i(data-lucide="layout-grid")
+        button.text-white.p-3.rounded-md.sidebar-button
+          i(data-lucide="file-text")
+        button.text-white.p-3.rounded-md.sidebar-button
+          i(data-lucide="heart")
+        button.text-white.p-3.rounded-md.sidebar-button
+          i(data-lucide="star")
+      
+      .mt-auto.mb-8.flex.flex-col.items-center.gap-8
+        button.text-white.p-3.rounded-md.sidebar-button
+          i(data-lucide="settings")
+        button.text-white.p-3.rounded-md.sidebar-button
+          i(data-lucide="log-out")
+    
+    // Main Content
+    .flex-1.flex.flex-col
+      // Header
+      header.bg-white.border-b.border-gray-200.flex.items-center.justify-between.px-6.py-4
+        .flex.items-center.gap-4
+          h1.font-serif.italic.font-bold.text-lg BOOK ORDER
+          .flex.items-center.text-gray-600.ml-8
+            span Dashboard
+            i.mx-1(data-lucide="chevron-right", style="width: 16px; height: 16px;")
+            span.font-medium Dashboard
+        
+        .flex.items-center.gap-4
+          button.relative
+            i(data-lucide="bell")
+            span.absolute.top-0.right-0.w-2.h-2.bg-red-500.rounded-full
+          .w-10.h-10.rounded-full.bg-orange-100.overflow-hidden
+            img(src="https://via.placeholder.com/40", alt="User avatar", class="w-full h-full object-cover")
+      
+      // Success Message
+      .flex-1.flex.flex-col.items-center.justify-center
+        .w-24.h-24.rounded-full.success-icon-outer.flex.items-center.justify-center.mb-6
+          .w-20.h-20.rounded-full.success-icon-inner.flex.items-center.justify-center
+            i.text-white(data-lucide="check", style="width: 48px; height: 48px;")
+        
+        h2.text-3xl.font-bold.mb-4 Successful!!
+        p.text-xl.mb-8 You have successfully Uploaded "The girl in the woods"
+        
+        .flex.gap-4
+          a.view-uploads-btn.text-white.px-6.py-3.rounded-md.transition-colors(href="/uploads") View in Uploads
+          a.border.border-gray-300.px-6.py-3.rounded-md.hover-bg-gray-50.transition-colors(href="/") Go Home
+
+  script.
+    // Initialize Lucide icons
+    lucide.createIcons();
+    
+    // Toggle sidebar functionality
+    document.getElementById('toggleSidebar').addEventListener('click', function() {
+      const sidebar = document.getElementById('sidebar');
+      if (sidebar.classList.contains('w-20')) {
+        sidebar.classList.remove('w-20');
+        sidebar.classList.add('w-16');
+      } else {
+        sidebar.classList.remove('w-16');
+        sidebar.classList.add('w-20');
+      }
+    });

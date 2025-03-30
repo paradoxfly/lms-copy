@@ -1,0 +1,1066 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Book Owly Dashboard
+    link(href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap", rel="stylesheet")
+    style.
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Inter', sans-serif;
+      }
+      
+      body {
+        background-color: #ffffff;
+        color: #000000;
+      }
+      
+      .dashboard {
+        min-height: 100vh;
+        display: flex;
+      }
+      
+      /* Sidebar */
+      .sidebar {
+        width: 64px;
+        background-color: #5252fc;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 16px 0;
+        position: fixed;
+        height: 100%;
+      }
+      
+      .sidebar-logo {
+        margin-bottom: 32px;
+        color: white;
+        font-weight: bold;
+        font-size: 12px;
+      }
+      
+      .sidebar-nav {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 32px;
+      }
+      
+      .nav-item {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      
+      .nav-item.active {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+      
+      /* Main Content */
+      .main-content {
+        flex: 1;
+        margin-left: 64px;
+      }
+      
+      /* Header */
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px;
+        border-bottom: 1px solid #f2f2f2;
+      }
+      
+      .header-title {
+        font-size: 20px;
+        font-weight: 600;
+      }
+      
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      
+      .notification-btn {
+        position: relative;
+        background: none;
+        border: none;
+        cursor: pointer;
+      }
+      
+      .notification-badge {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        width: 8px;
+        height: 8px;
+        background-color: #ee0355;
+        border-radius: 50%;
+      }
+      
+      .avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-color: #f2f2f2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        color: #525252;
+      }
+      
+      /* Dashboard Content */
+      .dashboard-content {
+        padding: 16px;
+      }
+      
+      /* Search and Filters */
+      .search-filters {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+      
+      .search-container {
+        position: relative;
+        width: 300px;
+      }
+      
+      .search-input {
+        width: 100%;
+        padding: 8px 16px 8px 40px;
+        border-radius: 4px;
+        border: none;
+        background-color: #f2f2f2;
+        font-size: 14px;
+      }
+      
+      .search-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #525252;
+      }
+      
+      .filters {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      
+      .filter-label {
+        font-size: 14px;
+      }
+      
+      .date-filter {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 12px;
+        border: 1px solid #f2f2f2;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+      
+      .select-filter {
+        padding: 6px 12px;
+        border: 1px solid #f2f2f2;
+        border-radius: 4px;
+        background-color: white;
+        font-size: 14px;
+        min-width: 120px;
+        cursor: pointer;
+      }
+      
+      .upload-btn {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 8px 16px;
+        background-color: #1fbbd6;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 14px;
+        cursor: pointer;
+      }
+      
+      /* Stats Cards */
+      .stats-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      
+      .stats-card {
+        background-color: white;
+        border: 1px solid #f2f2f2;
+        border-radius: 8px;
+        padding: 16px;
+      }
+      
+      .stats-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 16px;
+      }
+      
+      .stats-icon-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      
+      .stats-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .stats-title {
+        font-size: 14px;
+        font-weight: 500;
+      }
+      
+      .more-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #525252;
+      }
+      
+      .stats-count {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+      
+      .stats-trend {
+        display: flex;
+        align-items: center;
+        font-size: 12px;
+        color: #525252;
+      }
+      
+      /* Analysis Sections */
+      .analysis-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      
+      .analysis-card {
+        background-color: #edfafc;
+        border-radius: 8px;
+        padding: 16px;
+      }
+      
+      .analysis-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 16px;
+      }
+      
+      .analysis-content {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        flex-wrap: wrap;
+      }
+      
+      .chart-container {
+        position: relative;
+        width: 200px;
+        height: 200px;
+      }
+      
+      .legend {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+      }
+      
+      .legend-color {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+      }
+      
+      .download-btn {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 8px 16px;
+        background-color: #1fbbd6;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 14px;
+        margin-top: 16px;
+        cursor: pointer;
+      }
+      
+      /* Tables */
+      .table-card {
+        background-color: white;
+        border: 1px solid #f2f2f2;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      
+      .table-header {
+        padding: 16px;
+        border-bottom: 1px solid #f2f2f2;
+      }
+      
+      .table-title {
+        font-size: 18px;
+        font-weight: 600;
+      }
+      
+      .table-container {
+        overflow-x: auto;
+      }
+      
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      
+      th {
+        text-align: left;
+        padding: 8px 16px;
+        font-weight: 500;
+        font-size: 14px;
+        border-bottom: 1px solid #f2f2f2;
+      }
+      
+      td {
+        padding: 8px 16px;
+        font-size: 14px;
+        border-bottom: 1px solid #f2f2f2;
+      }
+      
+      .status-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 2px;
+        font-size: 12px;
+        color: white;
+      }
+      
+      .status-past-due {
+        background-color: #ee0355;
+      }
+      
+      .status-available {
+        background-color: #129145;
+      }
+      
+      /* Pagination */
+      .pagination {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px;
+      }
+      
+      .page-numbers {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      
+      .page-btn {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #f2f2f2;
+        border-radius: 4px;
+        background-color: white;
+        font-size: 14px;
+        cursor: pointer;
+      }
+      
+      .page-btn.active {
+        background-color: #1fbbd6;
+        color: white;
+        border: none;
+      }
+      
+      .page-info {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 14px;
+      }
+      
+      /* Payment Reminder */
+      .payment-reminder {
+        background-color: white;
+        border: 1px solid #f2f2f2;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 24px;
+      }
+      
+      .reminder-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 16px;
+      }
+      
+      .reminder-subtitle {
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 8px;
+      }
+      
+      .reminder-textarea {
+        width: 100%;
+        min-height: 100px;
+        padding: 12px;
+        border: 1px solid #f2f2f2;
+        border-radius: 4px;
+        margin-bottom: 16px;
+        font-size: 14px;
+        resize: vertical;
+      }
+      
+      .reminder-actions {
+        display: flex;
+        gap: 8px;
+      }
+      
+      .send-btn {
+        padding: 8px 16px;
+        background-color: #1fbbd6;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 14px;
+        cursor: pointer;
+      }
+      
+      .email-btn {
+        padding: 8px 16px;
+        background-color: white;
+        color: #1fbbd6;
+        border: 1px solid #1fbbd6;
+        border-radius: 4px;
+        font-size: 14px;
+        cursor: pointer;
+      }
+      
+      /* Responsive */
+      @media (max-width: 768px) {
+        .search-filters {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        
+        .search-container {
+          width: 100%;
+        }
+        
+        .analysis-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+  body
+    .dashboard
+      // Sidebar
+      .sidebar
+        .sidebar-logo BOOK OWLY
+        .sidebar-nav
+          .nav-item.active
+            svg(xmlns="http://www.w3.org/2000/svg", width="20", height="20", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+              path(d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z")
+              polyline(points="9 22 9 12 15 12 15 22")
+          .nav-item
+            svg(xmlns="http://www.w3.org/2000/svg", width="20", height="20", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+              path(d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20")
+          .nav-item
+            svg(xmlns="http://www.w3.org/2000/svg", width="20", height="20", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+              path(d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4")
+              polyline(points="17 8 12 3 7 8")
+              line(x1="12", x2="12", y1="3", y2="15")
+          .nav-item
+            svg(xmlns="http://www.w3.org/2000/svg", width="20", height="20", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+              path(d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z")
+          .nav-item
+            svg(xmlns="http://www.w3.org/2000/svg", width="20", height="20", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+              path(d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2")
+              circle(cx="9", cy="7", r="4")
+              path(d="M22 21v-2a4 4 0 0 0-3-3.87")
+              path(d="M16 3.13a4 4 0 0 1 0 7.75")
+      
+      // Main Content
+      .main-content
+        // Header
+        header.header
+          h1.header-title Dashboard
+          .header-actions
+            button.notification-btn
+              svg(xmlns="http://www.w3.org/2000/svg", width="20", height="20", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                path(d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9")
+                path(d="M10.3 21a1.94 1.94 0 0 0 3.4 0")
+              span.notification-badge
+            .avatar U
+        
+        // Dashboard Content
+        main.dashboard-content
+          // Search and Filters
+          .search-filters
+            .search-container
+              input.search-input(type="text", placeholder="Search")
+              .search-icon
+                svg(xmlns="http://www.w3.org/2000/svg", width="16", height="16", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                  circle(cx="11", cy="11", r="8")
+                  path(d="m21 21-4.3-4.3")
+            .filters
+              span.filter-label Filter by :
+              .date-filter
+                span Date uploaded
+                svg(xmlns="http://www.w3.org/2000/svg", width="16", height="16", viewBox="0 0 24 24", fill="none", stroke="#5252fc", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                  rect(width="18", height="18", x="3", y="4", rx="2", ry="2")
+                  line(x1="16", x2="16", y1="2", y2="6")
+                  line(x1="8", x2="8", y1="2", y2="6")
+                  line(x1="3", x2="21", y1="10", y2="10")
+              select.select-filter
+                option Popular
+                option Recent
+                option Oldest
+              select.select-filter
+                option Author
+                option All Authors
+                option Fiction
+                option Non-Fiction
+              button.upload-btn
+                | Upload book
+                svg(xmlns="http://www.w3.org/2000/svg", width="16", height="16", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                  path(d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4")
+                  polyline(points="17 8 12 3 7 8")
+                  line(x1="12", x2="12", y1="3", y2="15")
+          
+          // Stats Cards
+          .stats-cards
+            // Recently Uploaded
+            .stats-card
+              .stats-header
+                .stats-icon-title
+                  .stats-icon(style="background-color: #d1d1f9;")
+                    svg(xmlns="http://www.w3.org/2000/svg", width="20", height="20", viewBox="0 0 24 24", fill="none", stroke="#ee0355", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                      path(d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z")
+                      polyline(points="14 2 14 8 20 8")
+                      circle(cx="10", cy="13", r="2")
+                      path(d="m20 17-1.09-1.09a2 2 0 0 0-2.82 0L10 22")
+                  h3.stats-title Recently Uploaded
+                button.more-btn
+                  svg(xmlns="http://www.w3.org/2000/svg", width="20", height="20", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                    circle(cx="12", cy="12", r="1")
+                    circle(cx="12", cy="5", r="1")
+                    circle(cx="12", cy="19", r="1")
+              h2.stats-count 200 Books
+              .stats-trend
+                svg(xmlns="http://www.w3.org/2000/svg", width="12", height="12", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                  polyline(points="23 6 13.5 15.5 8.5 10.5 1 18")
+                  polyline(points="17 6 23 6 23 12")
+                span 20% more than previous months
+            
+            // Popular Books
+            .stats-card
+              .stats-header
+                .stats-icon-title
+                  .stats-icon(style="background-color: #d1d1f9;")
+                    svg(xmlns="http://www.w3.org/2000/svg", width="20", height="20", viewBox="0 0 24 24", fill="none", stroke="#5252fc", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                      path(d="m22 9-8 8-7-7-5 5")
+                      path(d="M22 3H15")
+                      path(d="M22 3v7")
+                  h3.stats-title Popular Books
+                button.more-btn
+                  svg(xmlns="http://www.w3.org/2000/svg", width="20", height="20", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                    circle(cx="12", cy="12", r="1")
+                    circle(cx="12", cy="5", r="1")
+                    circle(cx="12", cy="19", r="1")
+              h2.stats-count 200 Books
+              .stats-trend
+                svg(xmlns="http://www.w3.org/2000/svg", width="12", height="12", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                  polyline(points="23 6 13.5 15.5 8.5 10.5 1 18")
+                  polyline(points="17 6 23 6 23 12")
+                span 20% more than previous months
+            
+            // Most borrowed
+            .stats-card
+              .stats-header
+                .stats-icon-title
+                  .stats-icon(style="background-color: #c9f0f7;")
+                    svg(xmlns="http://www.w3.org/2000/svg", width="20", height="20", viewBox="0 0 24 24", fill="none", stroke="#1fbbd6", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                      path(d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20")
+                  h3.stats-title Most borrowed
+                button.more-btn
+                  svg(xmlns="http://www.w3.org/2000/svg", width="20", height="20", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                    circle(cx="12", cy="12", r="1")
+                    circle(cx="12", cy="5", r="1")
+                    circle(cx="12", cy="19", r="1")
+              h2.stats-count 200 Books
+              .stats-trend
+                svg(xmlns="http://www.w3.org/2000/svg", width="12", height="12", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                  polyline(points="23 6 13.5 15.5 8.5 10.5 1 18")
+                  polyline(points="17 6 23 6 23 12")
+                span 20% more than previous months
+          
+          // Analysis Section
+          .analysis-grid
+            // Fines Analysis
+            .analysis-card
+              h2.analysis-title Fines Analysis
+              .analysis-content
+                .chart-container
+                  canvas#finesChart(width="200", height="200")
+                .legend
+                  .legend-item
+                    .legend-color(style="background-color: #1fbbd6;")
+                    span 50% of Users returned books at when due
+                  .legend-item
+                    .legend-color(style="background-color: #d4ed82;")
+                    span 30% of Users returned books a day late
+                  .legend-item
+                    .legend-color(style="background-color: #a39efa;")
+                    span 20% of Users Ended up paying fines because they returned books way over the grace period
+              button.download-btn
+                | Download report
+                svg(xmlns="http://www.w3.org/2000/svg", width="16", height="16", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                  path(d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4")
+                  polyline(points="7 10 12 15 17 10")
+                  line(x1="12", x2="12", y1="15", y2="3")
+            
+            // Overdue Books
+            .table-card
+              .table-header
+                h2.table-title Overdue Books
+              .table-container
+                table
+                  thead
+                    tr
+                      th S/N
+                      th Book name
+                      th Date borrowed
+                      th Due Date
+                      th Status
+                      th
+                  tbody
+                    tr
+                      td 1
+                      td The girl in the woods
+                      td 25/02/2025
+                      td 25/03/2025
+                      td
+                        span.status-badge.status-past-due Past due
+                      td
+                        button.more-btn
+                          svg(xmlns="http://www.w3.org/2000/svg", width="16", height="16", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                            circle(cx="12", cy="12", r="1")
+                            circle(cx="12", cy="5", r="1")
+                            circle(cx="12", cy="19", r="1")
+                    tr
+                      td 2
+                      td The girl in the woods
+                      td 25/02/2025
+                      td 25/03/2025
+                      td
+                        span.status-badge.status-past-due Past due
+                      td
+                        button.more-btn
+                          svg(xmlns="http://www.w3.org/2000/svg", width="16", height="16", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                            circle(cx="12", cy="12", r="1")
+                            circle(cx="12", cy="5", r="1")
+                            circle(cx="12", cy="19", r="1")
+                    tr
+                      td 3
+                      td The girl in the woods
+                      td 25/02/2025
+                      td 25/03/2025
+                      td
+                        span.status-badge.status-past-due Past due
+                      td
+                        button.more-btn
+                          svg(xmlns="http://www.w3.org/2000/svg", width="16", height="16", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                            circle(cx="12", cy="12", r="1")
+                            circle(cx="12", cy="5", r="1")
+                            circle(cx="12", cy="19", r="1")
+                    tr
+                      td 4
+                      td The girl in the woods
+                      td 25/02/2025
+                      td 25/03/2025
+                      td
+                        span.status-badge.status-past-due Past due
+                      td
+                        button.more-btn
+                          svg(xmlns="http://www.w3.org/2000/svg", width="16", height="16", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                            circle(cx="12", cy="12", r="1")
+                            circle(cx="12", cy="5", r="1")
+                            circle(cx="12", cy="19", r="1")
+                    tr
+                      td 5
+                      td The girl in the woods
+                      td 25/02/2025
+                      td 25/03/2025
+                      td
+                        span.status-badge.status-past-due Past due
+                      td
+                        button.more-btn
+                          svg(xmlns="http://www.w3.org/2000/svg", width="16", height="16", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                            circle(cx="12", cy="12", r="1")  stroke-linejoin="round")
+                            circle(cx="12", cy="12", r="1")
+                            circle(cx="12", cy="5", r="1")
+                            circle(cx="12", cy="19", r="1")
+                    tr
+                      td 6
+                      td The girl in the woods
+                      td 25/02/2025
+                      td 25/03/2025
+                      td
+                        span.status-badge.status-past-due Past due
+                      td
+                        button.more-btn
+                          svg(xmlns="http://www.w3.org/2000/svg", width="16", height="16", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                            circle(cx="12", cy="12", r="1")
+                            circle(cx="12", cy="5", r="1")
+                            circle(cx="12", cy="19", r="1")
+                    tr
+                      td 7
+                      td The girl in the woods
+                      td 25/02/2025
+                      td 25/03/2025
+                      td
+                        span.status-badge.status-past-due Past due
+                      td
+                        button.more-btn
+                          svg(xmlns="http://www.w3.org/2000/svg", width="16", height="16", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                            circle(cx="12", cy="12", r="1")
+                            circle(cx="12", cy="5", r="1")
+                            circle(cx="12", cy="19", r="1")
+                    tr
+                      td 8
+                      td The girl in the woods
+                      td 25/02/2025
+                      td 25/03/2025
+                      td
+                        span.status-badge.status-past-due Past due
+                      td
+                        button.more-btn
+                          svg(xmlns="http://www.w3.org/2000/svg", width="16", height="16", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                            circle(cx="12", cy="12", r="1")
+                            circle(cx="12", cy="5", r="1")
+                            circle(cx="12", cy="19", r="1")
+              .pagination
+                .page-numbers
+                  button.page-btn.active 1
+                  button.page-btn 2
+                  button.page-btn 3
+                  button.page-btn 4
+                  button.page-btn 5
+                  span ...
+                  button.page-btn 500
+                .page-info
+                  span 16
+                  svg(xmlns="http://www.w3.org/2000/svg", width="16", height="16", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                    polyline(points="9 18 15 12 9 6")
+          
+          // Borrowing Section
+          .analysis-grid
+            // Borrowing Analysis
+            .analysis-card
+              h2.analysis-title Borrowing Analysis
+              .analysis-content
+                .chart-container
+                  canvas#borrowingChart(width="200", height="200")
+                .legend
+                  .legend-item
+                    .legend-color(style="background-color: #1fbbd6;")
+                    span 50% of new Users on the platform
+                  .legend-item
+                    .legend-color(style="background-color: #d4ed82;")
+                    span 30% of Users retention
+                  .legend-item
+                    .legend-color(style="background-color: #a39efa;")
+                    span 20% of Users exceeded borrow limit of books in a week (The borrow limit is 10 books a week)
+              button.download-btn
+                | Download report
+                svg(xmlns="http://www.w3.org/2000/svg", width="16", height="16", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                  path(d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4")
+                  polyline(points="7 10 12 15 17 10")
+                  line(x1="12", x2="12", y1="15", y2="3")
+            
+            // Borrowing History
+            .table-card
+              .table-header
+                h2.table-title Borrowing History
+              .table-container
+                table
+                  thead
+                    tr
+                      th S/N
+                      th Book name
+                      th Date borrowed
+                      th Weekly stats
+                      th Status
+                      th
+                  tbody
+                    tr
+                      td 1
+                      td The girl in the woods
+                      td 25/02/2025
+                      td 25
+                      td
+                        span.status-badge.status-available Available
+                      td
+                        button.more-btn
+                          svg(xmlns="http://www.w3.org/2000/svg", width="16", height="16", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                            circle(cx="12", cy="12", r="1")
+                            circle(cx="12", cy="5", r="1")
+                            circle(cx="12", cy="19", r="1")
+                    tr
+                      td 2
+                      td The girl in the woods
+                      td 25/02/2025
+                      td 80
+                      td
+                        span.status-badge.status-available Available
+                      td
+                        button.more-btn
+                          svg(xmlns="http://www.w3.org/2000/svg", width="16", height="16", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                            circle(cx="12", cy="12", r="1")
+                            circle(cx="12", cy="5", r="1")
+                            circle(cx="12", cy="19", r="1")
+                    tr
+                      td 3
+                      td The girl in the woods
+                      td 25/02/2025
+                      td 56
+                      td
+                        span.status-badge.status-available Available
+                      td
+                        button.more-btn
+                          svg(xmlns="http://www.w3.org/2000/svg", width="16", height="16", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                            circle(cx="12", cy="12", r="1")
+                            circle(cx="12", cy="5", r="1")
+                            circle(cx="12", cy="19", r="1")
+                    tr
+                      td 4
+                      td The girl in the woods
+                      td 25/02/2025
+                      td 100
+                      td
+                        span.status-badge.status-available Available
+                      td
+                        button.more-btn
+                          svg(xmlns="http://www.w3.org/2000/svg", width="16", height="16", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                            circle(cx="12", cy="12", r="1")
+                            circle(cx="12", cy="5", r="1")
+                            circle(cx="12", cy="19", r="1")
+                    tr
+                      td 5
+                      td The girl in the woods
+                      td 25/02/2025
+                      td 44
+                      td
+                        span.status-badge.status-available Available
+                      td
+                        button.more-btn
+                          svg(xmlns="http://www.w3.org/2000/svg", width="16", height="16", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                            circle(cx="12", cy="12", r="1")
+                            circle(cx="12", cy="5", r="1")
+                            circle(cx="12", cy="19", r="1")
+                    tr
+                      td 6
+                      td The girl in the woods
+                      td 25/02/2025
+                      td 30
+                      td
+                        span.status-badge.status-available Available
+                      td
+                        button.more-btn
+                          svg(xmlns="http://www.w3.org/2000/svg", width="16", height="16", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                            circle(cx="12", cy="12", r="1")
+                            circle(cx="12", cy="5", r="1")
+                            circle(cx="12", cy="19", r="1")
+                    tr
+                      td 7
+                      td The girl in the woods
+                      td 25/02/2025
+                      td 10
+                      td
+                        span.status-badge.status-available Available
+                      td
+                        button.more-btn
+                          svg(xmlns="http://www.w3.org/2000/svg", width="16", height="16", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                            circle(cx="12", cy="12", r="1")
+                            circle(cx="12", cy="5", r="1")
+                            circle(cx="12", cy="19", r="1")
+                    tr
+                      td 8
+                      td The girl in the woods
+                      td 25/02/2025
+                      td 17
+                      td
+                        span.status-badge.status-available Available
+                      td
+                        button.more-btn
+                          svg(xmlns="http://www.w3.org/2000/svg", width="16", height="16", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                            circle(cx="12", cy="12", r="1")
+                            circle(cx="12", cy="5", r="1")
+                            circle(cx="12", cy="19", r="1")
+              .pagination
+                .page-numbers
+                  button.page-btn.active 1
+                  button.page-btn 2
+                  button.page-btn 3
+                  button.page-btn 4
+                  button.page-btn 5
+                  span ...
+                  button.page-btn 500
+                .page-info
+                  span 16
+                  svg(xmlns="http://www.w3.org/2000/svg", width="16", height="16", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                    polyline(points="9 18 15 12 9 6")
+          
+          // Payment Reminder
+          .payment-reminder
+            h2.reminder-title Payment Reminder
+            h3.reminder-subtitle Automated message
+            textarea.reminder-textarea(readonly) Please kindly be reminded that your due date is near. Ensure to return your book 'Girl in the woods' on time to avoid late payment fee of £13.22
+            .reminder-actions
+              button.send-btn Send Reminder
+              button.email-btn Send Email Reminder
+    
+    script.
+      // Draw Fines Analysis Chart
+      function drawFinesChart() {
+        const canvas = document.getElementById('finesChart');
+        const ctx = canvas.getContext('2d');
+        
+        // Set canvas dimensions
+        const size = 200;
+        canvas.width = size;
+        canvas.height = size;
+        
+        // Chart data
+        const data = [
+          { color: '#1fbbd6', percentage: 50 },
+          { color: '#d4ed82', percentage: 30 },
+          { color: '#a39efa', percentage: 20 }
+        ];
+        
+        // Draw donut chart
+        const centerX = size / 2;
+        const centerY = size / 2;
+        const radius = size / 2 - 20;
+        const innerRadius = radius * 0.6;
+        
+        let startAngle = 0;
+        
+        data.forEach(item => {
+          const endAngle = startAngle + (item.percentage / 100) * 2 * Math.PI;
+          
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+          ctx.arc(centerX, centerY, innerRadius, endAngle, startAngle, true);
+          ctx.closePath();
+          
+          ctx.fillStyle = item.color;
+          ctx.fill();
+          
+          startAngle = endAngle;
+        });
+        
+        // Draw center circle (white)
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, innerRadius - 5, 0, 2 * Math.PI);
+        ctx.fillStyle = 'white';
+        ctx.fill();
+      }
+      
+      // Draw Borrowing Analysis Chart
+      function drawBorrowingChart() {
+        const canvas = document.getElementById('borrowingChart');
+        const ctx = canvas.getContext('2d');
+        
+        // Set canvas dimensions
+        const size = 200;
+        canvas.width = size;
+        canvas.height = size;
+        
+        // Chart data
+        const data = [
+          { color: '#1fbbd6', percentage: 50 },
+          { color: '#d4ed82', percentage: 30 },
+          { color: '#a39efa', percentage: 20 }
+        ];
+        
+        // Draw donut chart
+        const centerX = size / 2;
+        const centerY = size / 2;
+        const radius = size / 2 - 20;
+        const innerRadius = radius * 0.6;
+        
+        let startAngle = 0;
+        
+        data.forEach(item => {
+          const endAngle = startAngle + (item.percentage / 100) * 2 * Math.PI;
+          
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+          ctx.arc(centerX, centerY, innerRadius, endAngle, startAngle, true);
+          ctx.closePath();
+          
+          ctx.fillStyle = item.color;
+          ctx.fill();
+          
+          startAngle = endAngle;
+        });
+        
+        // Draw center circle (white)
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, innerRadius - 5, 0, 2 * Math.PI);
+        ctx.fillStyle = 'white';
+        ctx.fill();
+      }
+      
+      // Initialize charts when the page loads
+      window.onload = function() {
+        drawFinesChart();
+        drawBorrowingChart();
+      };

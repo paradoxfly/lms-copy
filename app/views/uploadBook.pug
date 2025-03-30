@@ -1,0 +1,466 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Book Upload - BookGreat
+    style.
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      }
+      
+      body {
+        background-color: #ffffff;
+      }
+      
+      .container {
+        display: flex;
+        height: 100vh;
+        width: 100%;
+      }
+      
+      /* Sidebar */
+      .sidebar {
+        width: 64px;
+        background-color: #7e77f8;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 24px 0;
+        color: white;
+      }
+      
+      .logo {
+        margin-bottom: 32px;
+        font-weight: bold;
+        font-size: 12px;
+        text-align: center;
+        line-height: 1.2;
+      }
+      
+      .sidebar-menu {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 32px;
+        flex-grow: 1;
+      }
+      
+      .sidebar-button {
+        padding: 8px;
+        background: transparent;
+        border: none;
+        color: white;
+        cursor: pointer;
+        border-radius: 6px;
+      }
+      
+      .sidebar-button:hover {
+        background-color: #6a63e6;
+      }
+      
+      .divider {
+        border-top: 1px solid rgba(255, 255, 255, 0.4);
+        width: 32px;
+        margin: 8px 0;
+      }
+      
+      /* Main Content */
+      .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      
+      /* Header */
+      .header {
+        height: 64px;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 24px;
+      }
+      
+      .header-title {
+        font-size: 20px;
+        font-weight: 500;
+      }
+      
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      
+      .notification-button {
+        position: relative;
+        background: none;
+        border: none;
+        cursor: pointer;
+      }
+      
+      .notification-badge {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        background-color: #3bcae3;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        color: white;
+      }
+      
+      .avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-color: #fed7aa;
+        overflow: hidden;
+      }
+      
+      .avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      
+      /* Form Content */
+      .form-container {
+        flex: 1;
+        padding: 24px;
+        overflow: auto;
+      }
+      
+      .form-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 32px;
+      }
+      
+      .form-title {
+        font-size: 30px;
+        font-weight: bold;
+      }
+      
+      .back-button {
+        background: none;
+        border: none;
+        cursor: pointer;
+      }
+      
+      .back-button:hover {
+        color: #7e77f8;
+      }
+      
+      .form {
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+      }
+      
+      @media (min-width: 768px) {
+        .form {
+          flex-direction: row;
+        }
+      }
+      
+      /* Image Upload */
+      .image-upload {
+        width: 100%;
+      }
+      
+      @media (min-width: 768px) {
+        .image-upload {
+          width: 25%;
+        }
+      }
+      
+      .image-upload-container {
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        aspect-ratio: 1/1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+      
+      .image-upload-container:hover {
+        background-color: #f9fafb;
+      }
+      
+      .image-upload-text {
+        font-size: 14px;
+        font-weight: 500;
+        margin-top: 8px;
+      }
+      
+      /* Form Fields */
+      .form-fields {
+        width: 100%;
+      }
+      
+      @media (min-width: 768px) {
+        .form-fields {
+          width: 75%;
+        }
+      }
+      
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+      
+      @media (min-width: 768px) {
+        .form-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      
+      .input {
+        width: 100%;
+        padding: 10px 14px;
+        background-color: #f9fafb;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+      }
+      
+      .input:focus {
+        outline: 2px solid #7e77f8;
+      }
+      
+      .textarea-container {
+        position: relative;
+        grid-column: span 1;
+      }
+      
+      @media (min-width: 768px) {
+        .textarea-container {
+          grid-column: span 2;
+        }
+      }
+      
+      .textarea {
+        width: 100%;
+        padding: 10px 14px;
+        background-color: #f9fafb;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        resize: none;
+        min-height: 100px;
+      }
+      
+      .textarea:focus {
+        outline: 2px solid #7e77f8;
+      }
+      
+      .word-count {
+        position: absolute;
+        bottom: 8px;
+        right: 8px;
+        font-size: 12px;
+        color: #9ca3af;
+      }
+      
+      .submit-container {
+        grid-column: span 1;
+        display: flex;
+        justify-content: flex-start;
+        margin-top: 8px;
+      }
+      
+      @media (min-width: 768px) {
+        .submit-container {
+          grid-column: span 2;
+        }
+      }
+      
+      .submit-button {
+        background-color: #3bcae3;
+        color: white;
+        border: none;
+        border-radius: 9999px;
+        padding: 8px 24px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      
+      .submit-button:hover {
+        background-color: rgba(59, 202, 227, 0.9);
+      }
+
+  body
+    .container
+      //- Sidebar
+      .sidebar
+        .logo BOOK
+          br
+          | GREAT
+        .sidebar-menu
+          button.sidebar-button(title="Dashboard")
+            svg(xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+              rect(width="7" height="7" x="3" y="3" rx="1")
+              rect(width="7" height="7" x="14" y="3" rx="1")
+              rect(width="7" height="7" x="14" y="14" rx="1")
+              rect(width="7" height="7" x="3" y="14" rx="1")
+          button.sidebar-button(title="Upload")
+            svg(xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+              path(d="m5 12 7-7 7 7")
+              path(d="M12 19V5")
+          button.sidebar-button(title="Files")
+            svg(xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+              path(d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4")
+              polyline(points="17 8 12 3 7 8")
+              line(x1="12" x2="12" y1="3" y2="15")
+          button.sidebar-button(title="Users")
+            svg(xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+              path(d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2")
+              circle(cx="9" cy="7" r="4")
+              path(d="M22 21v-2a4 4 0 0 0-3-3.87")
+              path(d="M16 3.13a4 4 0 0 1 0 7.75")
+          .divider
+          button.sidebar-button(title="Settings")
+            svg(xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+              path(d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z")
+              circle(cx="12" cy="12" r="3")
+          button.sidebar-button(title="Refresh" style="margin-top: auto;")
+            svg(xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+              path(d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8")
+              path(d="M3 3v5h5")
+
+      //- Main Content
+      .main-content
+        //- Header
+        header.header
+          h1.header-title Dashboard
+          .header-actions
+            button.notification-button
+              svg(xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+                path(d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9")
+                path(d="M10.3 21a1.94 1.94 0 0 0 3.4 0")
+              span.notification-badge 1
+            .avatar
+              img(src="https://via.placeholder.com/32" alt="User avatar")
+
+        //- Form Content
+        .form-container
+          .form-header
+            h2.form-title Upload Book
+            button.back-button
+              svg(xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+                path(d="m12 19-7-7 7-7")
+                path(d="M19 12H5")
+
+          form.form#bookUploadForm
+            //- Book Image Upload
+            .image-upload
+              .image-upload-container#imageUpload
+                svg(xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+                  path(d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4")
+                  polyline(points="17 8 12 3 7 8")
+                  line(x1="12" x2="12" y1="3" y2="15")
+                p.image-upload-text Add Book image
+
+            //- Form Fields
+            .form-fields
+              .form-grid
+                div
+                  input.input(type="text" placeholder="Book name" name="bookName")
+                div
+                  input.input(type="text" placeholder="Author's name" name="authorName")
+                div
+                  input.input(type="text" placeholder="Publishing Company name" name="publishingCompany")
+                div
+                  input.input(type="text" placeholder="ISBN Number" name="isbn")
+                div
+                  input.input(type="text" placeholder="Year of Publication" name="yearOfPublication")
+                div
+                  input.input(type="text" placeholder="Number of pages" name="numberOfPages")
+                div
+                  input.input(type="text" placeholder="Genre" name="genre")
+                div
+                  input.input(type="text" placeholder="Copies Available" name="copiesAvailable")
+                
+                .textarea-container
+                  textarea.textarea(placeholder="Details about book" name="bookDescription")
+                  .word-count 50-500 words
+                
+                .textarea-container
+                  textarea.textarea(placeholder="About author" name="authorDescription")
+                  .word-count 50-500 words
+                
+                .submit-container
+                  button.submit-button(type="submit") Upload book
+
+  script.
+    document.addEventListener('DOMContentLoaded', function() {
+      // Form submission
+      const form = document.getElementById('bookUploadForm');
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(form);
+        const bookDetails = {};
+        
+        for (const [key, value] of formData.entries()) {
+          bookDetails[key] = value;
+        }
+        
+        console.log('Book details submitted:', bookDetails);
+        // Handle form submission logic here
+      });
+      
+      // Image upload
+      const imageUpload = document.getElementById('imageUpload');
+      imageUpload.addEventListener('click', function() {
+        // Create a file input element
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = 'image/*';
+        
+        fileInput.addEventListener('change', function(e) {
+          if (e.target.files && e.target.files[0]) {
+            const reader = new FileReader();
+            
+            reader.onload = function(event) {
+              // Create an image element
+              const img = document.createElement('img');
+              img.src = event.target.result;
+              img.style.width = '100%';
+              img.style.height = '100%';
+              img.style.objectFit = 'cover';
+              
+              // Clear the upload container and append the image
+              imageUpload.innerHTML = '';
+              imageUpload.appendChild(img);
+            };
+            
+            reader.readAsDataURL(e.target.files[0]);
+          }
+        });
+        
+        fileInput.click();
+      });
+      
+      // Word count for textareas
+      const textareas = document.querySelectorAll('.textarea');
+      textareas.forEach(textarea => {
+        textarea.addEventListener('input', function() {
+          const wordCount = this.value.trim().split(/\s+/).filter(Boolean).length;
+          const countDisplay = this.parentElement.querySelector('.word-count');
+          countDisplay.textContent = `${wordCount}/500 words`;
+        });
+      });
+    });

@@ -1,0 +1,67 @@
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title Sign Up - BOOK ORBIT
+    link(rel="stylesheet", href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap")
+    link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css")
+    link(rel="stylesheet", href="/css/styles.css")
+  body
+    .background
+    .signup-container
+      h1 Create an Account
+      p Get instant access to books at the comfort of wherever you are with BOOK ORBIT.
+      form#signup-form(action="/auth/register" method="POST")
+        .form-group
+          label(for="username") 
+            i.fas.fa-user
+            span Username
+          input(type="text" id="username" name="username" placeholder="Enter your username" required)
+          span.error-message Required
+        .form-group
+          label(for="email")
+            i.fas.fa-envelope
+            span Email
+          input(type="email" id="email" name="email" placeholder="Enter your email" required)
+          span.error-message Required
+        .form-group
+          label(for="password")
+            i.fas.fa-lock
+            span Password
+          .password-input-container
+            input(type="password" id="password" name="password" placeholder="Enter password" required minlength="8")
+            button.toggle-password(type="button" tabindex="-1")
+              i.fas.fa-eye
+          span.error-message Required
+          p.password-hint Must be at least 8 characters
+        .form-group
+          label(for="confirm-password")
+            i.fas.fa-lock
+            span Confirm Password
+          .password-input-container
+            input(type="password" id="confirm-password" name="confirm-password" placeholder="Confirm your password" required minlength="8")
+            button.toggle-password(type="button" tabindex="-1")
+              i.fas.fa-eye
+          span.error-message Required
+        button(type="submit")
+          span Create Account
+          i.fas.fa-arrow-right
+      p.login-link Already have an account? 
+        a(href="/login") Log in
+
+    // Success Popup
+    #success-popup.popup
+      .popup-content
+        .success
+          i.fas.fa-check-circle.success-icon
+          h5 Successful
+          p Your account has been created successfully!
+          .popup-buttons
+            a(href="/login")
+              i.fas.fa-sign-in-alt
+              span Log In
+            button#close-popup
+              i.fas.fa-times
+              span Close
+
+    script(src="/js/signup.js")

@@ -1,0 +1,608 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title BookGreat Dashboard
+    style.
+      /* Base styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        background-color: white;
+        color: #09121f;
+      }
+      
+      /* Layout */
+      .min-h-screen {
+        min-height: 100vh;
+      }
+      
+      .flex {
+        display: flex;
+      }
+      
+      .flex-1 {
+        flex: 1;
+      }
+      
+      .flex-col {
+        flex-direction: column;
+      }
+      
+      .items-center {
+        align-items: center;
+      }
+      
+      .justify-center {
+        justify-content: center;
+      }
+      
+      .justify-between {
+        justify-content: space-between;
+      }
+      
+      .gap-2 {
+        gap: 0.5rem;
+      }
+      
+      .gap-4 {
+        gap: 1rem;
+      }
+      
+      .gap-8 {
+        gap: 2rem;
+      }
+      
+      .mt-auto {
+        margin-top: auto;
+      }
+      
+      .mb-1 {
+        margin-bottom: 0.25rem;
+      }
+      
+      .mb-2 {
+        margin-bottom: 0.5rem;
+      }
+      
+      .mb-4 {
+        margin-bottom: 1rem;
+      }
+      
+      .mb-6 {
+        margin-bottom: 1.5rem;
+      }
+      
+      .mb-8 {
+        margin-bottom: 2rem;
+      }
+      
+      .ml-8 {
+        margin-left: 2rem;
+      }
+      
+      .ml-auto {
+        margin-left: auto;
+      }
+      
+      .p-2 {
+        padding: 0.5rem;
+      }
+      
+      .p-3 {
+        padding: 0.75rem;
+      }
+      
+      .p-4 {
+        padding: 1rem;
+      }
+      
+      .p-6 {
+        padding: 1.5rem;
+      }
+      
+      .p-8 {
+        padding: 2rem;
+      }
+      
+      .px-3 {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+      }
+      
+      .px-6 {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+      }
+      
+      .px-8 {
+        padding-left: 2rem;
+        padding-right: 2rem;
+      }
+      
+      .py-1 {
+        padding-top: 0.25rem;
+        padding-bottom: 0.25rem;
+      }
+      
+      .py-2 {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+      }
+      
+      .py-4 {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+      }
+      
+      .py-6 {
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
+      }
+      
+      /* Grid */
+      .grid {
+        display: grid;
+      }
+      
+      .grid-cols-1 {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+      }
+      
+      .grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      
+      .gap-y-8 {
+        row-gap: 2rem;
+      }
+      
+      /* Typography */
+      .text-xs {
+        font-size: 0.75rem;
+      }
+      
+      .text-sm {
+        font-size: 0.875rem;
+      }
+      
+      .text-lg {
+        font-size: 1.125rem;
+      }
+      
+      .text-xl {
+        font-size: 1.25rem;
+      }
+      
+      .text-2xl {
+        font-size: 1.5rem;
+      }
+      
+      .font-medium {
+        font-weight: 500;
+      }
+      
+      .font-bold {
+        font-weight: 700;
+      }
+      
+      .text-white {
+        color: white;
+      }
+      
+      .text-gray-500 {
+        color: #6b7280;
+      }
+      
+      .text-gray-600 {
+        color: #4b5563;
+      }
+      
+      .text-right {
+        text-align: right;
+      }
+      
+      /* Colors */
+      .bg-white {
+        background-color: white;
+      }
+      
+      .bg-bookblue {
+        background-color: #5252fc;
+      }
+      
+      .bg-red-500 {
+        background-color: #ef4444;
+      }
+      
+      .bg-teal {
+        background-color: #3bcae3;
+      }
+      
+      .text-bookblue {
+        color: #5252fc;
+      }
+      
+      .text-teal {
+        color: #3bcae3;
+      }
+      
+      .border-teal {
+        border-color: #3bcae3;
+      }
+      
+      /* Components */
+      .w-16 {
+        width: 4rem;
+      }
+      
+      .w-12 {
+        width: 3rem;
+      }
+      
+      .h-12 {
+        height: 3rem;
+      }
+      
+      .w-16 {
+        width: 4rem;
+      }
+      
+      .h-16 {
+        height: 4rem;
+      }
+      
+      .w-6 {
+        width: 1.5rem;
+      }
+      
+      .h-6 {
+        height: 1.5rem;
+      }
+      
+      .w-5 {
+        width: 1.25rem;
+      }
+      
+      .h-5 {
+        height: 1.25rem;
+      }
+      
+      .w-4 {
+        width: 1rem;
+      }
+      
+      .h-4 {
+        height: 1rem;
+      }
+      
+      .w-2 {
+        width: 0.5rem;
+      }
+      
+      .h-2 {
+        height: 0.5rem;
+      }
+      
+      .h-80 {
+        height: 20rem;
+      }
+      
+      .rounded-full {
+        border-radius: 9999px;
+      }
+      
+      .rounded-lg {
+        border-radius: 0.5rem;
+      }
+      
+      .rounded-3xl {
+        border-radius: 1.5rem;
+      }
+      
+      .border {
+        border-width: 1px;
+        border-style: solid;
+        border-color: #e5e7eb;
+      }
+      
+      .border-b {
+        border-bottom-width: 1px;
+        border-bottom-style: solid;
+        border-bottom-color: #e5e7eb;
+      }
+      
+      .border-none {
+        border: none;
+      }
+      
+      .shadow-lg {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      }
+      
+      .relative {
+        position: relative;
+      }
+      
+      .absolute {
+        position: absolute;
+      }
+      
+      .top-0 {
+        top: 0;
+      }
+      
+      .right-0 {
+        right: 0;
+      }
+      
+      /* Custom components */
+      .avatar {
+        position: relative;
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 9999px;
+        overflow: hidden;
+        background-color: #e5e7eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 500;
+      }
+      
+      .avatar-large {
+        width: 4rem;
+        height: 4rem;
+      }
+      
+      .avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 9999px;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+      }
+      
+      .badge-blue {
+        background-color: #d1d1f9;
+        color: #5252fc;
+      }
+      
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.375rem;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        cursor: pointer;
+      }
+      
+      .btn-icon {
+        padding: 0.5rem;
+      }
+      
+      .btn-rounded {
+        border-radius: 9999px;
+      }
+      
+      .btn-teal {
+        background-color: #70d8eb;
+        color: white;
+        border: none;
+      }
+      
+      .btn-outline-teal {
+        background-color: transparent;
+        color: #3bcae3;
+        border: 1px solid #3bcae3;
+      }
+      
+      .btn-ghost {
+        background-color: transparent;
+        border: none;
+      }
+      
+      .btn-ghost:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+      }
+      
+      .btn-gray {
+        background-color: #f2f2f2;
+        border: none;
+      }
+      
+      /* Responsive */
+      @media (min-width: 768px) {
+        .md-grid-cols-2 {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+  body
+    .flex.min-h-screen.bg-white
+      // Left Sidebar
+      .w-16.bg-bookblue.flex.flex-col.items-center.py-6.gap-8
+        .text-white.font-bold
+          svg.w-6.h-6(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16")
+        
+        .flex.flex-col.items-center.gap-8
+          button.btn.btn-ghost.p-2.text-white
+            svg.w-6.h-6(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6")
+          
+          button.btn.btn-ghost.p-2.text-white
+            svg.w-6.h-6(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z")
+          
+          button.btn.btn-ghost.p-2.text-white
+            svg.w-6.h-6(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253")
+          
+          button.btn.btn-ghost.p-2.text-white
+            svg.w-6.h-6(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z")
+          
+          button.btn.btn-ghost.p-2.text-white
+            svg.w-6.h-6(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z")
+        
+        .mt-auto.flex.flex-col.items-center.gap-8
+          button.btn.btn-ghost.p-2.text-white
+            svg.w-6.h-6(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z")
+      
+      // Main Content
+      .flex-1
+        // Header
+        header.flex.items-center.justify-between.px-6.py-4.border-b
+          .flex.items-center.gap-4
+            h1.text-lg.font-bold(style="color: #0a2256;") BOOKGREAT
+            .text-sm.text-gray-500.ml-8 Dashboard / Dashboard
+          
+          .flex.items-center.gap-4
+            button.btn.btn-ghost.relative
+              svg.w-5.h-5(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9")
+              span.absolute.top-0.right-0.w-2.h-2.bg-red-500.rounded-full
+            
+            .avatar
+              img(src="https://randomuser.me/api/portraits/men/1.jpg" alt="User")
+        
+        // Content
+        .p-6
+          .flex.items-center.justify-between.mb-8
+            button.btn.btn-gray.btn-rounded.w-12.h-12
+              svg.w-5.h-5(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18")
+            
+            button.btn.btn-gray.btn-rounded.w-12.h-12
+              svg.w-5.h-5(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z")
+          
+          .grid.grid-cols-1.gap-8
+            // Book Info
+            div
+              .rounded-3xl.p-8.flex.justify-center.mb-8(style="background-color: rgba(214, 218, 229, 0.3);")
+                img.h-80.shadow-lg(src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Swiyt-CboRqW09s0pAEQTwWRfeB0G6RShWvU.png" alt="The Girl in the Woods book cover")
+              
+              .mb-8
+                h2.text-2xl.font-bold.mb-1 The Girl in the Woods
+                p.text-gray-600.mb-4 Olivia Wilson
+                
+                .flex.items-center.gap-2.mb-4
+                  .text-sm.font-medium Status :
+                  .badge.badge-blue Past due
+                
+                .mb-4
+                  p.text-sm.font-medium.mb-2 User Name : Ifeanyi Agu
+                
+                .grid.grid-cols-2.gap-4.mb-6
+                  .flex.items-center.gap-2.border.rounded-lg.p-3
+                    .text-sm Date Borrowed
+                    svg.w-4.h-4.ml-auto.text-bookblue(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+                      path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z")
+                  
+                  .flex.items-center.gap-2.border.rounded-lg.p-3
+                    .text-sm Date Borrowed
+                    svg.w-4.h-4.ml-auto.text-bookblue(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+                      path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z")
+                  
+                  .flex.items-center.gap-2.border.rounded-lg.p-3
+                    .text-sm Date Returned
+                    svg.w-4.h-4.ml-auto.text-bookblue(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+                      path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z")
+                  
+                  .flex.items-center.gap-2.border.rounded-lg.p-3
+                    .text-sm Time Returned
+                    svg.w-4.h-4.ml-auto.text-bookblue(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+                      path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z")
+                
+                .mb-8
+                  p.text-sm.font-medium Fine amount : User will pay a sum of £13.22
+                
+                button.btn.btn-teal.btn-rounded.px-8.py-2.h-12 Back
+            
+            // Details
+            div
+              h2.text-2xl.font-bold.mb-6 Details
+              
+              .grid.grid-cols-2.gap-y-8.mb-8
+                div
+                  p.text-gray-500.text-sm.mb-1 Page number
+                  p.font-medium.text-lg 500 pages
+                
+                div.text-right
+                  p.text-gray-500.text-sm.mb-1 Language
+                  p.font-medium.text-lg English
+                
+                div
+                  p.text-gray-500.text-sm.mb-1 Publish date
+                  p.font-medium.text-lg March 2020
+                
+                div.text-right
+                  p.text-gray-500.text-sm.mb-1 Publishers
+                  p.font-medium.text-lg Griffin & co 2019
+              
+              .mb-8
+                p.font-medium.mb-8(style="color: #3bcae3;") 250 People borrowed this book
+                
+                .flex.items-center.gap-4.mb-4
+                  .avatar.avatar-large
+                    img(src="https://randomuser.me/api/portraits/women/65.jpg" alt="Olivia Wilson")
+                  h3.text-lg.font-medium Olivia Wilson
+                
+                h3.text-xl.font-bold.mb-2 About Author
+                p.text-gray-600.mb-8
+                  | Lorem ipsum is simply dummy text of the printing and typesetting industry. Lorem ipsum. Lorem ipsum is simply dummy text of the printing and typesetting industry. Lorem IpsumLorem ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum
+              
+              div
+                h2.text-2xl.font-bold.mb-6 Fine Calculator
+                
+                .mb-4
+                  div(style="background-color: #f2f2f2;").p-4.rounded-lg.mb-2
+                    p.text-gray-600.mb-1 Date of Borrow
+                    p.text-xs.text-gray-500 This calculates the day the user borrowed the book
+                
+                .mb-6
+                  div(style="background-color: #f2f2f2;").p-4.rounded-lg.mb-2
+                    p.text-gray-600.mb-1 Date of Return
+                    p.text-xs.text-gray-500 This calculates the day the user Returns the book
+                
+                p.font-medium.mb-6 N/B 10 Days Late, User should pay £13.22
+                
+                .flex.gap-4
+                  button.btn.btn-teal.btn-rounded.px-8.py-2.flex-1 Send Reminder
+                  button.btn.btn-outline-teal.btn-rounded.px-8.py-2.flex-1 Charge Fine
+
+script.
+  // Add media query handling with JavaScript
+  function handleResponsiveLayout() {
+    const container = document.querySelector('.grid-cols-1');
+    if (window.innerWidth >= 768) {
+      container.classList.add('grid-cols-2');
+    } else {
+      container.classList.remove('grid-cols-2');
+    }
+  }
+  
+  // Run on page load
+  handleResponsiveLayout();
+  
+  // Run on window resize
+  window.addEventListener('resize', handleResponsiveLayout);

@@ -1,0 +1,76 @@
+Code of Conduct for Library Management System Project
+1. Respect and Professionalism
+Treat all team members with respect, kindness, and professionalism.
+
+Value diverse opinions and perspectives. Disagreements should be handled constructively.
+
+Avoid offensive language, personal attacks, or disrespectful behavior.
+
+2. Communication
+Use the agreed-upon communication channels i.e WhatsApp and and email for project-related discussions.
+
+Respond to messages within 24 hours, or notify the group if you will be unavailable.
+
+Be clear, concise, and respectful in all communications.
+
+Raise concerns or issues promptly to avoid delays.
+
+3. Attendance and Participation
+Attend all scheduled meetings (in-person or virtual) on time. If you cannot attend, inform the group in advance.
+
+Actively participate in discussions, brainstorming sessions, and decision-making processes.
+
+Contribute equally to the project and take ownership of assigned tasks.
+
+4. Task Management and Deadlines
+Use the agreed-upon project management tool -Kanban and Github, to track tasks and progress.
+
+Complete assigned tasks by the agreed deadlines. If you anticipate a delay, inform the group immediately.
+
+Help teammates if they are struggling with their tasks, and ask for help when needed.
+
+5. Collaboration and Teamwork
+Share ideas, resources, and knowledge openly with the team.
+
+Be open to feedback and constructive criticism. Use feedback to improve your work.
+
+Avoid working in silos. Keep the team updated on your progress and challenges.
+
+6. Accountability
+Take responsibility for your tasks and deliverables.
+
+If you make a mistake, own up to it and work with the team to find a solution.
+
+we hold each other accountable in a respectful and supportive manner.
+
+7. Conflict Resolution
+Address conflicts or disagreements calmly and professionally.
+
+Focus on finding solutions rather than assigning blame.
+
+If a conflict cannot be resolved internally, we'll seek guidance from our lectuter.
+
+8. Academic Integrity
+Ensure all work is original and properly cited. Avoid plagiarism at all costs.
+
+Follow the institution’s guidelines for academic integrity and ethical behavior.
+
+Do not share project details or code with individuals outside the group without permission.
+
+9. Work-Life Balance
+Respect each other’s time and personal commitments. Avoid scheduling meetings or setting deadlines outside reasonable hours.
+
+Take breaks when needed to maintain productivity and mental well-being.
+
+10. Continuous Improvement
+Regularly reflect on the team’s progress and identify areas for improvement.
+
+Be open to adapting processes or workflows to enhance efficiency and collaboration.
+
+Agreement
+By agreeing to this Code of Conduct, all team members commit to upholding these principles throughout the project. Failure to adhere to these guidelines may result in a discussion with the team and, if necessary, escalation to the project supervisor.
+
+Signed:
+
+Tolulope Babajide A00020050
+Franklin Ikeh A00021448

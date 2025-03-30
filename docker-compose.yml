@@ -1,0 +1,48 @@
+version: '3.8'
+services:
+  web:
+    build:
+      context: ./
+    platform: linux/amd64  # Specify the platform
+    volumes:
+      - .:/src
+    command: supervisor -e 'js,pug,html' index.js
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  db:
+    image: mysql
+    platform: linux/amd64  # Specify the platform
+    restart: always
+    env_file:
+      - ./.env
+    ports:
+      - "3308:3306"
+    volumes:
+      - ./db:/var/lib/mysql
+    networks:
+      - app-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    platform: linux/amd64  # Specify the platform
+    restart: always
+    environment:
+      - APACHE_SERVER_NAME=localhost
+      - PMA_HOST=db
+    env_file:
+      - ./.env
+    ports:
+      - "8081:80"
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
