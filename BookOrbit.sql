@@ -18,12 +18,19 @@ CREATE TABLE Users (
 -- Books Table
 CREATE TABLE Books (
     book_id INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(150) NOT NULL,
-    author VARCHAR(100) NOT NULL,
-    genre VARCHAR(50) NOT NULL,
-    price DECIMAL(10, 2) NOT NULL,
-    availability_status ENUM('available', 'rented', 'sold') NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    title VARCHAR(255) NOT NULL,
+    author VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    image MEDIUMBLOB NOT NULL,
+    isbn VARCHAR(255) NOT NULL,
+    publishing_company VARCHAR(255) NOT NULL,
+    year_of_publication INT NOT NULL,
+    number_of_pages INT NOT NULL,
+    genre VARCHAR(255) NOT NULL,
+    no_of_copies INT NOT NULL,
+    no_of_copies_available INT NOT NULL,
+    about_author TEXT NOT NULL
 );
 
 -- Categories Table

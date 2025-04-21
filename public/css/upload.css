@@ -1,0 +1,396 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+}
+
+body {
+  background-color: #ffffff;
+}
+
+.container {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+}
+
+.top-navbar {
+  background-color: #f5f5f5;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  padding: 0px 16px;
+}
+
+.logo-text {
+  font-family: "Euphoria Script", cursive;
+  font-size: 24px;
+  color: #0a0a0a;
+  line-height: 1.5;
+  width: 267px;
+  border-right: 1px solid #d6dae5;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-self: center;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 64px;
+  background-color: #7e77f8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 0;
+  color: white;
+  height: 100vh;
+}
+
+.logo {
+  margin-bottom: 32px;
+  font-weight: bold;
+  font-size: 12px;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  flex-grow: 1;
+}
+
+.sidebar-button {
+  padding: 8px;
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.sidebar-button:hover {
+  background-color: #6a63e6;
+}
+
+.divider {
+  border-top: 1px solid rgba(255, 255, 255, 0.4);
+  width: 32px;
+  margin: 8px 0;
+}
+
+/* Main Content */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.header {
+  height: 64px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+}
+
+.header-title {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.notification-button {
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background-color: #3bcae3;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: white;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #fed7aa;
+  overflow: hidden;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Form Content */
+.form-container {
+  flex: 1;
+  padding: 24px;
+  overflow: auto;
+}
+
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.form-title {
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.back-button:hover {
+  color: #7e77f8;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+@media (min-width: 768px) {
+  .form {
+    flex-direction: row;
+  }
+}
+
+/* Image Upload */
+.image-upload {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .image-upload {
+    width: 25%;
+  }
+}
+
+.image-upload-container {
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  aspect-ratio: 1/1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.image-upload-container:hover {
+  background-color: #f9fafb;
+}
+
+.image-upload-text {
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+/* Form Fields */
+.form-fields {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .form-fields {
+    width: 75%;
+  }
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+@media (min-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.input {
+  width: 100%;
+  padding: 10px 14px;
+  background-color: #f9fafb;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+.input:focus {
+  outline: 2px solid #7e77f8;
+}
+
+.textarea-container {
+  position: relative;
+  grid-column: span 1;
+}
+
+@media (min-width: 768px) {
+  .textarea-container {
+    grid-column: span 2;
+  }
+}
+
+.textarea {
+  width: 100%;
+  padding: 10px 14px;
+  background-color: #f9fafb;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  resize: none;
+  min-height: 100px;
+}
+
+.textarea:focus {
+  outline: 2px solid #7e77f8;
+}
+
+.word-count {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.submit-container {
+  grid-column: span 1;
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 8px;
+}
+
+@media (min-width: 768px) {
+  .submit-container {
+    grid-column: span 2;
+  }
+}
+
+.submit-button {
+  background-color: #3bcae3;
+  color: white;
+  border: none;
+  border-radius: 9999px;
+  padding: 8px 24px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.submit-button:hover {
+  background-color: rgba(59, 202, 227, 0.9);
+}
+
+.submit-button.loading {
+  animation: swirlbackgroundcolors 2s linear infinite;
+  background-color: linear-gradient(to right, #3bcae3, #e7f7fa);
+}
+
+.error {
+  border: 1px solid red;
+  animation: bob 0.5s ease-in-out;
+}
+
+@keyframes bob {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes swirlbackgroundcolors {
+  0% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.2;
+  }
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 500px;
+  border-radius: 8px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.close-modal {
+  color: #aaa;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close-modal:hover {
+  color: black;
+}
+
+.modal-body {
+  color: #333;
+}

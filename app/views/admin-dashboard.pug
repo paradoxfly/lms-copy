@@ -3,543 +3,51 @@ html(lang="en")
   head
     meta(charset="UTF-8")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
-    title Book Owly Dashboard
+    title BookOrbit Dashboard
     link(href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap", rel="stylesheet")
-    style.
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: 'Inter', sans-serif;
-      }
-      
-      body {
-        background-color: #ffffff;
-        color: #000000;
-      }
-      
-      .dashboard {
-        min-height: 100vh;
-        display: flex;
-      }
-      
-      /* Sidebar */
-      .sidebar {
-        width: 64px;
-        background-color: #5252fc;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 16px 0;
-        position: fixed;
-        height: 100%;
-      }
-      
-      .sidebar-logo {
-        margin-bottom: 32px;
-        color: white;
-        font-weight: bold;
-        font-size: 12px;
-      }
-      
-      .sidebar-nav {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 32px;
-      }
-      
-      .nav-item {
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        border-radius: 6px;
-        cursor: pointer;
-      }
-      
-      .nav-item.active {
-        background-color: rgba(255, 255, 255, 0.1);
-      }
-      
-      /* Main Content */
-      .main-content {
-        flex: 1;
-        margin-left: 64px;
-      }
-      
-      /* Header */
-      .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 16px;
-        border-bottom: 1px solid #f2f2f2;
-      }
-      
-      .header-title {
-        font-size: 20px;
-        font-weight: 600;
-      }
-      
-      .header-actions {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-      }
-      
-      .notification-btn {
-        position: relative;
-        background: none;
-        border: none;
-        cursor: pointer;
-      }
-      
-      .notification-badge {
-        position: absolute;
-        top: -4px;
-        right: -4px;
-        width: 8px;
-        height: 8px;
-        background-color: #ee0355;
-        border-radius: 50%;
-      }
-      
-      .avatar {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        background-color: #f2f2f2;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 600;
-        color: #525252;
-      }
-      
-      /* Dashboard Content */
-      .dashboard-content {
-        padding: 16px;
-      }
-      
-      /* Search and Filters */
-      .search-filters {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 24px;
-        flex-wrap: wrap;
-        gap: 16px;
-      }
-      
-      .search-container {
-        position: relative;
-        width: 300px;
-      }
-      
-      .search-input {
-        width: 100%;
-        padding: 8px 16px 8px 40px;
-        border-radius: 4px;
-        border: none;
-        background-color: #f2f2f2;
-        font-size: 14px;
-      }
-      
-      .search-icon {
-        position: absolute;
-        left: 12px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #525252;
-      }
-      
-      .filters {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex-wrap: wrap;
-      }
-      
-      .filter-label {
-        font-size: 14px;
-      }
-      
-      .date-filter {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 6px 12px;
-        border: 1px solid #f2f2f2;
-        border-radius: 4px;
-        font-size: 14px;
-      }
-      
-      .select-filter {
-        padding: 6px 12px;
-        border: 1px solid #f2f2f2;
-        border-radius: 4px;
-        background-color: white;
-        font-size: 14px;
-        min-width: 120px;
-        cursor: pointer;
-      }
-      
-      .upload-btn {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        padding: 8px 16px;
-        background-color: #1fbbd6;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        font-size: 14px;
-        cursor: pointer;
-      }
-      
-      /* Stats Cards */
-      .stats-cards {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 16px;
-        margin-bottom: 24px;
-      }
-      
-      .stats-card {
-        background-color: white;
-        border: 1px solid #f2f2f2;
-        border-radius: 8px;
-        padding: 16px;
-      }
-      
-      .stats-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 16px;
-      }
-      
-      .stats-icon-title {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-      
-      .stats-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      
-      .stats-title {
-        font-size: 14px;
-        font-weight: 500;
-      }
-      
-      .more-btn {
-        background: none;
-        border: none;
-        cursor: pointer;
-        color: #525252;
-      }
-      
-      .stats-count {
-        font-size: 24px;
-        font-weight: 700;
-        margin-bottom: 8px;
-      }
-      
-      .stats-trend {
-        display: flex;
-        align-items: center;
-        font-size: 12px;
-        color: #525252;
-      }
-      
-      /* Analysis Sections */
-      .analysis-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
-        gap: 16px;
-        margin-bottom: 24px;
-      }
-      
-      .analysis-card {
-        background-color: #edfafc;
-        border-radius: 8px;
-        padding: 16px;
-      }
-      
-      .analysis-title {
-        font-size: 18px;
-        font-weight: 600;
-        margin-bottom: 16px;
-      }
-      
-      .analysis-content {
-        display: flex;
-        align-items: center;
-        gap: 24px;
-        flex-wrap: wrap;
-      }
-      
-      .chart-container {
-        position: relative;
-        width: 200px;
-        height: 200px;
-      }
-      
-      .legend {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-      }
-      
-      .legend-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 14px;
-      }
-      
-      .legend-color {
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-      }
-      
-      .download-btn {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        padding: 8px 16px;
-        background-color: #1fbbd6;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        font-size: 14px;
-        margin-top: 16px;
-        cursor: pointer;
-      }
-      
-      /* Tables */
-      .table-card {
-        background-color: white;
-        border: 1px solid #f2f2f2;
-        border-radius: 8px;
-        overflow: hidden;
-      }
-      
-      .table-header {
-        padding: 16px;
-        border-bottom: 1px solid #f2f2f2;
-      }
-      
-      .table-title {
-        font-size: 18px;
-        font-weight: 600;
-      }
-      
-      .table-container {
-        overflow-x: auto;
-      }
-      
-      table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-      
-      th {
-        text-align: left;
-        padding: 8px 16px;
-        font-weight: 500;
-        font-size: 14px;
-        border-bottom: 1px solid #f2f2f2;
-      }
-      
-      td {
-        padding: 8px 16px;
-        font-size: 14px;
-        border-bottom: 1px solid #f2f2f2;
-      }
-      
-      .status-badge {
-        display: inline-block;
-        padding: 2px 8px;
-        border-radius: 2px;
-        font-size: 12px;
-        color: white;
-      }
-      
-      .status-past-due {
-        background-color: #ee0355;
-      }
-      
-      .status-available {
-        background-color: #129145;
-      }
-      
-      /* Pagination */
-      .pagination {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 16px;
-      }
-      
-      .page-numbers {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-      }
-      
-      .page-btn {
-        width: 32px;
-        height: 32px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid #f2f2f2;
-        border-radius: 4px;
-        background-color: white;
-        font-size: 14px;
-        cursor: pointer;
-      }
-      
-      .page-btn.active {
-        background-color: #1fbbd6;
-        color: white;
-        border: none;
-      }
-      
-      .page-info {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        font-size: 14px;
-      }
-      
-      /* Payment Reminder */
-      .payment-reminder {
-        background-color: white;
-        border: 1px solid #f2f2f2;
-        border-radius: 8px;
-        padding: 16px;
-        margin-bottom: 24px;
-      }
-      
-      .reminder-title {
-        font-size: 18px;
-        font-weight: 600;
-        margin-bottom: 16px;
-      }
-      
-      .reminder-subtitle {
-        font-size: 14px;
-        font-weight: 500;
-        margin-bottom: 8px;
-      }
-      
-      .reminder-textarea {
-        width: 100%;
-        min-height: 100px;
-        padding: 12px;
-        border: 1px solid #f2f2f2;
-        border-radius: 4px;
-        margin-bottom: 16px;
-        font-size: 14px;
-        resize: vertical;
-      }
-      
-      .reminder-actions {
-        display: flex;
-        gap: 8px;
-      }
-      
-      .send-btn {
-        padding: 8px 16px;
-        background-color: #1fbbd6;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        font-size: 14px;
-        cursor: pointer;
-      }
-      
-      .email-btn {
-        padding: 8px 16px;
-        background-color: white;
-        color: #1fbbd6;
-        border: 1px solid #1fbbd6;
-        border-radius: 4px;
-        font-size: 14px;
-        cursor: pointer;
-      }
-      
-      /* Responsive */
-      @media (max-width: 768px) {
-        .search-filters {
-          flex-direction: column;
-          align-items: flex-start;
-        }
-        
-        .search-container {
-          width: 100%;
-        }
-        
-        .analysis-grid {
-          grid-template-columns: 1fr;
-        }
-      }
-  body
-    .dashboard
-      // Sidebar
-      .sidebar
-        .sidebar-logo BOOK OWLY
-        .sidebar-nav
-          .nav-item.active
-            svg(xmlns="http://www.w3.org/2000/svg", width="20", height="20", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
-              path(d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z")
-              polyline(points="9 22 9 12 15 12 15 22")
-          .nav-item
-            svg(xmlns="http://www.w3.org/2000/svg", width="20", height="20", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
-              path(d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20")
-          .nav-item
-            svg(xmlns="http://www.w3.org/2000/svg", width="20", height="20", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
-              path(d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4")
-              polyline(points="17 8 12 3 7 8")
-              line(x1="12", x2="12", y1="3", y2="15")
-          .nav-item
-            svg(xmlns="http://www.w3.org/2000/svg", width="20", height="20", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
-              path(d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z")
-          .nav-item
-            svg(xmlns="http://www.w3.org/2000/svg", width="20", height="20", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
-              path(d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2")
-              circle(cx="9", cy="7", r="4")
-              path(d="M22 21v-2a4 4 0 0 0-3-3.87")
-              path(d="M16 3.13a4 4 0 0 1 0 7.75")
-      
-      // Main Content
-      .main-content
-        // Header
-        header.header
-          h1.header-title Dashboard
-          .header-actions
-            button.notification-btn
+    link(href="https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,100..900;1,100..900&family=Euphoria+Script&display=swap" rel="stylesheet")
+    link(href="/css/admin-dashboard.css", rel="stylesheet")
+    link(href="/css/reusable.css", rel="stylesheet")
+
+  body.h-screen
+    // Top Navbar
+    .top-navbar
+        h1.logo-text BookOrbit
+        h1.text-xl.font-semibold.pl-3 Admin Dashboard
+        .flex.items-center.gap-4.ml-auto
+          button.relative
+            //- i.fas.fa-bell
+            //- span.notification-badge 1
+          .rounded-full.overflow-hidden(style="background-color: #dccdbe;")
+            img(src="https://placehold.co/40x40/dccdbe/ffffff?text=U" alt="User")#profile-picture
+    .flex
+        // Sidebar
+        .sidebar
+          .sidebar-nav
+            .nav-item.active
               svg(xmlns="http://www.w3.org/2000/svg", width="20", height="20", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
-                path(d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9")
-                path(d="M10.3 21a1.94 1.94 0 0 0 3.4 0")
-              span.notification-badge
-            .avatar U
+                path(d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z")
+                polyline(points="9 22 9 12 15 12 15 22")
+            .nav-item
+              svg(xmlns="http://www.w3.org/2000/svg", width="20", height="20", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                path(d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20")
+            .nav-item
+              svg(xmlns="http://www.w3.org/2000/svg", width="20", height="20", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                path(d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4")
+                polyline(points="17 8 12 3 7 8")
+                line(x1="12", x2="12", y1="3", y2="15")
+            .nav-item
+              svg(xmlns="http://www.w3.org/2000/svg", width="20", height="20", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                path(d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z")
+            .nav-item
+              svg(xmlns="http://www.w3.org/2000/svg", width="20", height="20", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+                path(d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2")
+                circle(cx="9", cy="7", r="4")
+                path(d="M22 21v-2a4 4 0 0 0-3-3.87")
+                path(d="M16 3.13a4 4 0 0 1 0 7.75")
         
         // Dashboard Content
-        main.dashboard-content
+        .dashboard-content
           // Search and Filters
           .search-filters
             .search-container
@@ -566,8 +74,7 @@ html(lang="en")
                 option All Authors
                 option Fiction
                 option Non-Fiction
-              button.upload-btn
-                | Upload book
+              button.upload-btn(onclick="window.location.href='/admin/upload-book'") Upload book
                 svg(xmlns="http://www.w3.org/2000/svg", width="16", height="16", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
                   path(d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4")
                   polyline(points="17 8 12 3 7 8")
@@ -1058,9 +565,20 @@ html(lang="en")
         ctx.fillStyle = 'white';
         ctx.fill();
       }
+
+      function adjustSidebarHeight() {
+        const sidebar = document.querySelector('.sidebar');
+        const dashboardContent = document.querySelector('.dashboard-content');
+        sidebar.style.height = dashboardContent.clientHeight + 'px';
+
+        dashboardContent.addEventListener('resize', () => {
+          sidebar.style.height = dashboardContent.clientHeight + 'px';
+        });
+      }
       
       // Initialize charts when the page loads
       window.onload = function() {
         drawFinesChart();
         drawBorrowingChart();
+        adjustSidebarHeight();
       };

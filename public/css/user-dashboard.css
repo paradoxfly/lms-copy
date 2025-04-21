@@ -1,0 +1,155 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family: "Inter", sans-serif;
+  background-color: #f2f2f2;
+}
+
+.top-navbar {
+    background-color: #F5F5F5;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    padding: 0px 16px;
+}
+
+.logo-text {
+    font-family: 'Euphoria Script', cursive;
+    font-size: 24px;
+    color: #0A0A0A;
+    line-height: 1.5;
+    width: 267px;
+    border-right: 1px solid #D6DAE5;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-self: center
+}
+
+.sidebar {
+  background-color: #7E77F8;
+  width: 64px;
+}
+.book-card {
+  border-color: #d6dae5;
+  border-radius: 12px;
+}
+.recently-borrowed-icon {
+  background-color: #c9f0f7;
+  color: #178ca1;
+}
+.currently-reading-icon {
+  background-color: #d1d1f9;
+  color: #5252fc;
+}
+.pending-returns-icon {
+  background-color: #b6f6d0;
+  color: #129145;
+}
+.borrow-button {
+  background-color: #3bcae3;
+  border-radius: 9999px;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+.borrow-button:hover {
+  background-color: #1fbbd6;
+}
+.available-badge {
+  background-color: #b6f6d0;
+  color: #129145;
+  border-radius: 9999px;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  display: inline-block;
+  width: fit-content;
+}
+.completed-badge {
+  background-color: #7e77f8;
+  color: white;
+  border-radius: 9999px;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  display: inline-block;
+}
+.read-more {
+  color: #3bcae3;
+  cursor: pointer;
+}
+.book-cover {
+  height: 160px;
+  width: 112px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+.book-cover-small {
+  aspect-ratio: 2/3;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 6px;
+}
+.star-filled {
+  color: #ee0355;
+}
+.star-empty {
+  color: #d6dae5;
+}
+.rotate-90 {
+  transform: rotate(90deg);
+  transform-origin: center;
+  display: inline-block;
+}
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 16px;
+  height: 16px;
+  background-color: #ee0355;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 10px;
+}
+.filter-button {
+  background-color: white;
+  border: 1px solid #d6dae5;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+.buy-button {
+  background-color: white;
+  border: 1px solid #d6dae5;
+  border-radius: 9999px;
+  padding: 4px 16px;
+  font-size: 0.875rem;
+  color: #4b5563;
+  cursor: pointer;
+}
+.action-button {
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0;
+}
+input {
+  outline: none;
+}
+.view-all {
+  color: #3bcae3;
+  text-decoration: none;
+  cursor: pointer;
+}
+

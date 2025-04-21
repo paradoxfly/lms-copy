@@ -1,24 +1,44 @@
-const logger = require('../utils/logger');
+const logger = require("../utils/logger");
+const Book = require("../models/Book");
 
-// Render the admin dashboard
-exports.dashboard = (req, res) => {
+exports.createBook = async (req, res) => {
   try {
-    // Ensure the user is authenticated and has the 'admin' role
-    if (!req.session.user || req.session.user.role !== 'admin') {
-      logger.warn(`Unauthorized access attempt to admin dashboard by ${req.session.user?.username || 'Unknown user'}`);
-      return res.status(403).json({ error: 'Access denied: Admins only' });
-    }
+    const {
+      title,
+      author,
+      about_author,
+      description,
+      image,
+      isbn,
+      publishing_company,
+      year_of_publication,
+      number_of_pages,
+      genre,
+      no_of_copies,
+    } = req.body;
 
-    // Render the admin dashboard view
-    res.render('adminDashboard', {
-      user: req.session.user,
-      title: 'Admin Dashboard',
+    const imageBuffer = Buffer.from(image, 'base64');
+
+    const newBook = await Book.create({
+      title,
+      author,
+      description,
+      about_author,
+      image: imageBuffer,
+      isbn,
+      publishing_company,
+      year_of_publication,
+      number_of_pages,
+      genre,
+      no_of_copies,
+      no_of_copies_available: no_of_copies,
+      created_at: new Date(),
     });
+
+    logger.info(`Book created: ${newBook.title}`);
+    res.status(201).json({ message: "Book created successfully", book: newBook });
   } catch (error) {
-    logger.error(`Error rendering admin dashboard: ${error.message}`);
-    res.status(500).json({ error: 'Failed to load admin dashboard' });
+    logger.error(`Error creating book: ${error.message}`);
+    res.status(500).json({ error: "Failed to create book" });
   }
 };
-
-// Add more admin-specific controller methods here
-// Example: Manage users, manage books, etc.

@@ -3,312 +3,24 @@ html(lang="en")
   head
     meta(charset="UTF-8")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
-    title Book Upload - BookGreat
-    style.
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-      }
-      
-      body {
-        background-color: #ffffff;
-      }
-      
-      .container {
-        display: flex;
-        height: 100vh;
-        width: 100%;
-      }
-      
-      /* Sidebar */
-      .sidebar {
-        width: 64px;
-        background-color: #7e77f8;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 24px 0;
-        color: white;
-      }
-      
-      .logo {
-        margin-bottom: 32px;
-        font-weight: bold;
-        font-size: 12px;
-        text-align: center;
-        line-height: 1.2;
-      }
-      
-      .sidebar-menu {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 32px;
-        flex-grow: 1;
-      }
-      
-      .sidebar-button {
-        padding: 8px;
-        background: transparent;
-        border: none;
-        color: white;
-        cursor: pointer;
-        border-radius: 6px;
-      }
-      
-      .sidebar-button:hover {
-        background-color: #6a63e6;
-      }
-      
-      .divider {
-        border-top: 1px solid rgba(255, 255, 255, 0.4);
-        width: 32px;
-        margin: 8px 0;
-      }
-      
-      /* Main Content */
-      .main-content {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-      }
-      
-      /* Header */
-      .header {
-        height: 64px;
-        border-bottom: 1px solid #e5e7eb;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 24px;
-      }
-      
-      .header-title {
-        font-size: 20px;
-        font-weight: 500;
-      }
-      
-      .header-actions {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-      }
-      
-      .notification-button {
-        position: relative;
-        background: none;
-        border: none;
-        cursor: pointer;
-      }
-      
-      .notification-badge {
-        position: absolute;
-        top: -4px;
-        right: -4px;
-        background-color: #3bcae3;
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 10px;
-        color: white;
-      }
-      
-      .avatar {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        background-color: #fed7aa;
-        overflow: hidden;
-      }
-      
-      .avatar img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-      
-      /* Form Content */
-      .form-container {
-        flex: 1;
-        padding: 24px;
-        overflow: auto;
-      }
-      
-      .form-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 32px;
-      }
-      
-      .form-title {
-        font-size: 30px;
-        font-weight: bold;
-      }
-      
-      .back-button {
-        background: none;
-        border: none;
-        cursor: pointer;
-      }
-      
-      .back-button:hover {
-        color: #7e77f8;
-      }
-      
-      .form {
-        display: flex;
-        flex-direction: column;
-        gap: 32px;
-      }
-      
-      @media (min-width: 768px) {
-        .form {
-          flex-direction: row;
-        }
-      }
-      
-      /* Image Upload */
-      .image-upload {
-        width: 100%;
-      }
-      
-      @media (min-width: 768px) {
-        .image-upload {
-          width: 25%;
-        }
-      }
-      
-      .image-upload-container {
-        border: 1px solid #d1d5db;
-        border-radius: 6px;
-        aspect-ratio: 1/1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-      }
-      
-      .image-upload-container:hover {
-        background-color: #f9fafb;
-      }
-      
-      .image-upload-text {
-        font-size: 14px;
-        font-weight: 500;
-        margin-top: 8px;
-      }
-      
-      /* Form Fields */
-      .form-fields {
-        width: 100%;
-      }
-      
-      @media (min-width: 768px) {
-        .form-fields {
-          width: 75%;
-        }
-      }
-      
-      .form-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 24px;
-      }
-      
-      @media (min-width: 768px) {
-        .form-grid {
-          grid-template-columns: 1fr 1fr;
-        }
-      }
-      
-      .input {
-        width: 100%;
-        padding: 10px 14px;
-        background-color: #f9fafb;
-        border: none;
-        border-radius: 6px;
-        font-size: 16px;
-      }
-      
-      .input:focus {
-        outline: 2px solid #7e77f8;
-      }
-      
-      .textarea-container {
-        position: relative;
-        grid-column: span 1;
-      }
-      
-      @media (min-width: 768px) {
-        .textarea-container {
-          grid-column: span 2;
-        }
-      }
-      
-      .textarea {
-        width: 100%;
-        padding: 10px 14px;
-        background-color: #f9fafb;
-        border: none;
-        border-radius: 6px;
-        font-size: 16px;
-        resize: none;
-        min-height: 100px;
-      }
-      
-      .textarea:focus {
-        outline: 2px solid #7e77f8;
-      }
-      
-      .word-count {
-        position: absolute;
-        bottom: 8px;
-        right: 8px;
-        font-size: 12px;
-        color: #9ca3af;
-      }
-      
-      .submit-container {
-        grid-column: span 1;
-        display: flex;
-        justify-content: flex-start;
-        margin-top: 8px;
-      }
-      
-      @media (min-width: 768px) {
-        .submit-container {
-          grid-column: span 2;
-        }
-      }
-      
-      .submit-button {
-        background-color: #3bcae3;
-        color: white;
-        border: none;
-        border-radius: 9999px;
-        padding: 8px 24px;
-        font-size: 16px;
-        cursor: pointer;
-      }
-      
-      .submit-button:hover {
-        background-color: rgba(59, 202, 227, 0.9);
-      }
+    link(href="https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,100..900;1,100..900&family=Euphoria+Script&display=swap" rel="stylesheet")
+    link(href="/css/upload.css", rel="stylesheet")
+    link(href="/css/reusable.css" rel="stylesheet")
+    title Book Upload - BookOrbit
 
   body
-    .container
+    .top-navbar
+      h1.logo-text BookOrbit
+      h1.text-xl.font-semibold.pl-3 Dashboard
+      .flex.items-center.gap-4.ml-auto
+        button.relative
+          //- i.fas.fa-bell
+          //- span.notification-badge 1
+        .w-8.h-8.rounded-full.overflow-hidden(style="background-color: #dccdbe;")
+          img(src="https://placehold.co/30x30/dccdbe/ffffff?text=U" alt="User")#profile-picture
+    .flex
       //- Sidebar
       .sidebar
-        .logo BOOK
-          br
-          | GREAT
         .sidebar-menu
           button.sidebar-button(title="Dashboard")
             svg(xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
@@ -343,18 +55,14 @@ html(lang="en")
 
       //- Main Content
       .main-content
-        //- Header
-        header.header
-          h1.header-title Dashboard
-          .header-actions
-            button.notification-button
-              svg(xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
-                path(d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9")
-                path(d="M10.3 21a1.94 1.94 0 0 0 3.4 0")
-              span.notification-badge 1
-            .avatar
-              img(src="https://via.placeholder.com/32" alt="User avatar")
-
+        //- Add modal HTML structure
+        .modal#errorModal
+          .modal-content
+            .modal-header
+              h3 Error
+              button.close-modal ×
+            .modal-body
+              p#errorMessage
         //- Form Content
         .form-container
           .form-header
@@ -378,41 +86,52 @@ html(lang="en")
             .form-fields
               .form-grid
                 div
-                  input.input(type="text" placeholder="Book name" name="bookName")
+                  input.input(type="text" placeholder="Book name" name="title" required)
                 div
-                  input.input(type="text" placeholder="Author's name" name="authorName")
+                  input.input(type="text" placeholder="Author's name" name="author" required)
                 div
-                  input.input(type="text" placeholder="Publishing Company name" name="publishingCompany")
+                  input.input(type="text" placeholder="Publishing Company name" name="publishing_company" required)
                 div
-                  input.input(type="text" placeholder="ISBN Number" name="isbn")
+                  input.input(type="text" placeholder="ISBN Number" name="isbn" required)
                 div
-                  input.input(type="text" placeholder="Year of Publication" name="yearOfPublication")
+                  input.input(type="number" placeholder="Year of Publication" name="year_of_publication" required)
                 div
-                  input.input(type="text" placeholder="Number of pages" name="numberOfPages")
+                  input.input(type="number" placeholder="Number of pages" name="number_of_pages" required)
                 div
-                  input.input(type="text" placeholder="Genre" name="genre")
+                  input.input(type="text" placeholder="Genre" name="genre" required)
                 div
-                  input.input(type="text" placeholder="Copies Available" name="copiesAvailable")
+                  input.input(type="number" placeholder="Number of copies" name="no_of_copies" required)
                 
                 .textarea-container
-                  textarea.textarea(placeholder="Details about book" name="bookDescription")
+                  textarea.textarea(placeholder="Details about book" name="description" required)
                   .word-count 50-500 words
                 
                 .textarea-container
-                  textarea.textarea(placeholder="About author" name="authorDescription")
+                  textarea.textarea(placeholder="About author" name="about_author" required)
                   .word-count 50-500 words
                 
                 .submit-container
-                  button.submit-button(type="submit") Upload book
+                  button.submit-button(type="submit") Upload book 
 
   script.
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', async function() {
+      let image = null;
       // Form submission
       const form = document.getElementById('bookUploadForm');
-      form.addEventListener('submit', function(e) {
+      form.addEventListener('submit', async function(e) {
         e.preventDefault();
+
+        if (!image) {
+          const imageContainer = document.getElementById('imageUpload');
+          imageContainer.classList.add('error');
+
+          setTimeout(() => {
+            imageContainer.classList.remove('error');
+          }, 2000);
+          return;
+        }
         const formData = new FormData(form);
-        const bookDetails = {};
+        const bookDetails = { image: image.split(',')[1] };
         
         for (const [key, value] of formData.entries()) {
           bookDetails[key] = value;
@@ -420,6 +139,48 @@ html(lang="en")
         
         console.log('Book details submitted:', bookDetails);
         // Handle form submission logic here
+
+        try {
+          const submitButton = document.querySelector('.submit-button');
+          submitButton.classList.add('loading');
+          const response = await fetch('/admin/create-book', {
+            method: 'POST',
+            body: JSON.stringify(bookDetails),
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+
+          submitButton.classList.remove('loading');
+
+          if (!response.ok) {
+            throw new Error('Failed to submit book details');
+          }
+          
+          const data = await response.json();
+          const { book } = data;
+          window.location.href = `/admin/upload-successful?book-id=${book.book_id}`;
+        } catch (error) {
+          console.error('Error submitting book details:', error);
+          // Replace alert with modal
+          const modal = document.getElementById('errorModal');
+          const errorMessage = document.getElementById('errorMessage');
+          errorMessage.textContent = 'Error submitting book details. Please try again.';
+          modal.style.display = 'block';
+
+          // Close modal when clicking the close button
+          document.querySelector('.close-modal').onclick = function() {
+            modal.style.display = 'none';
+          }
+
+          // Close modal when clicking outside
+          window.onclick = function(event) {
+            if (event.target === modal) {
+              modal.style.display = 'none';
+            }
+          }
+        }
+      
       });
       
       // Image upload
@@ -445,6 +206,9 @@ html(lang="en")
               // Clear the upload container and append the image
               imageUpload.innerHTML = '';
               imageUpload.appendChild(img);
+
+              //image to base64
+              image = event.target.result;
             };
             
             reader.readAsDataURL(e.target.files[0]);

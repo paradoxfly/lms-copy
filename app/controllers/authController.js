@@ -11,18 +11,6 @@ const loginLimiter = rateLimit({
     message: 'Too many login attempts, please try again after 15 minutes',
 });
 
-exports.adminLoginPage = (req, res) => {
-    res.render('adminLogin', { title: 'Admin Login' });
-};
-
-exports.userLoginPage = (req, res) => {
-    res.render('userLogin', { title: 'User Login' });
-};
-
-exports.registerPage = (req, res) => {
-    res.render('register', { title: 'Register' });
-};
-
 exports.register = async (req, res) => {
     const { username, email, password } = req.body;
 
@@ -53,37 +41,40 @@ exports.register = async (req, res) => {
 exports.adminLogin = [loginLimiter, async (req, res) => {
     const { username, password } = req.body;
 
-    // Input validation
-    if (!username || !password) {
-        return res.status(400).json({ error: 'Username and password are required' });
-    }
-
-    const sql = 'SELECT * FROM Users WHERE username = ? AND role = "admin"';
-
     try {
-        const users = await query(sql, [username]);
-        const user = users[0];
+        // Find the admin user
+        const user = await User.findOne({
+            where: {
+                username: username,
+                role: 'admin'
+            }
+        });
 
-        // Check if admin user exists
         if (!user) {
             logger.warn(`Admin login attempt failed: Admin not found for username ${username}`);
-            return res.status(404).json({ error: 'Admin not found' });
+            return res.status(401).json({ error: 'Invalid username or password' });
         }
 
-        // Compare provided password with hashed password in the database
-        const isMatch = await bcrypt.compare(password, user.password_hash);
+        const isMatch = await user.comparePassword(password);
+
         if (!isMatch) {
             logger.warn(`Admin login attempt failed: Invalid credentials for username ${username}`);
-            return res.status(401).json({ error: 'Invalid credentials' });
+            return res.status(401).json({ error: 'Invalid username or password' });
         }
 
-        // Set session with user data and expiry
-        req.session.user = user;
-        req.session.cookie.expires = new Date(Date.now() + 60 * 60 * 1000); // 1-hour session expiry
-        req.session.cookie.secure = true; // Ensure cookies are only sent over HTTPS
+        // Set session
+        req.session.user = {
+            id: user.user_id,
+            username: user.username,
+            email: user.email,
+            role: user.role
+        };
+
+        req.session.cookie.expires = new Date(Date.now() + 1000 * 60 * 30); // 30 minutes
 
         logger.info(`Admin login successful for username ${username}`);
         res.redirect('/admin/dashboard');
+
     } catch (error) {
         logger.error(`Admin login failed: ${error.message}`);
         res.status(500).json({ error: 'Admin login failed' });
@@ -99,15 +90,18 @@ exports.userLogin = async (req, res) => {
         const user = await User.findOne({
             where: {
                 username: username,
-                role: 'library_user'
             }
         });
 
         if (!user) {
-            return res.status(404).json({ error: 'Invalid username or password' });
+            return res.status(401).json({ error: 'Invalid username or password' });
         }
 
-    
+        const isMatch = await user.comparePassword(password);
+
+        if (!isMatch) {
+            return res.status(401).json({ error: 'Invalid username or password' });
+        }
 
         // Set session
         req.session.user = {
@@ -116,6 +110,8 @@ exports.userLogin = async (req, res) => {
             email: user.email,
             role: user.role
         };
+
+        req.session.cookie.expires = new Date(Date.now() + 1000 * 60 * 30); // 30 minutes
 
         // Instead of sending JSON response, redirect directly to dashboard
         res.redirect('/user/dashboard');

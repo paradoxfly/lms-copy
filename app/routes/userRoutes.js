@@ -5,6 +5,6 @@ const userController = require('../controllers/userController');
 const router = express.Router();
 
 // User dashboard route
-router.get('/dashboard', ensureAuthenticated, ensureUser, userController.dashboard);
+// router.get('/dashboard', ensureAuthenticated, ensureUser, userController.dashboard);
 
 module.exports = router;

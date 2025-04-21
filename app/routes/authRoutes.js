@@ -6,11 +6,10 @@ const { ensureAuthenticated } = require('../middlewares/authMiddleware');
 const router = express.Router();
 
 // Login routes
-router.get('/login', authController.userLoginPage);
 router.post('/login', authController.userLogin);
+router.post('/admin-login', authController.adminLogin);
 
 // Registration routes
-router.get('/register', authController.registerPage);
 router.post('/register', validateRegistration, authController.register);
 
 // Logout route
