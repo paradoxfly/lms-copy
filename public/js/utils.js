@@ -36,7 +36,7 @@ const renderBook = (book) => {
               </div>
             </div>
           </div>
-          <div class="p-4 pt-0 flex gap-2 ${book.isBorrowed ? "hidden" : ""}">
+          <div class="p-4 pt-0 flex gap-2">
             <button class="borrow-button flex-1 py-1 text-sm ${
               !isAvailable ? "disabled" : ""
             }" 
