@@ -1,0 +1,41 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title BookOrbit
+    link(href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet")
+    link(href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet")
+    link(href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet")
+    link(href="https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,100..900;1,100..900&family=Euphoria+Script&display=swap" rel="stylesheet")
+    link(href="/css/reusable.css" rel="stylesheet")
+    block styles
+
+  body.h-screen
+    // Top Navbar
+    .top-navbar
+      h1.logo-text BookOrbit
+      block page-title
+      .flex.items-center.gap-4.ml-auto
+        button.relative
+        .w-8.h-8.rounded-full.overflow-hidden(style="background-color: #dccdbe;")
+          img(src="https://placehold.co/40x40/dccdbe/ffffff?text=U" alt="User")#profile-picture
+
+    .flex.h-full
+      // Sidebar
+      .sidebar.flex.flex-col.items-center.py-6.text-white
+        .flex.flex-col.items-center.gap-8
+          button.p-2.rounded-md(class=currentPage === 'dashboard' ? 'bg-white bg-opacity-20' : '' onclick="window.location.href='/user/dashboard'")
+            i.fas.fa-home
+          button.p-2.rounded-md(class=currentPage === 'books' ? 'bg-white bg-opacity-20' : '' onclick="window.location.href='/user/books'")
+            i.fas.fa-book-open
+          button.p-2.rounded-md(class=currentPage === 'liked' ? 'bg-white bg-opacity-20' : '' onclick="window.location.href='/user/liked'")
+            i.fas.fa-heart
+          button.p-2.rounded-md(class=currentPage === 'starred' ? 'bg-white bg-opacity-20' : '' onclick="window.location.href='/user/starred'")
+            i.fas.fa-star
+
+      // Main Content
+      .flex-1.overflow-auto.h-full
+        block content
+
+    block scripts

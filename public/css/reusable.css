@@ -240,3 +240,33 @@
 .right-neg5 {
   right: -5px;
 }
+.hidden {
+  display: none;
+}
+.toast {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  background-color: #22c55e;
+  background-color: #fe4e4e;
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
+  z-index: 1000;
+  min-width: 200px;
+  max-width: 400px;
+  font-size: 14px;
+  animation: slide-in 0.3s ease-out;
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

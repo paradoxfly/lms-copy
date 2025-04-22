@@ -3,10 +3,10 @@ const sequelize = require("../services/db");
 const User = require("./User");
 const Book = require("./Book");
 
-const Transaction = sequelize.define(
-  "Transaction",
+const Like = sequelize.define(
+  "Like",
   {
-    transaction_id: {
+    like_id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
@@ -27,27 +27,19 @@ const Transaction = sequelize.define(
         key: 'book_id'
       }
     },
-    transaction_type: {
-      type: DataTypes.ENUM('purchase', 'rental'),
-      allowNull: false,
-    },
-    rental_expiry: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
-    transaction_date: {
+    created_at: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
     }
   },
   {
     timestamps: true,
-    createdAt: "transaction_date",
+    createdAt: "created_at",
     updatedAt: false,
   }
 );
 
-Transaction.belongsTo(User, { foreignKey: 'user_id' });
-Transaction.belongsTo(Book, { foreignKey: 'book_id' });
+Like.belongsTo(User, { foreignKey: 'user_id' });
+Like.belongsTo(Book, { foreignKey: 'book_id' });
 
-module.exports = Transaction;
+module.exports = Like; 

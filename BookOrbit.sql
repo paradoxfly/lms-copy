@@ -55,9 +55,7 @@ CREATE TABLE Transactions (
     book_id INT NOT NULL,
     transaction_type ENUM('purchase', 'rental') NOT NULL,
     rental_expiry DATE,
-    transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (book_id) REFERENCES Books(book_id) ON DELETE CASCADE
+    transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Wishlist Table
@@ -88,4 +86,26 @@ CREATE TABLE Reports (
     report_name VARCHAR(100) NOT NULL,
     report_data JSON NOT NULL,
     generated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Likes Table
+CREATE TABLE Likes (
+    like_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    book_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (book_id) REFERENCES Books(book_id) ON DELETE CASCADE,
+    UNIQUE KEY unique_like (user_id, book_id)
+);
+
+-- Stars Table
+CREATE TABLE Stars (
+    star_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    book_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (book_id) REFERENCES Books(book_id) ON DELETE CASCADE,
+    UNIQUE KEY unique_star (user_id, book_id)
 );

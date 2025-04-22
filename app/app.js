@@ -64,6 +64,10 @@ app.use("/admin", require("./routes/adminRoutes")); // Admin-specific routes
 app.use("/user", require("./routes/userRoutes")); // User-specific routes
 app.use("/books", require("./routes/bookRoutes")); // Book-specific routes
 
+app.get("/", function (req, res) {
+  res.redirect("/login");
+});
+
 app.get("/register", function (req, res) {
   res.render("signup");
 });
@@ -74,6 +78,19 @@ app.get("/login", function (req, res) {
 app.get("/overdueBook", function (req, res) {
   res.render("overdueBook");
 });
+
+app.get("/user/likes", ensureAuthenticated, (req, res) => {
+  res.render("liked-books", { user: req.session.user });
+});
+
+app.get("/user/starred", ensureAuthenticated, (req, res) => {
+  res.render("starred-books", { user: req.session.user });
+});
+
+app.get("/user/books", ensureAuthenticated, (req, res) => {
+  res.render("my-books", { user: req.session.user });
+});
+
 // User Dashboard (Only accessible to Library Users)
 app.get("/user/dashboard", ensureAuthenticated, (req, res) => {
   res.render("userDashboard", { user: req.session.user });

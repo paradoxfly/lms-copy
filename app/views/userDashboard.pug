@@ -30,7 +30,7 @@ html(lang="en")
             i.fas.fa-home
           button.p-2.rounded-md(onclick="window.location.href='/user/books'")
             i.fas.fa-book-open
-          button.p-2.rounded-md(onclick="window.location.href='/user/liked'")
+          button.p-2.rounded-md(onclick="window.location.href='/user/likes'")
             i.fas.fa-heart
           button.p-2.rounded-md(onclick="window.location.href='/user/starred'")
             i.fas.fa-star
@@ -76,7 +76,7 @@ html(lang="en")
               button.ml-auto.action-button
                 i.fas.fa-ellipsis-v
             .p-4.pt-0
-              h2.text-2xl.font-bold 20 Books
+              h2.text-2xl.font-bold#recently-borrowed-books ---
           
           // Currently Reading Card
           //- .book-card.bg-white.border.overflow-hidden
@@ -370,4 +370,5 @@ html(lang="en")
                     i.fas.fa-star(class=j < 5 ? "star-filled" : "star-empty")
                 span.text-xs.ml-1 4.5
 
+  script(src="/js/utils.js")
   script(src="/js/user-dashboard.js")
