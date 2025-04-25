@@ -1,9 +1,9 @@
--- Create the database
-CREATE DATABASE BookOrbit;
+-- Create the database if it doesn't exist
+CREATE DATABASE IF NOT EXISTS BookOrbit;
 USE BookOrbit;
 
 -- Users Table
-CREATE TABLE Users (
+CREATE TABLE IF NOT EXISTS Users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
@@ -16,7 +16,7 @@ CREATE TABLE Users (
 );
 
 -- Books Table
-CREATE TABLE Books (
+CREATE TABLE IF NOT EXISTS Books (
     book_id INT AUTO_INCREMENT PRIMARY KEY,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     title VARCHAR(255) NOT NULL,
@@ -34,13 +34,13 @@ CREATE TABLE Books (
 );
 
 -- Categories Table
-CREATE TABLE Categories (
+CREATE TABLE IF NOT EXISTS Categories (
     category_id INT AUTO_INCREMENT PRIMARY KEY,
     category_name VARCHAR(50) NOT NULL UNIQUE
 );
 
 -- Book-Categories (Many-to-Many Relationship)
-CREATE TABLE Book_Categories (
+CREATE TABLE IF NOT EXISTS Book_Categories (
     book_id INT,
     category_id INT,
     PRIMARY KEY (book_id, category_id),
@@ -49,17 +49,19 @@ CREATE TABLE Book_Categories (
 );
 
 -- Transactions Table
-CREATE TABLE Transactions (
+CREATE TABLE IF NOT EXISTS Transactions (
     transaction_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     book_id INT NOT NULL,
     transaction_type ENUM('purchase', 'rental') NOT NULL,
     rental_expiry DATE,
-    transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (book_id) REFERENCES Books(book_id) ON DELETE CASCADE
 );
 
 -- Wishlist Table
-CREATE TABLE Wishlist (
+CREATE TABLE IF NOT EXISTS Wishlist (
     wishlist_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     book_id INT NOT NULL,
@@ -69,7 +71,7 @@ CREATE TABLE Wishlist (
 );
 
 -- Reviews Table
-CREATE TABLE Reviews (
+CREATE TABLE IF NOT EXISTS Reviews (
     review_id INT AUTO_INCREMENT PRIMARY KEY,
     book_id INT NOT NULL,
     user_id INT NOT NULL,
@@ -81,7 +83,7 @@ CREATE TABLE Reviews (
 );
 
 -- Reports Table (for Admin Analytics)
-CREATE TABLE Reports (
+CREATE TABLE IF NOT EXISTS Reports (
     report_id INT AUTO_INCREMENT PRIMARY KEY,
     report_name VARCHAR(100) NOT NULL,
     report_data JSON NOT NULL,
@@ -89,7 +91,7 @@ CREATE TABLE Reports (
 );
 
 -- Likes Table
-CREATE TABLE Likes (
+CREATE TABLE IF NOT EXISTS Likes (
     like_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     book_id INT NOT NULL,
@@ -100,7 +102,7 @@ CREATE TABLE Likes (
 );
 
 -- Stars Table
-CREATE TABLE Stars (
+CREATE TABLE IF NOT EXISTS Stars (
     star_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     book_id INT NOT NULL,
