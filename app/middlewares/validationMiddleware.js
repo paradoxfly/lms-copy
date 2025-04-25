@@ -2,6 +2,22 @@ const { body, validationResult } = require("express-validator");
 
 exports.validateRegistration = [
   // Validation rules
+  body("first_name")
+    .notEmpty()
+    .withMessage("First name is required")
+    .isLength({ min: 2 })
+    .withMessage("First name must be at least 2 characters")
+    .isAlpha()
+    .withMessage("First name can only contain letters"),
+
+  body("last_name")
+    .notEmpty()
+    .withMessage("Last name is required")
+    .isLength({ min: 2 })
+    .withMessage("Last name must be at least 2 characters")
+    .isAlpha()
+    .withMessage("Last name can only contain letters"),
+
   body("username")
     .notEmpty()
     .withMessage("Username is required")

@@ -21,6 +21,8 @@ document.getElementById('signup-form').addEventListener('submit', async (event) 
     const formData = new FormData(form);
 
     // Get form values
+    const first_name = formData.get('first_name');
+    const last_name = formData.get('last_name');
     const username = formData.get('username');
     const email = formData.get('email');
     const password = formData.get('password');
@@ -37,6 +39,22 @@ document.getElementById('signup-form').addEventListener('submit', async (event) 
     // Validation
     let hasError = false;
     
+    if (!first_name) {
+        showError('first_name', 'First name is required');
+        hasError = true;
+    } else if (!/^[a-zA-Z]+$/.test(first_name)) {
+        showError('first_name', 'First name can only contain letters');
+        hasError = true;
+    }
+
+    if (!last_name) {
+        showError('last_name', 'Last name is required');
+        hasError = true;
+    } else if (!/^[a-zA-Z]+$/.test(last_name)) {
+        showError('last_name', 'Last name can only contain letters');
+        hasError = true;
+    }
+
     if (!username) {
         showError('username', 'Username is required');
         hasError = true;
@@ -79,6 +97,8 @@ document.getElementById('signup-form').addEventListener('submit', async (event) 
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
+                first_name,
+                last_name,
                 username,
                 email,
                 password,

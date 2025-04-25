@@ -17,6 +17,22 @@ const User = sequelize.define('User', {
             len: [3, 50],
         },
     },
+    first_name: {
+        type: DataTypes.STRING(50),
+        allowNull: false,
+        validate: {
+            notEmpty: true,
+            len: [2, 50],
+        },
+    },
+    last_name: {
+        type: DataTypes.STRING(50),
+        allowNull: false,
+        validate: {
+            notEmpty: true,
+            len: [2, 50],
+        },
+    },
     password_hash: {
         type: DataTypes.STRING(255),
         allowNull: false,

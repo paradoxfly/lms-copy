@@ -1,0 +1,195 @@
+/* Container styles */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Error and Success Messages */
+.error-message {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    display: none;
+    padding: 0.25rem 0;
+}
+
+.error-message::before {
+    content: "⚠️";
+    font-size: 1.25rem;
+}
+
+.success-message {
+    background-color: #dcfce7;
+    color: #16a34a;
+    padding: 0.75rem 1rem;
+    border-radius: 0.375rem;
+    margin-bottom: 1rem;
+    border: 1px solid #bbf7d0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.success-message::before {
+    content: "✅";
+    font-size: 1.25rem;
+}
+
+.error {
+    border-color: #dc2626 !important;
+    box-shadow: 0 0 0 1px #dc2626;
+}
+
+#error-container {
+    margin-bottom: 1.5rem;
+}
+
+/* Form styles */
+.form-group {
+    margin-bottom: 1.5rem;
+    position: relative;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #374151;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-group.error .error-message {
+    display: block;
+}
+
+/* Error state styling */
+.form-group.error input {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 1px #dc3545;
+}
+
+.form-group.error input:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+/* Password strength indicator */
+.password-strength {
+    height: 4px;
+    margin-top: 0.5rem;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.password-strength.weak {
+    background-color: #ef4444;
+    width: 33%;
+}
+
+.password-strength.medium {
+    background-color: #f59e0b;
+    width: 66%;
+}
+
+.password-strength.strong {
+    background-color: #10b981;
+    width: 100%;
+}
+
+/* Button styles */
+button[type="submit"] {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 0.375rem;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+button[type="submit"]:hover {
+    background-color: #2563eb;
+    transform: translateY(-1px);
+}
+
+button[type="submit"]:active {
+    transform: translateY(0);
+}
+
+button[type="submit"]:disabled {
+    background-color: #93c5fd;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Responsive design */
+@media (max-width: 640px) {
+    .container {
+        padding: 1rem;
+    }
+    
+    .form-group input {
+        padding: 0.5rem 0.75rem;
+    }
+    
+    button[type="submit"] {
+        padding: 0.5rem 0.75rem;
+    }
+}
+
+/* Password input container */
+.password-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+}
+
+.form-group.error .password-input-container {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 1px #dc3545;
+}
+
+.form-group.error .password-input-container:focus-within {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+.password-input-container input {
+    border: none;
+    flex: 1;
+}
+
+.password-input-container input:focus {
+    box-shadow: none;
+}
+
+.password-input-container:focus-within {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+} 

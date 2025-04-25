@@ -6,24 +6,40 @@ html(lang="en")
     link(rel="stylesheet", href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap")
     link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css")
     link(rel="stylesheet", href="/css/styles.css")
+    link(rel="stylesheet", href="/css/register.css")
   body
     .background
     .signup-container
       h1 Create an Account
       p Get instant access to books at the comfort of wherever you are with BOOK ORBIT.
+      
+      #error-container
+      
       form#signup-form(action="/auth/register" method="POST")
+        .form-group
+          label(for="first_name") 
+            i.fas.fa-user
+            span First Name
+          input(type="text" id="first_name" name="first_name" placeholder="Enter your first name" required)
+          span.error-message
+        .form-group
+          label(for="last_name") 
+            i.fas.fa-user
+            span Last Name
+          input(type="text" id="last_name" name="last_name" placeholder="Enter your last name" required)
+          span.error-message
         .form-group
           label(for="username") 
             i.fas.fa-user
             span Username
           input(type="text" id="username" name="username" placeholder="Enter your username" required)
-          span.error-message Required
+          span.error-message
         .form-group
           label(for="email")
             i.fas.fa-envelope
             span Email
           input(type="email" id="email" name="email" placeholder="Enter your email" required)
-          span.error-message Required
+          span.error-message
         .form-group
           label(for="password")
             i.fas.fa-lock
@@ -32,7 +48,7 @@ html(lang="en")
             input(type="password" id="password" name="password" placeholder="Enter password" required minlength="8")
             button.toggle-password(type="button" tabindex="-1")
               i.fas.fa-eye
-          span.error-message Required
+          span.error-message
           p.password-hint Must be at least 8 characters
         .form-group
           label(for="confirm-password")
@@ -42,7 +58,7 @@ html(lang="en")
             input(type="password" id="confirm-password" name="confirm-password" placeholder="Confirm your password" required minlength="8")
             button.toggle-password(type="button" tabindex="-1")
               i.fas.fa-eye
-          span.error-message Required
+          span.error-message
         button(type="submit")
           span Create Account
           i.fas.fa-arrow-right
@@ -64,4 +80,22 @@ html(lang="en")
               i.fas.fa-times
               span Close
 
-    script(src="/js/signup.js")
+    script.
+      console.log('Scripts loading...');
+      window.addEventListener('load', function() {
+        console.log('Page loaded, checking form elements...');
+        const form = document.getElementById('signup-form');
+        console.log('Form found:', !!form);
+        if (form) {
+          console.log('Form elements:', {
+            firstname: !!document.getElementById('first_name'),
+            lastname: !!document.getElementById('last_name'),
+            username: !!document.getElementById('username'),
+            email: !!document.getElementById('email'),
+            password: !!document.getElementById('password'),
+            confirmPassword: !!document.getElementById('confirm-password')
+          });
+        }
+      });
+    script(src="/js/register.js" defer)
+    script(src="/js/signup.js" defer)

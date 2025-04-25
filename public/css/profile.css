@@ -1,0 +1,272 @@
+/* Profile Header */
+.profile-header {
+    background: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.profile-picture-container {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.profile-picture {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.upload-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.upload-overlay:hover {
+    opacity: 1;
+}
+
+.upload-overlay i {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Stats */
+.stats {
+    margin-top: 1.5rem;
+}
+
+.stat {
+    text-align: center;
+    padding: 0.5rem 1rem;
+    background: #f8f9fa;
+    border-radius: 0.5rem;
+}
+
+.stat .number {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #5252fc;
+}
+
+.stat .label {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+/* Sections */
+.section {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #212529;
+}
+
+/* Reading Preferences */
+.preferences-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.preference-item {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.5rem;
+}
+
+.preference-item .label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #6c757d;
+}
+
+.preference-item .value {
+    color: #212529;
+}
+
+/* Favorite Genres */
+.genres-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.genre-tag {
+    background: #e9ecef;
+    padding: 0.5rem 1rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    color: #495057;
+}
+
+/* Books Grid */
+.books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.book-card {
+    background: #f8f9fa;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.book-card:hover {
+    transform: translateY(-5px);
+}
+
+.book-cover {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+}
+
+.book-info {
+    padding: 1rem;
+}
+
+.book-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #212529;
+}
+
+.book-author {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    width: 90%;
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    border-radius: 1rem;
+    position: relative;
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #212529;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #495057;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.cancel-btn, .save-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.cancel-btn {
+    background: #e9ecef;
+    color: #495057;
+}
+
+.save-btn {
+    background: #5252fc;
+    color: white;
+}
+
+/* Buttons */
+.edit-profile-btn, .follow-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.edit-profile-btn {
+    background: #5252fc;
+    color: white;
+}
+
+.follow-btn {
+    background: #e9ecef;
+    color: #495057;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .profile-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .profile-info {
+        margin-top: 1.5rem;
+    }
+
+    .stats {
+        justify-content: center;
+    }
+
+    .books-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+} 

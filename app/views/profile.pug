@@ -1,0 +1,123 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title #{user.first_name}'s Profile - BookOrbit
+    link(href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet")
+    link(href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet")
+    link(href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet")
+    link(href="https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,100..900;1,100..900&family=Euphoria+Script&display=swap" rel="stylesheet")
+    link(href="/css/reusable.css" rel="stylesheet")
+    link(href="/css/profile.css" rel="stylesheet")
+    
+  body.h-screen
+    // Top Navbar
+    .top-navbar
+        h1.logo-text BookOrbit
+        h1.text-xl.font-semibold.pl-3 Profile
+        .flex.items-center.gap-4.ml-auto
+          if isOwnProfile
+            button.edit-profile-btn
+              i.fas.fa-edit
+              span Edit Profile
+          else
+            button.follow-btn
+              i.fas.fa-user-plus
+              span Follow
+
+    .flex.h-full
+      // Main Content
+      .flex-1.overflow-auto.h-full.p-6
+        // Profile Header
+        .profile-header.flex.items-start.gap-6.mb-8
+          .profile-picture-container
+            img.profile-picture(src=profile.profile_picture || "/images/default-avatar.png" alt="Profile Picture")
+            if isOwnProfile
+              .upload-overlay
+                i.fas.fa-camera
+                span Change Photo
+          .profile-info
+            h1.text-3xl.font-bold #{user.first_name} #{user.last_name}
+            p.text-gray-600 @#{user.username}
+            if profile.bio
+              p.mt-2 #{profile.bio}
+            .stats.flex.gap-4.mt-4
+              .stat
+                span.number #{profile.liked_books.length}
+                span.label Books Liked
+              .stat
+                span.number #{profile.starred_books.length}
+                span.label Books Starred
+              .stat
+                span.number #{profile.borrowed_books.length}
+                span.label Books Read
+
+        // Reading Preferences
+        if profile.reading_preferences
+          .section.mb-8
+            h2.section-title Reading Preferences
+            .preferences-grid
+              each preference, key in profile.reading_preferences
+                .preference-item
+                  span.label #{key}
+                  span.value #{preference}
+
+        // Favorite Genres
+        if profile.favorite_genres && profile.favorite_genres.length > 0
+          .section.mb-8
+            h2.section-title Favorite Genres
+            .genres-container
+              each genre in profile.favorite_genres
+                .genre-tag #{genre}
+
+        // Reading History
+        .section
+          h2.section-title Reading History
+          if profile.borrowed_books && profile.borrowed_books.length > 0
+            .books-grid
+              each book in profile.borrowed_books
+                .book-card
+                  img.book-cover(src=book.image alt=book.title)
+                  .book-info
+                    h3.book-title #{book.title}
+                    p.book-author #{book.author}
+          else
+            p.no-books No books read yet
+
+    // Edit Profile Modal
+    if isOwnProfile
+      .modal#edit-profile-modal
+        .modal-content
+          h2.modal-title Edit Profile
+          form#edit-profile-form
+            .form-group
+              label(for="bio") Bio
+              textarea#bio(name="bio" placeholder="Tell us about yourself") #{profile.bio}
+            
+            .form-group
+              label(for="profile_picture") Profile Picture
+              input#profile_picture(type="file" name="profile_picture" accept="image/*")
+            
+            .form-group
+              label Reading Preferences
+              .preferences-grid
+                each preference, key in profile.reading_preferences || {}
+                  .preference-item
+                    label #{key}
+                    input(type="text" name=`preferences[${key}]` value=preference)
+            
+            .form-group
+              label Favorite Genres
+              .genres-container
+                each genre in profile.favorite_genres || []
+                  .genre-tag
+                    span #{genre}
+                    button.remove-genre ×
+                button.add-genre + Add Genre
+            
+            .form-actions
+              button.cancel-btn(type="button") Cancel
+              button.save-btn(type="submit") Save Changes
+
+    script(src="/js/profile.js") 

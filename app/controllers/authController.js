@@ -3,6 +3,7 @@ const { query } = require('../services/db');
 const rateLimit = require('express-rate-limit'); // For rate limiting
 const logger = require('../utils/logger'); // Custom logger for logging errors
 const User = require('../models/User');
+const { Sequelize } = require('sequelize');
 
 // Rate limiter for login endpoints to prevent brute-force attacks
 const loginLimiter = rateLimit({
@@ -12,13 +13,41 @@ const loginLimiter = rateLimit({
 });
 
 exports.register = async (req, res) => {
-    const { username, email, password } = req.body;
+    const { username, email, password, first_name, last_name } = req.body;
 
     try {
+        // Check for existing username
+        const existingUsername = await User.findOne({
+            where: { username }
+        });
+
+        if (existingUsername) {
+            logger.warn(`Registration attempt failed: Username '${username}' already exists`);
+            return res.status(400).json({ 
+                error: 'Username already exists',
+                field: 'username'
+            });
+        }
+
+        // Check for existing email
+        const existingEmail = await User.findOne({
+            where: { email }
+        });
+
+        if (existingEmail) {
+            logger.warn(`Registration attempt failed: Email '${email}' already exists`);
+            return res.status(400).json({ 
+                error: 'Email already exists',
+                field: 'email'
+            });
+        }
+
         // Create a new user using Sequelize
         const newUser = await User.create({
             username,
             email,
+            first_name,
+            last_name,
             password_hash: password, // Note: the hook will hash this
             role: 'library_user',
         });
@@ -27,10 +56,30 @@ exports.register = async (req, res) => {
         logger.info(`User registered: ${newUser.username}`);
 
         // Send success response
-        res.status(201).json({ message: 'User registered successfully', user: newUser });
+        res.status(201).json({ 
+            message: 'User registered successfully', 
+            user: {
+                username: newUser.username,
+                email: newUser.email,
+                first_name: newUser.first_name,
+                last_name: newUser.last_name,
+                role: newUser.role
+            }
+        });
     } catch (error) {
         // Log the error
         logger.error(`Error registering user: ${error.message}`);
+
+        // Handle other potential errors
+        if (error instanceof Sequelize.ValidationError) {
+            return res.status(400).json({ 
+                error: 'Validation error',
+                details: error.errors.map(err => ({
+                    field: err.path,
+                    message: err.message
+                }))
+            });
+        }
 
         // Send error response
         res.status(500).json({ error: 'Failed to register user' });

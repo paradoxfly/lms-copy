@@ -6,6 +6,8 @@ USE BookOrbit;
 CREATE TABLE IF NOT EXISTS Users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     password_salt VARCHAR(255),
     password_reset_token VARCHAR(255),
