@@ -132,24 +132,30 @@ exports.adminLogin = [loginLimiter, async (req, res) => {
 
 // User Login Logic
 exports.userLogin = async (req, res) => {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
     try {
-        // Find the user
+        // Find the user by email
         const user = await User.findOne({
             where: {
-                username: username,
+                email: email,
             }
         });
 
         if (!user) {
-            return res.status(401).json({ error: 'Invalid username or password' });
+            return res.status(401).json({ 
+                error: 'Invalid email or password',
+                field: 'email'
+            });
         }
 
         const isMatch = await user.comparePassword(password);
 
         if (!isMatch) {
-            return res.status(401).json({ error: 'Invalid username or password' });
+            return res.status(401).json({ 
+                error: 'Invalid email or password',
+                field: 'password'
+            });
         }
 
         // Set session
@@ -167,7 +173,10 @@ exports.userLogin = async (req, res) => {
 
     } catch (error) {
         console.error('Login error:', error);
-        res.status(500).json({ error: 'Login failed. Please try again.' });
+        res.status(500).json({ 
+            error: 'Login failed. Please try again.',
+            field: 'email'
+        });
     }
 };
 
