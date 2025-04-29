@@ -48,22 +48,22 @@ html(lang="en")
             input.pl-3.pr-10.py-2.rounded-md.border.w-full(type="text" placeholder="Search" style="border-color: #d6dae5;")
             i.fas.fa-search.absolute.right-3.top-search.text-gray-400
           
-          //- .flex.items-center.gap-3
-          //-   span.text-sm.text-gray-500 Filter by :
+          .flex.items-center.gap-3
+            span.text-sm.text-gray-500 Filter by :
             
-          //-   button.filter-button
-          //-     span Date
-          //-     i.fas.fa-calendar(style="color: #5252fc;")
+            button.filter-button
+              span Date
+              i.fas.fa-calendar(style="color: #5252fc;")
             
-          //-   button.filter-button
-          //-     span Author
-          //-     i.fas.fa-chevron-down
+            button.filter-button
+              span Author
+              i.fas.fa-chevron-down
             
-          //-   button.filter-button
-          //-     span Genre
-          //-     i.fas.fa-chevron-down
+            button.filter-button
+              span Genre
+              i.fas.fa-chevron-down
             
-          //-   button.borrow-button.px-4.py-1-5.text-sm Borrow now
+            button.borrow-button.px-4.py-1-5.text-sm Borrow now
 
         // Book Status Cards
         .grid.grid-cols-3.gap-4.px-6.mb-8
@@ -71,40 +71,40 @@ html(lang="en")
           .book-card.bg-white.border.overflow-hidden
             .flex.flex-row.items-center.gap-3.p-4.pb-2
               .w-10.h-10.rounded-full.flex.items-center.justify-center.recently-borrowed-icon
-                i.fas.fa-book-open
+                i.fas.fa-book
               h3.font-medium Recently Borrowed
               button.ml-auto.action-button
                 i.fas.fa-ellipsis-v
             .p-4.pt-0
-              h2.text-2xl.font-bold#recently-borrowed-books ---
+              h2.text-2xl.font-bold#recently-borrowed-books 20 Books
           
           // Currently Reading Card
-          //- .book-card.bg-white.border.overflow-hidden
-          //-   .flex.flex-row.items-center.gap-3.p-4.pb-2
-          //-     .w-10.h-10.rounded-full.flex.items-center.justify-center.currently-reading-icon
-          //-       i.fas.fa-book-open
-          //-     h3.font-medium Currently Reading
-          //-     button.ml-auto.action-button
-          //-       i.fas.fa-ellipsis-v
-          //-   .p-4.pt-0
-          //-     h2.text-2xl.font-bold 20 Books
+          .book-card.bg-white.border.overflow-hidden
+            .flex.flex-row.items-center.gap-3.p-4.pb-2
+              .w-10.h-10.rounded-full.flex.items-center.justify-center.currently-reading-icon
+                i.fas.fa-book-open
+              h3.font-medium Currently Reading
+              button.ml-auto.action-button
+                i.fas.fa-ellipsis-v
+            .p-4.pt-0
+              h2.text-2xl.font-bold 20 Books
           
           // Pending Returns Card
-          //- .book-card.bg-white.border.overflow-hidden
-          //-   .flex.flex-row.items-center.gap-3.p-4.pb-2
-          //-     .w-10.h-10.rounded-full.flex.items-center.justify-center.pending-returns-icon
-          //-       i.fas.fa-book-open
-          //-     h3.font-medium Pending Returns
-          //-     button.ml-auto.action-button
-          //-       i.fas.fa-ellipsis-v
-          //-   .p-4.pt-0
-          //-     h2.text-2xl.font-bold 20 Books
+          .book-card.bg-white.border.overflow-hidden
+            .flex.flex-row.items-center.gap-3.p-4.pb-2
+              .w-10.h-10.rounded-full.flex.items-center.justify-center.pending-returns-icon
+                i.fas.fa-clock
+              h3.font-medium Pending Returns
+              button.ml-auto.action-button
+                i.fas.fa-ellipsis-v
+            .p-4.pt-0
+              h2.text-2xl.font-bold 20 Books
 
         // New Reads Section
         .px-6.mb-8
           .flex.justify-between.items-center.mb-4
             h2.text-xl.font-bold New Reads
-            //- a.view-all View All...
+            a.view-all(href="#") See All...
           
           .grid.grid-cols-3.gap-4#new-reads
             // The Girl in the Woods

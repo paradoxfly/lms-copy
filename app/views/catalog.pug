@@ -1,0 +1,44 @@
+extends layout
+
+block content
+  .catalog-container
+    .catalog-header
+      h1 Book Catalog
+      .search-bar
+        input#search-input(type="text" placeholder="Search by title, author, or ISBN...")
+        button#search-btn
+          i.fas.fa-search
+    
+    .filters-container
+      .filter-group
+        label(for="genre-filter") Genre
+        select#genre-filter
+          option(value="") All Genres
+          option(value="Fiction") Fiction
+          option(value="Non-Fiction") Non-Fiction
+          option(value="Science Fiction") Science Fiction
+          option(value="Mystery") Mystery
+          option(value="Romance") Romance
+          option(value="Fantasy") Fantasy
+          option(value="Biography") Biography
+          option(value="History") History
+          option(value="Self-Help") Self-Help
+      
+      .filter-group
+        label(for="sort-by") Sort By
+        select#sort-by
+          option(value="title") Title
+          option(value="author") Author
+          option(value="rating") Rating
+          option(value="newest") Newest First
+      
+      button#clear-filters Clear Filters
+
+    .books-grid#books-container
+      // Books will be dynamically loaded here
+
+    #no-results.no-results-message(style="display: none;")
+      p No books found matching your criteria.
+
+block scripts
+  script(src="/js/catalog.js") 

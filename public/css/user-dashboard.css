@@ -4,50 +4,43 @@
   box-sizing: border-box;
 }
 body {
-  font-family: "Inter", sans-serif;
-  background-color: #f2f2f2;
+  background-color: #f5f5f5;
+  font-family: 'Inter', sans-serif;
 }
 
 .top-navbar {
-    background-color: #F5F5F5;
-    height: 80px;
-    display: flex;
-    align-items: center;
-    padding: 0px 16px;
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .logo-text {
-    font-family: 'Euphoria Script', cursive;
-    font-size: 24px;
-    color: #0A0A0A;
-    line-height: 1.5;
-    width: 267px;
-    border-right: 1px solid #D6DAE5;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-self: center
+  font-family: 'Euphoria Script', cursive;
+  font-size: 1.5rem;
+  color: #6C5DD3;
 }
 
 .sidebar {
-  background-color: #7E77F8;
-  width: 64px;
+  width: 80px;
+  background-color: #6C5DD3;
 }
 .book-card {
-  border-color: #d6dae5;
   border-radius: 12px;
+  border: 1px solid #e5e7eb;
 }
 .recently-borrowed-icon {
-  background-color: #c9f0f7;
-  color: #178ca1;
+  background-color: rgba(108, 93, 211, 0.1);
+  color: #6C5DD3;
 }
 .currently-reading-icon {
-  background-color: #d1d1f9;
-  color: #5252fc;
+  background-color: rgba(255, 152, 0, 0.1);
+  color: #FF9800;
 }
 .pending-returns-icon {
-  background-color: #b6f6d0;
-  color: #129145;
+  background-color: rgba(244, 67, 54, 0.1);
+  color: #F44336;
 }
 .borrow-button {
   background-color: #3bcae3;
@@ -138,19 +131,19 @@ body {
   cursor: pointer;
 }
 .action-button {
-  background: none;
-  border: none;
-  color: #6b7280;
-  cursor: pointer;
-  padding: 0;
+  color: #6E7191;
+  padding: 0.5rem;
+  border-radius: 50%;
+}
+.action-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 input {
   outline: none;
 }
 .view-all {
-  color: #3bcae3;
-  text-decoration: none;
-  cursor: pointer;
+  color: #6C5DD3;
+  font-weight: 500;
 }
 .action-button.loading {
   opacity: 0.5;
@@ -182,5 +175,64 @@ input {
 .borrow-button.loading {
   opacity: 0.7;
   cursor: wait;
+}
+
+/* Stats Cards */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.book-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.stat-count {
+  font-size: 24px;
+  font-weight: 600;
+  color: #0A0A0A;
+  margin-bottom: 4px;
+}
+
+.book-card .more-options {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  cursor: pointer;
+  color: #666;
+}
+
+/* Search */
+.top-search {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .grid-cols-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .grid-cols-3 {
+    grid-template-columns: 1fr;
+  }
 }
 
