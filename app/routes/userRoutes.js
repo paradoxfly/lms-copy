@@ -4,8 +4,27 @@ const userController = require('../controllers/userController');
 
 const router = express.Router();
 
-// User dashboard route
-// router.get('/dashboard', ensureAuthenticated, ensureUser, userController.dashboard);
+// User dashboard
+router.get('/dashboard', ensureAuthenticated, (req, res) => {
+  res.render('userDashboard', { user: req.session.user });
+});
+
+// User book views
+router.get('/likes', ensureAuthenticated, (req, res) => {
+  res.render('liked-books', { user: req.session.user });
+});
+
+router.get('/starred', ensureAuthenticated, (req, res) => {
+  res.render('starred-books', { user: req.session.user });
+});
+
+router.get('/books', ensureAuthenticated, (req, res) => {
+  res.render('my-books', { user: req.session.user });
+});
+
+router.get('/overdue', ensureAuthenticated, (req, res) => {
+  res.render('overdueBook');
+});
 
 // Like/Unlike routes
 router.post("/books/:bookId/like", ensureAuthenticated, userController.toggleLike);

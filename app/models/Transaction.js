@@ -15,7 +15,7 @@ const Transaction = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'Users',
+        model: User,
         key: 'user_id'
       }
     },
@@ -23,30 +23,56 @@ const Transaction = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'Books',
+        model: Book,
         key: 'book_id'
       }
     },
     transaction_type: {
-      type: DataTypes.ENUM('purchase', 'rental'),
+      type: DataTypes.ENUM('RENTAL', 'PURCHASE'),
       allowNull: false,
     },
-    rental_expiry: {
-      type: DataTypes.DATE,
+    amount: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
+    },
+    payment_method: {
+      type: DataTypes.STRING(50),
+      allowNull: false,
+    },
+    payment_status: {
+      type: DataTypes.ENUM('PENDING', 'COMPLETED', 'FAILED', 'REFUNDED'),
+      allowNull: false,
+      defaultValue: 'PENDING'
+    },
+    payment_reference: {
+      type: DataTypes.STRING(255),
       allowNull: true,
+      comment: 'Reference number from payment provider'
+    },
+    rental_duration: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      comment: 'Duration in days for rental transactions'
     },
     transaction_date: {
       type: DataTypes.DATE,
+      allowNull: false,
       defaultValue: DataTypes.NOW,
+    },
+    status: {
+      type: DataTypes.ENUM('ACTIVE', 'EXPIRED', 'CANCELLED', 'COMPLETED'),
+      allowNull: false,
+      defaultValue: 'ACTIVE'
     }
   },
   {
     timestamps: true,
-    createdAt: "transaction_date",
-    updatedAt: false,
+    createdAt: "created_at",
+    updatedAt: "updated_at",
   }
 );
 
+// Set up associations
 Transaction.belongsTo(User, { foreignKey: 'user_id' });
 Transaction.belongsTo(Book, { foreignKey: 'book_id' });
 

@@ -1,24 +1,21 @@
-# Base image to use
-FROM node:latest
+FROM node:18
 
-# set a working directory
-WORKDIR /src
+WORKDIR /usr/src/app
 
-# Copy across project configuration information
-# Install application dependencies
-COPY package*.json /src/
+# Copy package files
+COPY package*.json ./
 
-# Ask npm to install the dependencies
-RUN npm install -g supervisor && npm install && npm install supervisor
+# Install dependencies
+RUN npm install
 
-# Copy across all our files
-COPY . /src
+# Copy app source
+COPY . .
 
-# Expose our application port (3000)
+# Expose port 3000
 EXPOSE 3000
 
-
-
+# Start the application
+CMD [ "npm", "start" ]
 
 # FROM node:latest
 

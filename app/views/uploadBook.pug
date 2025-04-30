@@ -67,7 +67,7 @@ html(lang="en")
         .form-container
           .form-header
             h2.form-title Upload Book
-            button.back-button
+            button.back-button(onclick="window.history.back()")
               svg(xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
                 path(d="m12 19-7-7 7-7")
                 path(d="M19 12H5")
@@ -94,20 +94,20 @@ html(lang="en")
                 div
                   input.input(type="text" placeholder="ISBN Number" name="isbn" required)
                 div
-                  input.input(type="number" placeholder="Year of Publication" name="year_of_publication" required)
+                  input.input(type="number" placeholder="Year of Publication" name="year_of_publication" required min="1800" max="2024")
                 div
-                  input.input(type="number" placeholder="Number of pages" name="number_of_pages" required)
+                  input.input(type="number" placeholder="Number of pages" name="number_of_pages" required min="1")
                 div
                   input.input(type="text" placeholder="Genre" name="genre" required)
                 div
-                  input.input(type="number" placeholder="Number of copies" name="no_of_copies" required)
+                  input.input(type="number" placeholder="Number of copies" name="no_of_copies" required min="1")
                 
                 .textarea-container
-                  textarea.textarea(placeholder="Details about book" name="description" required)
+                  textarea.textarea(placeholder="Details about book" name="description" required minlength="50" maxlength="500")
                   .word-count 50-500 words
                 
                 .textarea-container
-                  textarea.textarea(placeholder="About author" name="about_author" required)
+                  textarea.textarea(placeholder="About author" name="about_author" required minlength="50" maxlength="500")
                   .word-count 50-500 words
                 
                 .submit-container
@@ -116,33 +116,55 @@ html(lang="en")
   script.
     document.addEventListener('DOMContentLoaded', async function() {
       let image = null;
-      // Form submission
       const form = document.getElementById('bookUploadForm');
+      const errorModal = document.getElementById('errorModal');
+      const errorMessage = document.getElementById('errorMessage');
+      const closeModal = document.querySelector('.close-modal');
+
+      // Close modal handlers
+      closeModal.onclick = function() {
+        errorModal.style.display = 'none';
+      }
+
+      window.onclick = function(event) {
+        if (event.target === errorModal) {
+          errorModal.style.display = 'none';
+        }
+      }
+
+      // Show error modal
+      function showError(message, details) {
+        errorMessage.innerHTML = `${message}${details ? '<br><small>' + details + '</small>' : ''}`;
+        errorModal.style.display = 'block';
+      }
+
+      // Form submission
       form.addEventListener('submit', async function(e) {
         e.preventDefault();
 
         if (!image) {
+          showError('Please upload a book cover image');
           const imageContainer = document.getElementById('imageUpload');
           imageContainer.classList.add('error');
-
           setTimeout(() => {
             imageContainer.classList.remove('error');
           }, 2000);
           return;
         }
+
         const formData = new FormData(form);
         const bookDetails = { image: image.split(',')[1] };
         
         for (const [key, value] of formData.entries()) {
-          bookDetails[key] = value;
+          bookDetails[key] = value.trim();
         }
-        
-        console.log('Book details submitted:', bookDetails);
-        // Handle form submission logic here
 
         try {
           const submitButton = document.querySelector('.submit-button');
+          submitButton.disabled = true;
           submitButton.classList.add('loading');
+          submitButton.textContent = 'Uploading...';
+
           const response = await fetch('/admin/create-book', {
             method: 'POST',
             body: JSON.stringify(bookDetails),
@@ -151,42 +173,24 @@ html(lang="en")
             }
           });
 
-          submitButton.classList.remove('loading');
+          const data = await response.json();
 
           if (!response.ok) {
-            throw new Error('Failed to submit book details');
+            throw new Error(data.error || 'Failed to submit book details');
           }
           
-          const data = await response.json();
-          const { book } = data;
-          window.location.href = `/admin/upload-successful?book-id=${book.book_id}`;
+          window.location.href = `/admin/upload-successful?book-id=${data.book.book_id}`;
         } catch (error) {
-          console.error('Error submitting book details:', error);
-          // Replace alert with modal
-          const modal = document.getElementById('errorModal');
-          const errorMessage = document.getElementById('errorMessage');
-          errorMessage.textContent = 'Error submitting book details. Please try again.';
-          modal.style.display = 'block';
-
-          // Close modal when clicking the close button
-          document.querySelector('.close-modal').onclick = function() {
-            modal.style.display = 'none';
-          }
-
-          // Close modal when clicking outside
-          window.onclick = function(event) {
-            if (event.target === modal) {
-              modal.style.display = 'none';
-            }
-          }
+          showError('Error submitting book details', error.message);
+          submitButton.disabled = false;
+          submitButton.classList.remove('loading');
+          submitButton.textContent = 'Upload book';
         }
-      
       });
       
       // Image upload
       const imageUpload = document.getElementById('imageUpload');
       imageUpload.addEventListener('click', function() {
-        // Create a file input element
         const fileInput = document.createElement('input');
         fileInput.type = 'file';
         fileInput.accept = 'image/*';
@@ -196,18 +200,14 @@ html(lang="en")
             const reader = new FileReader();
             
             reader.onload = function(event) {
-              // Create an image element
               const img = document.createElement('img');
               img.src = event.target.result;
               img.style.width = '100%';
               img.style.height = '100%';
               img.style.objectFit = 'cover';
               
-              // Clear the upload container and append the image
               imageUpload.innerHTML = '';
               imageUpload.appendChild(img);
-
-              //image to base64
               image = event.target.result;
             };
             
@@ -225,6 +225,15 @@ html(lang="en")
           const wordCount = this.value.trim().split(/\s+/).filter(Boolean).length;
           const countDisplay = this.parentElement.querySelector('.word-count');
           countDisplay.textContent = `${wordCount}/500 words`;
+          
+          // Visual feedback for word count
+          if (wordCount < 50) {
+            countDisplay.style.color = '#dc2626';
+          } else if (wordCount > 500) {
+            countDisplay.style.color = '#dc2626';
+          } else {
+            countDisplay.style.color = '#6b7280';
+          }
         });
       });
     });

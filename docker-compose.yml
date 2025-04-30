@@ -1,48 +1,56 @@
 version: '3.8'
+
 services:
-  web:
-    build:
-      context: ./
-    platform: linux/amd64  # Specify the platform
-    volumes:
-      - .:/src
-    command: supervisor -e 'js,pug,html' index.js
+  app:
+    build: .
     ports:
       - "3000:3000"
+    environment:
+      DB_HOST: db
+      DB_USER: bookorbit_user
+      DB_PASSWORD: password
+      DB_NAME: bookorbit
+      NODE_ENV: development
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
     depends_on:
-      - db
-    networks:
-      - app-network
+      db:
+        condition: service_healthy
+    restart: always
 
   db:
-    image: mysql
-    platform: linux/amd64  # Specify the platform
-    restart: always
-    env_file:
-      - ./.env
-    ports:
-      - "3308:3306"
-    volumes:
-      - ./db:/var/lib/mysql
-    networks:
-      - app-network
-
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin:latest
-    platform: linux/amd64  # Specify the platform
+    image: mysql:8.0
     restart: always
     environment:
-      - APACHE_SERVER_NAME=localhost
-      - PMA_HOST=db
-    env_file:
-      - ./.env
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: bookorbit
+      MYSQL_USER: bookorbit_user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_HOST: '%'
     ports:
-      - "8081:80"
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "bookorbit_user", "--password=password"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    cap_add:
+      - SYS_NICE
+
+  phpmyadmin:
+    image: arm64v8/phpmyadmin:latest
+    platform: linux/arm64/v8
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: rootpassword
     depends_on:
       - db
-    networks:
-      - app-network
 
-networks:
-  app-network:
-    driver: bridge
+volumes:
+  mysql_data:

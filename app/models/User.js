@@ -11,7 +11,6 @@ const User = sequelize.define('User', {
     username: {
         type: DataTypes.STRING(50),
         allowNull: false,
-        unique: true,
         validate: {
             notEmpty: true,
             len: [3, 50],
@@ -36,9 +35,6 @@ const User = sequelize.define('User', {
     password_hash: {
         type: DataTypes.STRING(255),
         allowNull: false,
-        validate: {
-            notEmpty: true,
-        },
     },
     password_salt: {
         type: DataTypes.STRING(255),
@@ -55,7 +51,6 @@ const User = sequelize.define('User', {
     email: {
         type: DataTypes.STRING(100),
         allowNull: false,
-        unique: true,
         validate: {
             isEmail: true,
             notEmpty: true,
@@ -74,30 +69,32 @@ const User = sequelize.define('User', {
 }, {
     tableName: 'Users',
     timestamps: false,
-    hooks: {
-        beforeCreate: async (user) => {
-            if (user.password_hash) {
-                const saltRounds = 10;
-                const hashedPassword = await bcrypt.hash(user.password_hash, saltRounds);
-                user.password_hash = hashedPassword;
-            }
+    indexes: [
+        {
+            name: 'username_unique_idx',
+            unique: true,
+            fields: ['username']
         },
-        beforeUpdate: async (user) => {
-            if (user.changed('password_hash')) {
-                const saltRounds = 10;
-                const hashedPassword = await bcrypt.hash(user.password_hash, saltRounds);
-                user.password_hash = hashedPassword;
-            }
+        {
+            name: 'email_unique_idx',
+            unique: true,
+            fields: ['email']
         },
-    },
+        {
+            name: 'user_auth_idx',
+            fields: ['username', 'password_hash']
+        },
+        {
+            name: 'reset_token_idx',
+            fields: ['password_reset_token']
+        }
+    ]
 });
 
-User.prototype.comparePassword = async function (candidatePassword) {
+// Method to compare password
+User.prototype.comparePassword = async function(candidatePassword) {
     try {
-        
-        const isMatch = await bcrypt.compare(candidatePassword, this.password_hash);
-        console.log('Password match result:', isMatch);
-        return isMatch;
+        return await bcrypt.compare(candidatePassword, this.password_hash);
     } catch (error) {
         console.error('Error comparing passwords:', error);
         return false;

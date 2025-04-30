@@ -1,5 +1,13 @@
-.git
-.dockerignore
 node_modules
 npm-debug.log
-db/mysql.sock
+.env
+.git
+.gitignore
+README.md
+.dockerignore
+Dockerfile
+docker-compose.yml
+logs/
+*.log
+db
+.DS_Store

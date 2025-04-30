@@ -1,0 +1,18 @@
+# Server Configuration
+PORT=3000
+NODE_ENV=development
+
+# Database Configuration
+MYSQL_HOST=db
+MYSQL_DATABASE=bookorbit
+MYSQL_USER=bookorbit_user
+MYSQL_PASS=rootpassword
+MYSQL_ROOT_PASSWORD=rootpassword
+DB_PORT=3306
+
+# Session Configuration
+SESSION_KEY=your-secret-key-here
+
+# Admin Account
+ADMIN_EMAIL=admin@bookorbit.com
+ADMIN_PASSWORD=admin123 

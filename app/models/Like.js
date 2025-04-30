@@ -36,6 +36,13 @@ const Like = sequelize.define(
     timestamps: true,
     createdAt: "created_at",
     updatedAt: false,
+    indexes: [
+      {
+        name: 'like_unique_idx',
+        unique: true,
+        fields: ['user_id', 'book_id']
+      }
+    ]
   }
 );
 

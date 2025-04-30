@@ -16,6 +16,14 @@ exports.register = async (req, res) => {
     const { username, email, password, first_name, last_name } = req.body;
 
     try {
+        // Input validation
+        if (!username || !email || !password || !first_name || !last_name) {
+            return res.status(400).json({
+                error: 'All fields are required',
+                field: 'form'
+            });
+        }
+
         // Check for existing username
         const existingUsername = await User.findOne({
             where: { username }
@@ -42,35 +50,41 @@ exports.register = async (req, res) => {
             });
         }
 
-        // Create a new user using Sequelize
+        // Hash password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        // Create a new user
         const newUser = await User.create({
             username,
             email,
             first_name,
             last_name,
-            password_hash: password, // Note: the hook will hash this
+            password_hash: hashedPassword,
             role: 'library_user',
         });
 
         // Log the successful registration
         logger.info(`User registered: ${newUser.username}`);
 
+        // Set session
+        req.session.user = {
+            id: newUser.user_id,
+            username: newUser.username,
+            email: newUser.email,
+            role: newUser.role
+        };
+
         // Send success response
         res.status(201).json({ 
-            message: 'User registered successfully', 
-            user: {
-                username: newUser.username,
-                email: newUser.email,
-                first_name: newUser.first_name,
-                last_name: newUser.last_name,
-                role: newUser.role
-            }
+            message: 'User registered successfully',
+            redirect: '/user/dashboard'
         });
     } catch (error) {
         // Log the error
         logger.error(`Error registering user: ${error.message}`);
 
-        // Handle other potential errors
+        // Handle validation errors
         if (error instanceof Sequelize.ValidationError) {
             return res.status(400).json({ 
                 error: 'Validation error',

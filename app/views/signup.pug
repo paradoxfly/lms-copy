@@ -80,22 +80,4 @@ html(lang="en")
               i.fas.fa-times
               span Close
 
-    script.
-      console.log('Scripts loading...');
-      window.addEventListener('load', function() {
-        console.log('Page loaded, checking form elements...');
-        const form = document.getElementById('signup-form');
-        console.log('Form found:', !!form);
-        if (form) {
-          console.log('Form elements:', {
-            firstname: !!document.getElementById('first_name'),
-            lastname: !!document.getElementById('last_name'),
-            username: !!document.getElementById('username'),
-            email: !!document.getElementById('email'),
-            password: !!document.getElementById('password'),
-            confirmPassword: !!document.getElementById('confirm-password')
-          });
-        }
-      });
-    script(src="/js/register.js" defer)
     script(src="/js/signup.js" defer)

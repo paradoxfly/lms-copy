@@ -3,532 +3,259 @@ html(lang="en")
   head
     meta(charset="UTF-8")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
-    title Book Dashboard
-    style.
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      }
-      
-      body {
-        background-color: #ffffff;
-      }
-      
-      .container {
-        display: flex;
-        height: 100vh;
-      }
-      
-      /* Sidebar */
-      .sidebar {
-        width: 115px;
-        border-right: 1px solid #e5e7eb;
-        display: flex;
-        flex-direction: column;
-      }
-      
-      .sidebar-header {
-        height: 64px;
-        border-bottom: 1px solid #e5e7eb;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      
-      .sidebar-header p {
-        font-size: 12px;
-        font-weight: 500;
-        color: #6b7280;
-      }
-      
-      .sidebar-content {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-      }
-      
-      .sidebar-nav {
-        padding: 16px 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 32px;
-      }
-      
-      .active-nav-item {
-        width: 100%;
-        height: 40px;
-        background-color: #1fbbd6;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      
-      .active-nav-icon {
-        width: 24px;
-        height: 24px;
-        background-color: white;
-        border-radius: 4px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      
-      .active-nav-icon span {
-        color: #1fbbd6;
-        font-size: 18px;
-      }
-      
-      .nav-icon {
-        width: 24px;
-        height: 24px;
-        color: #9ca3af;
-      }
-      
-      .sidebar-footer {
-        padding: 16px 0;
-        display: flex;
-        justify-content: center;
-      }
-      
-      /* Main Content */
-      .main {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-      }
-      
-      /* Header */
-      .header {
-        height: 64px;
-        border-bottom: 1px solid #e5e7eb;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 24px;
-      }
-      
-      .header h1 {
-        font-size: 18px;
-        font-weight: 500;
-      }
-      
-      .header-actions {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-      }
-      
-      .notification-btn {
-        position: relative;
-      }
-      
-      .notification-icon {
-        width: 20px;
-        height: 20px;
-        color: #6b7280;
-      }
-      
-      .notification-badge {
-        position: absolute;
-        top: 0;
-        right: 0;
-        width: 8px;
-        height: 8px;
-        background-color: #ef4444;
-        border-radius: 50%;
-      }
-      
-      .avatar {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        background-color: #ee0355;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 12px;
-      }
-      
-      /* Content */
-      .content {
-        flex: 1;
-        padding: 24px;
-        overflow: auto;
-      }
-      
-      /* Search and Filters */
-      .search-filters {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 32px;
-      }
-      
-      .search-container {
-        position: relative;
-        width: 200px;
-      }
-      
-      .search-input {
-        width: 100%;
-        padding: 8px 12px;
-        padding-right: 40px;
-        border: 1px solid #d1d5db;
-        border-radius: 6px;
-        font-size: 14px;
-      }
-      
-      .search-icon {
-        position: absolute;
-        right: 12px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 16px;
-        height: 16px;
-        color: #9ca3af;
-      }
-      
-      .filters {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-      }
-      
-      .filter-label {
-        font-size: 14px;
-        color: #6b7280;
-      }
-      
-      .filter-dropdown {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        border: 1px solid #d1d5db;
-        border-radius: 6px;
-        padding: 6px 12px;
-      }
-      
-      .filter-text {
-        font-size: 14px;
-      }
-      
-      .dropdown-icon {
-        width: 16px;
-        height: 16px;
-        color: #6b7280;
-      }
-      
-      .upload-btn {
-        background-color: #1fbbd6;
-        color: white;
-        padding: 8px 16px;
-        border-radius: 6px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 14px;
-        border: none;
-        cursor: pointer;
-      }
-      
-      .upload-icon {
-        width: 16px;
-        height: 16px;
-      }
-      
-      /* Book Tables */
-      .books-section {
-        margin-bottom: 32px;
-      }
-      
-      .section-title {
-        font-size: 24px;
-        font-weight: 700;
-        margin-bottom: 16px;
-      }
-      
-      .table-container {
-        border: 1px solid #e5e7eb;
-        border-radius: 6px;
-        overflow: hidden;
-      }
-      
-      table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-      
-      thead {
-        background-color: #f9fafb;
-        text-align: left;
-      }
-      
-      th {
-        padding: 12px 16px;
-        font-size: 14px;
-        font-weight: 500;
-        color: #6b7280;
-      }
-      
-      td {
-        padding: 12px 16px;
-        font-size: 14px;
-        border-top: 1px solid #e5e7eb;
-      }
-      
-      .status-badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 2px 10px;
-        border-radius: 9999px;
-        font-size: 12px;
-        font-weight: 500;
-        background-color: #b6f6d0;
-        color: #129145;
-      }
-      
-      /* Pagination */
-      .pagination {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-top: 16px;
-      }
-      
-      .page-numbers {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-      }
-      
-      .page-btn {
-        width: 32px;
-        height: 32px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 4px;
-        font-size: 14px;
-        cursor: pointer;
-        border: none;
-      }
-      
-      .active-page {
-        background-color: #1fbbd6;
-        color: white;
-      }
-      
-      .inactive-page {
-        color: #6b7280;
-      }
-      
-      .inactive-page:hover {
-        background-color: #f3f4f6;
-      }
-      
-      .ellipsis {
-        margin: 0 8px;
-        color: #6b7280;
-      }
-      
-      .page-info {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-      }
-      
-      .page-text {
-        font-size: 14px;
-        color: #6b7280;
-      }
-      
-      .chevron-icon {
-        width: 16px;
-        height: 16px;
-        color: #6b7280;
-      }
+    link(href="https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,100..900;1,100..900&family=Euphoria+Script&display=swap" rel="stylesheet")
+    link(href="/css/upload.css", rel="stylesheet")
+    link(href="/css/reusable.css", rel="stylesheet")
+    title Book List Upload - BookOrbit
 
   body
-    .container
+    .top-navbar
+      h1.logo-text BookOrbit
+      h1.text-xl.font-semibold.pl-3 Admin Dashboard
+      .flex.items-center.gap-4.ml-auto
+        button.relative
+          //- i.fas.fa-bell
+          //- span.notification-badge 1
+        .w-8.h-8.rounded-full.overflow-hidden(style="background-color: #dccdbe;")
+          img(src="https://placehold.co/30x30/dccdbe/ffffff?text=U" alt="User")#profile-picture
+    
+    .flex
       //- Sidebar
       .sidebar
-        .sidebar-header
-          p ICON PANEL
-        .sidebar-content
-          .sidebar-nav
-            .active-nav-item
-              .active-nav-icon
-                span ≡
-            button.nav-icon
-              svg(xmlns="http://www.w3.org/2000/svg", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
-                rect(width="18", height="18", x="3", y="3", rx="2")
-                path(d="M9 3v18")
-                path(d="M13 7h5")
-                path(d="M13 11h5")
-                path(d="M13 15h5")
-            button.nav-icon
-              svg(xmlns="http://www.w3.org/2000/svg", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
-                path(d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2")
-                circle(cx="9", cy="7", r="4")
-                path(d="M22 21v-2a4 4 0 0 0-3-3.87")
-                path(d="M16 3.13a4 4 0 0 1 0 7.75")
-            button.nav-icon
-              svg(xmlns="http://www.w3.org/2000/svg", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
-                circle(cx="12", cy="12", r="10")
-                path(d="M12 16v-4")
-                path(d="M12 8h.01")
-            button.nav-icon
-              svg(xmlns="http://www.w3.org/2000/svg", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
-                path(d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z")
-                polyline(points="9 22 9 12 15 12 15 22")
-        .sidebar-footer
-          button.nav-icon
-            svg(xmlns="http://www.w3.org/2000/svg", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
-              circle(cx="12", cy="12", r="3")
-              path(d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z")
+        .sidebar-nav
+          a.nav-item(href="/admin/dashboard")
+            svg(xmlns="http://www.w3.org/2000/svg", width="20", height="20", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+              path(d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z")
+              polyline(points="9 22 9 12 15 12 15 22")
+            span Dashboard
+          a.nav-item.active(href="/admin/upload-book-list")
+            svg(xmlns="http://www.w3.org/2000/svg", width="20", height="20", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+              path(d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20")
+            span Book List
+          a.nav-item(href="/admin/upload-book")
+            svg(xmlns="http://www.w3.org/2000/svg", width="20", height="20", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+              path(d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4")
+              polyline(points="17 8 12 3 7 8")
+              line(x1="12", x2="12", y1="3", y2="15")
+            span Upload Book
+          a.nav-item(href="/admin/messages")
+            svg(xmlns="http://www.w3.org/2000/svg", width="20", height="20", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+              path(d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z")
+            span Messages
+          a.nav-item(href="/admin/users")
+            svg(xmlns="http://www.w3.org/2000/svg", width="20", height="20", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
+              path(d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2")
+              circle(cx="9", cy="7", r="4")
+              path(d="M22 21v-2a4 4 0 0 0-3-3.87")
+              path(d="M16 3.13a4 4 0 0 1 0 7.75")
+            span Users
 
-      //- Main content
-      .main
-        //- Header
-        .header
-          h1 Dashboard
-          .header-actions
-            button.notification-btn
-              svg.notification-icon(xmlns="http://www.w3.org/2000/svg", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
-                path(d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9")
-                path(d="M13.73 21a2 2 0 0 1-3.46 0")
-              span.notification-badge
-            .avatar
-              span JD
+      //- Main Content
+      .main-content
+        //- Error Modal
+        .modal#errorModal
+          .modal-content
+            .modal-header
+              h3 Error
+              button.close-modal ×
+            .modal-body
+              p#errorMessage
 
-        //- Content
-        .content
-          //- Search and filters
-          .search-filters
-            .search-container
-              input.search-input(type="text", placeholder="Search")
-              svg.search-icon(xmlns="http://www.w3.org/2000/svg", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
-                circle(cx="11", cy="11", r="8")
-                line(x1="21", y1="21", x2="16.65", y2="16.65")
-            .filters
-              .filter-group
-                span.filter-label Filter by
-                .filter-dropdown
-                  span.filter-text Date uploaded
-                  svg.dropdown-icon(xmlns="http://www.w3.org/2000/svg", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
-                    polyline(points="6 9 12 15 18 9")
-              .filter-dropdown
-                span.filter-text Popular
-                svg.dropdown-icon(xmlns="http://www.w3.org/2000/svg", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
-                  polyline(points="6 9 12 15 18 9")
-              .filter-dropdown
-                span.filter-text Author
-                svg.dropdown-icon(xmlns="http://www.w3.org/2000/svg", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
-                  polyline(points="6 9 12 15 18 9")
-              button.upload-btn
-                svg.upload-icon(xmlns="http://www.w3.org/2000/svg", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
-                  path(d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4")
-                  polyline(points="17 8 12 3 7 8")
-                  line(x1="12", y1="3", x2="12", y2="15")
-                | Upload book
+        //- Upload Section
+        .upload-section.bg-white.p-6.rounded-lg.shadow-sm.mb-8
+          h2.text-2xl.font-bold.mb-4 Upload Book List
+          p.text-gray-600.mb-8 Upload a JSON file containing multiple books to add them to the library
 
-          //- Uploaded Books
-          .books-section
-            h2.section-title Uploaded Books
-            .table-container
-              table
-                thead
-                  tr
-                    th S/N
-                    th Book name
-                    th Author's Name
-                    th ISBN No
-                    th Genre
-                    th Available copies
-                    th Publish year
-                    th No of pages
-                    th Status
-                tbody
-                  - 
-                    var authors = [
-                      "Olivia Grace", "Ruby Rose", "Robert Patterson", "Gary Charles", "John Marcus",
-                      "Jennifer Jules", "Carl Langsfield", "Almond Ray", "Mark Twain", "Charles Dickens",
-                      "John Steinbeck", "Dan Brown", "J. K. Rowling", "Lewis Carroll", "Stephen King",
-                      "Nora Roberts", "Danielle Steel", "Dean Koontz", "Jackie Collins", "John Grisham",
-                      "Clive Cussler", "Tom Clancy", "C. S. Lewis", "Harold Robbins", "Anne Rice",
-                      "Ken Follett", "Cao Xueqin", "David Baldacci", "Jeffrey Archer", "Robert Ludlum"
-                    ];
-                    var pages = [
-                      "250", "300", "500", "250", "420", "500", "250", "180", "480", "250",
-                      "210", "250", "610", "250", "250", "310", "250", "290", "250", "300",
-                      "250", "900", "710", "450", "650", "400", "250", "150", "250", "700"
-                    ];
-                  - for (var i = 0; i < 30; i++)
-                    tr
-                      td= i + 1
-                      td The girl in the woods
-                      td= authors[i % 30]
-                      td ISBN: 978-0-7334-2609-4
-                      td Romance
-                      td 100
-                      td 1998
-                      td= pages[i % 30]
-                      td
-                        span.status-badge Available
-            .pagination
-              .page-numbers
-                button.page-btn.active-page 1
-                - for (var i = 2; i <= 5; i++)
-                  button.page-btn.inactive-page= i
-                span.ellipsis ...
-                button.page-btn.inactive-page 100
-              .page-info
-                span.page-text 30-50
-                svg.chevron-icon(xmlns="http://www.w3.org/2000/svg", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
-                  polyline(points="9 18 15 12 9 6")
+          .upload-container.border-2.border-dashed.border-gray-300.rounded-lg.p-8.text-center
+            input#fileInput(type="file" accept=".json" class="hidden")
+            .upload-prompt.cursor-pointer(onclick="document.getElementById('fileInput').click()")
+              svg.mx-auto.mb-4(xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+                path(d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4")
+                polyline(points="17 8 12 3 7 8")
+                line(x1="12" x2="12" y1="3" y2="15")
+              p.text-lg.font-medium.mb-2 Choose a JSON file or drag it here
+              p.text-sm.text-gray-500 Maximum file size: 5MB
 
-          //- Most Borrowed Books
-          .books-section
-            h2.section-title Most Borrowed book in the past month
-            .table-container
-              table
-                thead
-                  tr
-                    th S/N
-                    th Book name
-                    th Author's Name
-                    th ISBN No
-                    th Genre
-                    th Available copies
-                    th Publish year
-                    th No of pages
-                    th Status
-                tbody
-                  - for (var i = 0; i < 30; i++)
-                    tr
-                      td= i + 1
-                      td The girl in the woods
-                      td= authors[i % 30]
-                      td ISBN: 978-0-7334-2609-4
-                      td Romance
-                      td 100
-                      td 1998
-                      td= pages[i % 30]
-                      td
-                        span.status-badge Available
-            .pagination
-              .page-numbers
-                button.page-btn.active-page 1
-                - for (var i = 2; i <= 5; i++)
-                  button.page-btn.inactive-page= i
-                span.ellipsis ...
-                button.page-btn.inactive-page 100
-              .page-info
-                span.page-text 30-50
-                svg.chevron-icon(xmlns="http://www.w3.org/2000/svg", viewBox="0 0 24 24", fill="none", stroke="currentColor", stroke-width="2", stroke-linecap="round", stroke-linejoin="round")
-                  polyline(points="9 18 15 12 9 6")
+          .mt-8
+            h3.text-lg.font-medium.mb-4 JSON Format Example:
+            pre.bg-gray-100.p-4.rounded.text-sm.overflow-x-auto
+              code.
+                [
+                  {
+                    "title": "Book Title",
+                    "author": "Author Name",
+                    "description": "Book description...",
+                    "isbn": "978-0123456789",
+                    "genre": "Fiction",
+                    "no_of_copies": 5,
+                    "price": 29.99
+                  }
+                ]
+
+        //- Book List Section
+        .books-section
+          h2.section-title Uploaded Books
+          .table-container
+            table
+              thead
+                tr
+                  th S/N
+                  th Book name
+                  th Author's Name
+                  th ISBN No
+                  th Genre
+                  th Available copies
+                  th Price
+                  th Status
+              tbody#booksList
+                tr
+                  td(colspan="8").text-center Loading...
+
+          .pagination#paginationContainer
+            .page-numbers
+              button.page-btn.active-page 1
+              - for (var i = 2; i <= 5; i++)
+                button.page-btn.inactive-page= i
+              span.ellipsis ...
+              button.page-btn.inactive-page 100
+            .page-info
+              span.page-text 0-0 of 0
+
+  script.
+    document.addEventListener('DOMContentLoaded', async function() {
+      const fileInput = document.getElementById('fileInput');
+      const uploadContainer = document.querySelector('.upload-container');
+      const booksList = document.getElementById('booksList');
+      const errorModal = document.getElementById('errorModal');
+      const errorMessage = document.getElementById('errorMessage');
+      const closeModal = document.querySelector('.close-modal');
+
+      // Close modal handlers
+      closeModal.onclick = function() {
+        errorModal.style.display = 'none';
+      }
+
+      window.onclick = function(event) {
+        if (event.target === errorModal) {
+          errorModal.style.display = 'none';
+        }
+      }
+
+      // Show error modal
+      function showError(message, details) {
+        errorMessage.innerHTML = `${message}${details ? '<br><small>' + details + '</small>' : ''}`;
+        errorModal.style.display = 'block';
+      }
+
+      // Load books
+      async function loadBooks() {
+        try {
+          const response = await fetch('/admin/books');
+          if (!response.ok) {
+            throw new Error('Failed to fetch books');
+          }
+
+          const books = await response.json();
+          booksList.innerHTML = '';
+
+          books.forEach((book, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${index + 1}</td>
+              <td>${book.title}</td>
+              <td>${book.author}</td>
+              <td>${book.isbn}</td>
+              <td>${book.genre}</td>
+              <td>${book.no_of_copies_available}/${book.no_of_copies}</td>
+              <td>$${book.price ? book.price.toFixed(2) : '0.00'}</td>
+              <td><span class="status-badge ${book.no_of_copies_available > 0 ? 'available' : 'not-available'}">${book.no_of_copies_available > 0 ? 'Available' : 'Not Available'}</span></td>
+            `;
+            booksList.appendChild(row);
+          });
+
+          // Update pagination info
+          const pageInfo = document.querySelector('.page-text');
+          pageInfo.textContent = `1-${books.length} of ${books.length}`;
+        } catch (error) {
+          console.error('Error:', error);
+          booksList.innerHTML = `
+            <tr>
+              <td colspan="8" class="text-center text-red-500">
+                Error loading books. Please try again later.
+              </td>
+            </tr>
+          `;
+        }
+      }
+
+      // Handle file upload
+      async function handleFile(file) {
+        if (file.type !== 'application/json') {
+          showError('Please upload a JSON file');
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append('bookList', file);
+
+        try {
+          const response = await fetch('/admin/upload-book-list', {
+            method: 'POST',
+            body: formData
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            // Reload the book list to show new additions
+            loadBooks();
+            
+            // Show success message
+            const successCount = result.success.length;
+            const errorCount = result.errors.length;
+            let message = `Successfully added ${successCount} book${successCount !== 1 ? 's' : ''}`;
+            if (errorCount > 0) {
+              message += `\nFailed to add ${errorCount} book${errorCount !== 1 ? 's' : ''}`;
+              const errorDetails = result.errors.map(err => `ISBN ${err.isbn}: ${err.error}`).join('\n');
+              showError(message, errorDetails);
+            } else {
+              alert(message);
+            }
+          } else {
+            throw new Error(result.message || 'Failed to upload book list');
+          }
+        } catch (error) {
+          showError('Error uploading file', error.message);
+        }
+
+        // Reset file input
+        fileInput.value = '';
+      }
+
+      // Handle drag and drop
+      uploadContainer.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadContainer.classList.add('border-blue-500');
+      });
+
+      uploadContainer.addEventListener('dragleave', () => {
+        uploadContainer.classList.remove('border-blue-500');
+      });
+
+      uploadContainer.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadContainer.classList.remove('border-blue-500');
+        const file = e.dataTransfer.files[0];
+        if (file) handleFile(file);
+      });
+
+      // Handle file input change
+      fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) handleFile(file);
+      });
+
+      // Initial load of books
+      loadBooks();
+    });
 
