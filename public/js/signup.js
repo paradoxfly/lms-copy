@@ -127,9 +127,16 @@ document.getElementById('signup-form').addEventListener('submit', async (event) 
                 window.location.href = '/login';
             }, 3000);
         } else {
-            const errorField = result.field || 'form';
-            const errorMessage = result.error || 'Registration failed. Please try again.';
-            showError(errorField, errorMessage);
+            if (result.errors) {
+                // Handle validation errors
+                result.errors.forEach(error => {
+                    showError(error.path, error.message);
+                });
+            } else {
+                const errorField = result.field || 'form';
+                const errorMessage = result.error || 'Registration failed. Please try again.';
+                showError(errorField, errorMessage);
+            }
         }
     } catch (error) {
         console.error('Error:', error);

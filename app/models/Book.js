@@ -30,8 +30,15 @@ const Book = sequelize.define(
       allowNull: false,
     },
     cover_image: {
-      type: DataTypes.BLOB('medium'),
+      type: DataTypes.TEXT,
       allowNull: false,
+      get() {
+        const rawValue = this.getDataValue('cover_image');
+        if (Buffer.isBuffer(rawValue)) {
+          return rawValue;
+        }
+        return rawValue || '/images/default-book-cover.jpg';
+      }
     },
     isbn: {
       type: DataTypes.STRING(255),

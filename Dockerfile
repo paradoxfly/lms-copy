@@ -7,6 +7,7 @@ COPY package*.json ./
 
 # Install dependencies
 RUN npm install
+RUN npm install express-mysql-session@3.0.3
 
 # Copy app source
 COPY . .

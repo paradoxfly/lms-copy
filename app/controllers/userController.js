@@ -10,8 +10,8 @@ const sequelize = require("../services/db");
 // Render the user dashboard
 exports.dashboard = (req, res) => {
   try {
-    // Ensure the user is authenticated and has the 'library_user' role
-    if (!req.session.user || req.session.user.role !== "library_user") {
+    // Ensure the user is authenticated and has the 'user' role
+    if (!req.session.user || req.session.user.role !== "user") {
       logger.warn(
         `Unauthorized access attempt to user dashboard by ${
           req.session.user?.username || "Unknown user"

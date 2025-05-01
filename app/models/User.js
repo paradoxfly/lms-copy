@@ -32,22 +32,6 @@ const User = sequelize.define('User', {
             len: [2, 50],
         },
     },
-    password_hash: {
-        type: DataTypes.STRING(255),
-        allowNull: false,
-    },
-    password_salt: {
-        type: DataTypes.STRING(255),
-        allowNull: true,
-    },
-    password_reset_token: {
-        type: DataTypes.STRING(255),
-        allowNull: true,
-    },
-    reset_token_expiry: {
-        type: DataTypes.DATE,
-        allowNull: true,
-    },
     email: {
         type: DataTypes.STRING(100),
         allowNull: false,
@@ -57,18 +41,36 @@ const User = sequelize.define('User', {
             len: [5, 100],
         },
     },
-    role: {
-        type: DataTypes.ENUM('admin', 'library_user'),
+    password: {
+        type: DataTypes.STRING(60),
         allowNull: false,
-        defaultValue: 'library_user',
+    },
+    role: {
+        type: DataTypes.ENUM('admin', 'user'),
+        allowNull: false,
+        defaultValue: 'user',
     },
     created_at: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
     },
+    updated_at: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+    },
+    password_reset_token: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+    },
+    reset_token_expiry: {
+        type: DataTypes.DATE,
+        allowNull: true,
+    },
 }, {
     tableName: 'Users',
-    timestamps: false,
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
     indexes: [
         {
             name: 'username_unique_idx',
@@ -81,20 +83,30 @@ const User = sequelize.define('User', {
             fields: ['email']
         },
         {
-            name: 'user_auth_idx',
-            fields: ['username', 'password_hash']
-        },
-        {
             name: 'reset_token_idx',
             fields: ['password_reset_token']
         }
-    ]
+    ],
+    hooks: {
+        beforeCreate: async (user) => {
+            if (user.password) {
+                const salt = await bcrypt.genSalt(10);
+                user.password = await bcrypt.hash(user.password, salt);
+            }
+        },
+        beforeUpdate: async (user) => {
+            if (user.changed('password')) {
+                const salt = await bcrypt.genSalt(10);
+                user.password = await bcrypt.hash(user.password, salt);
+            }
+        }
+    }
 });
 
 // Method to compare password
 User.prototype.comparePassword = async function(candidatePassword) {
     try {
-        return await bcrypt.compare(candidatePassword, this.password_hash);
+        return await bcrypt.compare(candidatePassword, this.password);
     } catch (error) {
         console.error('Error comparing passwords:', error);
         return false;

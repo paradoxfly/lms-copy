@@ -5,6 +5,7 @@ const UserBook = require('../models/UserBook');
 const Transaction = require('../models/Transaction');
 const bcrypt = require('bcryptjs');
 const logger = require('../utils/logger');
+const seedUsers = require('../scripts/seedUsers');
 
 async function initializeDatabase() {
     try {
@@ -30,12 +31,15 @@ async function initializeDatabase() {
                 first_name: 'Admin',
                 last_name: 'User',
                 email: 'admin@bookorbit.com',
-                password_hash: hashedPassword,
+                password: hashedPassword,
                 role: 'admin'
             });
 
             logger.info('Admin user created successfully');
         }
+
+        // Seed sample users
+        await seedUsers();
 
     } catch (error) {
         logger.error('Error initializing database:', error);

@@ -25,6 +25,29 @@ document.addEventListener("DOMContentLoaded", function () {
         group.classList.remove('error');
       });
 
+      // Validate inputs
+      let hasError = false;
+
+      if (!email) {
+        showError('email', 'Email is required');
+        hasError = true;
+      } else if (!isValidEmail(email)) {
+        showError('email', 'Please enter a valid email address');
+        hasError = true;
+      }
+
+      if (!password) {
+        showError('password', 'Password is required');
+        hasError = true;
+      } else if (password.length < 8) {
+        showError('password', 'Password must be at least 8 characters');
+        hasError = true;
+      }
+
+      if (hasError) {
+        return;
+      }
+
       // Show loading state
       submitButton.disabled = true;
       submitButton.classList.add('loading');
@@ -39,19 +62,28 @@ document.addEventListener("DOMContentLoaded", function () {
             email,
             password
           }),
-          redirect: 'follow'
+          credentials: 'include' // Ensure cookies are sent
         });
 
-        // If the response redirects, follow it
-        if (response.redirected) {
-          window.location.href = response.url;
-          return;
-        }
-
-        // Handle non-redirect responses (errors)
         const data = await response.json();
         
-        if (!response.ok) {
+        if (response.ok && data.success) {
+          // Store user info in localStorage if needed
+          if (data.user) {
+            localStorage.setItem('user', JSON.stringify(data.user));
+          }
+          
+          // Show success message
+          const successPopup = document.getElementById('success-popup');
+          if (successPopup) {
+            successPopup.style.display = 'flex';
+          }
+          
+          // Redirect after a short delay
+          setTimeout(() => {
+            window.location.href = data.redirect;
+          }, 1000);
+        } else {
           const errorMessage = data.error || 'Invalid email or password';
           const errorField = data.field || determineErrorField(errorMessage);
           showError(errorField, errorMessage);

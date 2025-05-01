@@ -50,18 +50,14 @@ exports.register = async (req, res) => {
             });
         }
 
-        // Hash password
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-
-        // Create a new user
+        // Create a new user (password will be hashed by the User model hook)
         const newUser = await User.create({
             username,
             email,
             first_name,
             last_name,
-            password_hash: hashedPassword,
-            role: 'library_user',
+            password, // Pass the plain password, it will be hashed by the model hook
+            role: 'user'
         });
 
         // Log the successful registration
@@ -157,6 +153,7 @@ exports.userLogin = async (req, res) => {
         });
 
         if (!user) {
+            logger.warn(`Login attempt failed: User not found for email ${email}`);
             return res.status(401).json({ 
                 error: 'Invalid email or password',
                 field: 'email'
@@ -166,6 +163,7 @@ exports.userLogin = async (req, res) => {
         const isMatch = await user.comparePassword(password);
 
         if (!isMatch) {
+            logger.warn(`Login attempt failed: Invalid password for email ${email}`);
             return res.status(401).json({ 
                 error: 'Invalid email or password',
                 field: 'password'
@@ -180,13 +178,24 @@ exports.userLogin = async (req, res) => {
             role: user.role
         };
 
-        req.session.cookie.expires = new Date(Date.now() + 1000 * 60 * 30); // 30 minutes
+        // Set session expiration
+        req.session.cookie.expires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
-        // Instead of sending JSON response, redirect directly to dashboard
-        res.redirect('/user/dashboard');
+        logger.info(`User login successful: ${user.username}`);
+
+        // Send success response with redirect URL
+        res.status(200).json({ 
+            success: true,
+            redirect: '/user/dashboard',
+            user: {
+                username: user.username,
+                email: user.email,
+                role: user.role
+            }
+        });
 
     } catch (error) {
-        console.error('Login error:', error);
+        logger.error(`Login error: ${error.message}`);
         res.status(500).json({ 
             error: 'Login failed. Please try again.',
             field: 'email'

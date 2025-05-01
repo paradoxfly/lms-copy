@@ -1,24 +1,34 @@
 require('dotenv').config();
 const { Sequelize } = require('sequelize');
+const logger = require('../utils/logger');
+
+// Validate required environment variables
+const requiredEnvVars = ['DB_NAME', 'DB_USER', 'DB_PASSWORD', 'DB_HOST', 'DB_PORT'];
+const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
+
+if (missingEnvVars.length > 0) {
+    logger.error(`Missing required environment variables: ${missingEnvVars.join(', ')}`);
+    logger.warn('Using default values for missing environment variables. This is not recommended for production.');
+}
 
 // Create a Sequelize instance
 const sequelize = new Sequelize(
-    process.env.DB_NAME || 'BookOrbit', // Database name
-    process.env.DB_USER || 'bookorbit_user', // Database user
-    process.env.DB_PASSWORD || 'password', // Database password
+    process.env.DB_NAME || 'bookorbit',
+    process.env.DB_USER || 'root',
+    process.env.DB_PASSWORD || 'rootpassword',
     {
-        host: process.env.DB_HOST || 'db', // Database host
-        port: process.env.DB_PORT || 3306, // Database port
-        dialect: 'mysql', // Database dialect
+        host: process.env.DB_HOST || 'localhost',
+        port: process.env.DB_PORT || 3306,
+        dialect: 'mysql',
         pool: {
-            max: 10, // Maximum number of connections in the pool
-            min: 0, // Minimum number of connections in the pool
-            acquire: 30000, // Maximum time (in milliseconds) that a connection can be idle before being released
-            idle: 10000, // Maximum time (in milliseconds) that a connection can be idle before being released
+            max: parseInt(process.env.DB_POOL_MAX) || 10,
+            min: parseInt(process.env.DB_POOL_MIN) || 0,
+            acquire: parseInt(process.env.DB_POOL_ACQUIRE) || 30000,
+            idle: parseInt(process.env.DB_POOL_IDLE) || 10000,
         },
-        logging: false, // Disable logging for production
+        logging: process.env.NODE_ENV === 'development' ? console.log : false,
         retry: {
-            max: 10, // Maximum retry attempts
+            max: parseInt(process.env.DB_RETRY_MAX) || 10,
             match: [
                 /Deadlock/i,
                 /SequelizeConnectionError/,
@@ -34,28 +44,34 @@ const sequelize = new Sequelize(
     }
 );
 
-// Test the database connection with retries
-let retries = 5;
-const connectWithRetry = async () => {
-    while (retries) {
-        try {
-            await sequelize.authenticate();
-            console.log('✅ Database connection has been established successfully.');
-            return;
-        } catch (error) {
-            console.error('❌ Unable to connect to the database:', error);
-            retries -= 1;
-            console.log(`Retries left: ${retries}`);
-            if (retries === 0) {
-                process.exit(1);
-            }
-            // Wait for 5 seconds before retrying
-            await new Promise(resolve => setTimeout(resolve, 5000));
+// Test the database connection with improved retry mechanism
+const MAX_RETRIES = parseInt(process.env.DB_MAX_RETRIES) || 5;
+const RETRY_DELAY = parseInt(process.env.DB_RETRY_DELAY) || 5000;
+
+const connectWithRetry = async (retryCount = 0) => {
+    try {
+        await sequelize.authenticate();
+        logger.info('✅ Database connection has been established successfully.');
+        return true;
+    } catch (error) {
+        logger.error('❌ Unable to connect to the database:', error.message);
+        
+        if (retryCount < MAX_RETRIES) {
+            logger.info(`Retrying connection in ${RETRY_DELAY/1000} seconds... (${MAX_RETRIES - retryCount} attempts remaining)`);
+            await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+            return connectWithRetry(retryCount + 1);
+        } else {
+            logger.error('Maximum retry attempts reached. Exiting...');
+            process.exit(1);
         }
     }
 };
 
-connectWithRetry();
+// Initialize connection
+connectWithRetry().catch(error => {
+    logger.error('Failed to establish database connection:', error);
+    process.exit(1);
+});
 
 // Export the Sequelize instance
 module.exports = sequelize;

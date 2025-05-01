@@ -1,6 +1,8 @@
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const { body, validationResult } = require('express-validator');
+const session = require('express-session');
+const MySQLStore = require('express-mysql-session')(session);
 
 // Rate limiters
 exports.profileUpdateLimiter = rateLimit({
@@ -44,7 +46,7 @@ exports.securityHeaders = helmet({
     ieNoOpen: true,
     noSniff: true,
     originAgentCluster: true,
-    permittedCrossDomainPolicies: { permittedPolicies: "none" },
+    permittedCrossDomainPolicies: { policy: "none" },
     referrerPolicy: { policy: "strict-origin-when-cross-origin" },
     xssFilter: true
 });
@@ -102,15 +104,44 @@ exports.validateFileUpload = (req, file, cb) => {
     cb(null, true);
 };
 
+// MySQL session store options
+const options = {
+    host: process.env.DB_HOST || 'db',
+    port: parseInt(process.env.DB_PORT) || 3306,
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || 'password',
+    database: process.env.DB_NAME || 'bookorbit',
+    clearExpired: true,
+    checkExpirationInterval: 900000, // 15 minutes
+    expiration: 86400000, // 24 hours
+    createDatabaseTable: true,
+    schema: {
+        tableName: 'sessions',
+        columnNames: {
+            session_id: 'session_id',
+            expires: 'expires',
+            data: 'data'
+        }
+    }
+};
+
+// Create MySQL session store
+const sessionStore = new MySQLStore(options);
+
 // Session security
 exports.sessionConfig = {
+    store: sessionStore,
     secret: process.env.SESSION_SECRET || 'your-secret-key',
     resave: false,
     saveUninitialized: false,
+    name: 'sessionId',
     cookie: {
-        secure: process.env.NODE_ENV === 'production',
+        secure: false, // Set to false for development
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000, // 24 hours
-        sameSite: 'strict'
-    }
+        sameSite: 'lax', // Set to lax for development
+        path: '/',
+        domain: process.env.COOKIE_DOMAIN || undefined // Allow setting domain if needed
+    },
+    rolling: true // Extend session lifetime on activity
 }; 

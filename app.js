@@ -22,4 +22,33 @@ const upload = multer({
 // Session configuration
 app.use(session(sessionConfig));
 
-// ... rest of your app.js code ... 
+// Serve static files
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Parse JSON bodies
+app.use(express.json());
+
+// Set view engine
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'app/views'));
+
+// Routes
+const bookRoutes = require('./app/routes/bookRoutes');
+const userRoutes = require('./app/routes/userRoutes');
+const authRoutes = require('./app/routes/authRoutes');
+
+app.use('/books', bookRoutes);
+app.use('/user', userRoutes);
+app.use('/auth', authRoutes);
+
+// Error handling
+app.use((err, req, res, next) => {
+    logger.error(err.stack);
+    res.status(500).json({ error: 'Something broke!' });
+});
+
+// Start server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+}); 

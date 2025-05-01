@@ -6,18 +6,13 @@ exports.ensureAuthenticated = (req, res, next) => {
   if (
     req.session.user &&
     req.session.cookie.expires > new Date() &&
-    ["library_user", "admin"].includes(req.session.user.role)
+    ["user", "admin"].includes(req.session.user.role)
   ) {
     return next(); // User is authenticated
   }
 
   // Log unauthorized access attempts
   logger.warn(`Unauthorized access attempt to ${req.originalUrl} by ${req.ip}`);
-
-  // // Return a 401 Unauthorized response for APIs
-  // if (req.accepts('json')) {
-  //     return res.status(401).json({ error: 'Unauthorized: Please log in' });
-  // }
 
   // Redirect to login page for web applications
   res.redirect("/login");
@@ -44,7 +39,7 @@ exports.ensureAdminAuthenticated = (req, res, next) => {
 exports.ensureUser = (req, res, next) => {
   if (
     req.session.user &&
-    ["library_user", "admin"].includes(req.session.user.role)
+    req.session.user.role === "user"
   ) {
     return next();
   }

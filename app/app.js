@@ -9,6 +9,7 @@ const {
   ensureAdminAuthenticated,
   ensureUser,
 } = require("./middlewares/authMiddleware");
+const { sessionConfig } = require("./middlewares/securityMiddleware");
 const db = require("./services/db"); // Database connection
 const initializeDatabase = require("./services/initDb");
 dotenv.config(); // Load environment variables
@@ -20,19 +21,7 @@ app.use(express.json({ limit: "20mb" }));
 app.use(express.urlencoded({ extended: true, limit: "20mb" }));
 
 // Session setup
-app.use(
-  session({
-    secret: process.env.SESSION_KEY || 'your-secret-key',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: process.env.NODE_ENV === "production", // Use secure cookies in production
-      httpOnly: true, // Prevent client-side JavaScript from accessing the cookie
-      maxAge: 60 * 60 * 1000, // 1-hour expiry
-      sameSite: "strict", // Prevent CSRF attacks
-    },
-  })
-);
+app.use(session(sessionConfig));
 
 // Add static files location
 app.use(express.static("public"));
