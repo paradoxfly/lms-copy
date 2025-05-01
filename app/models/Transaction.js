@@ -34,10 +34,11 @@ const Transaction = sequelize.define(
     amount: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
+      defaultValue: 0.00
     },
     payment_method: {
       type: DataTypes.STRING(50),
-      allowNull: false,
+      allowNull: true,
     },
     payment_status: {
       type: DataTypes.ENUM('PENDING', 'COMPLETED', 'FAILED', 'REFUNDED'),
@@ -54,21 +55,65 @@ const Transaction = sequelize.define(
       allowNull: true,
       comment: 'Duration in days for rental transactions'
     },
-    transaction_date: {
+    rental_start_date: {
       type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: DataTypes.NOW
+    },
+    rental_end_date: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      comment: 'Expected return date'
+    },
+    actual_return_date: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      comment: 'Actual date when book was returned'
+    },
+    late_fee: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
+      defaultValue: 0.00,
+      comment: 'Late fee if book is returned after due date'
+    },
+    late_fee_paid: {
+      type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: DataTypes.NOW,
+      defaultValue: false
     },
     status: {
-      type: DataTypes.ENUM('ACTIVE', 'EXPIRED', 'CANCELLED', 'COMPLETED'),
+      type: DataTypes.ENUM('ACTIVE', 'EXPIRED', 'CANCELLED', 'COMPLETED', 'OVERDUE'),
       allowNull: false,
       defaultValue: 'ACTIVE'
+    },
+    notes: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      comment: 'Additional notes about the transaction'
     }
   },
   {
     timestamps: true,
     createdAt: "created_at",
     updatedAt: "updated_at",
+    indexes: [
+      {
+        name: 'transaction_user_idx',
+        fields: ['user_id']
+      },
+      {
+        name: 'transaction_book_idx',
+        fields: ['book_id']
+      },
+      {
+        name: 'transaction_status_idx',
+        fields: ['status']
+      },
+      {
+        name: 'transaction_dates_idx',
+        fields: ['rental_start_date', 'rental_end_date', 'actual_return_date']
+      }
+    ]
   }
 );
 

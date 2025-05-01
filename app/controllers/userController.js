@@ -157,10 +157,18 @@ exports.borrowBook = async (req, res) => {
   try {
     const { bookId } = req.params;
     const userId = req.session.user.id;
+    const { rental_duration = 14 } = req.body; // Default 14 days if not specified
+
+    // Validate rental duration
+    if (rental_duration < 1 || rental_duration > 30) {
+      return res.status(400).json({ 
+        error: "Invalid rental duration",
+        details: "Rental duration must be between 1 and 30 days"
+      });
+    }
 
     // Get the book and check availability
     const book = await Book.findByPk(bookId);
-
     if (!book) {
       return res.status(404).json({ error: "Book not found" });
     }
@@ -169,25 +177,77 @@ exports.borrowBook = async (req, res) => {
       return res.status(400).json({ error: "Book is currently unavailable" });
     }
 
+    // Check if user has any overdue books
+    const overdueBooks = await Transaction.count({
+      where: {
+        user_id: userId,
+        status: 'OVERDUE',
+        late_fee_paid: false
+      }
+    });
+
+    if (overdueBooks > 0) {
+      return res.status(400).json({ 
+        error: "Cannot borrow new books",
+        details: "You have overdue books that need to be returned"
+      });
+    }
+
+    // Check if user has reached borrowing limit (max 5 books)
+    const activeBorrows = await Transaction.count({
+      where: {
+        user_id: userId,
+        status: 'ACTIVE',
+        transaction_type: 'RENTAL'
+      }
+    });
+
+    if (activeBorrows >= 5) {
+      return res.status(400).json({ 
+        error: "Borrowing limit reached",
+        details: "You can only borrow up to 5 books at a time"
+      });
+    }
+
+    // Check if user already has this book
     const existingTransaction = await Transaction.findOne({
-      where: { user_id: userId, book_id: bookId },
+      where: {
+        user_id: userId,
+        book_id: bookId,
+        status: {
+          [Op.in]: ['ACTIVE', 'OVERDUE']
+        }
+      }
     });
 
     if (existingTransaction) {
-      return res
-        .status(400)
-        .json({ error: "You have already borrowed this book" });
+      return res.status(400).json({ 
+        error: "Already borrowed",
+        details: "You have already borrowed this book"
+      });
     }
+
+    // Calculate rental dates and fees
+    const rentalStartDate = new Date();
+    const rentalEndDate = new Date(rentalStartDate);
+    rentalEndDate.setDate(rentalEndDate.getDate() + rental_duration);
+    
+    const rentalAmount = book.rental_price * rental_duration;
 
     // Create transaction and update book copies in a transaction
     await sequelize.transaction(async (t) => {
       // Create borrow transaction
-      await Transaction.create(
+      const transaction = await Transaction.create(
         {
           user_id: userId,
           book_id: bookId,
-          transaction_type: "rental",
-          rental_expiry: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days from now
+          transaction_type: "RENTAL",
+          amount: rentalAmount,
+          rental_duration,
+          rental_start_date: rentalStartDate,
+          rental_end_date: rentalEndDate,
+          status: 'ACTIVE',
+          payment_status: 'COMPLETED' // Assuming payment is handled separately
         },
         { transaction: t }
       );
@@ -199,15 +259,31 @@ exports.borrowBook = async (req, res) => {
         },
         { transaction: t }
       );
+
+      // Schedule email notification for due date
+      const dueDateNotification = new Date(rentalEndDate);
+      dueDateNotification.setDate(dueDateNotification.getDate() - 1); // Notify 1 day before
+      
+      // TODO: Implement email notification system
+      // await scheduleDueDateNotification(userId, bookId, dueDateNotification);
     });
 
     res.json({
       message: "Book borrowed successfully",
-      availableCopies: book.no_of_copies_available - 1,
+      details: {
+        bookId,
+        rentalStartDate,
+        rentalEndDate,
+        rentalAmount,
+        availableCopies: book.no_of_copies_available - 1
+      }
     });
   } catch (error) {
     logger.error(`Error borrowing book: ${error.message}`);
-    res.status(500).json({ error: "Failed to borrow book" });
+    res.status(500).json({ 
+      error: "Failed to borrow book",
+      details: error.message 
+    });
   }
 };
 
@@ -216,58 +292,67 @@ exports.returnBook = async (req, res) => {
     const { bookId } = req.params;
     const userId = req.session.user.id;
 
-    // Find the transaction
+    // Find the active transaction for this book
     const transaction = await Transaction.findOne({
       where: {
         user_id: userId,
         book_id: bookId,
-        transaction_type: 'rental',
-        returned_at: null
-      }
+        status: {
+          [Op.in]: ['ACTIVE', 'OVERDUE']
+        }
+      },
+      include: [Book]
     });
 
     if (!transaction) {
-      return res.status(404).json({ error: "No active rental found for this book" });
+      return res.status(404).json({ 
+        error: "No active borrow found",
+        details: "This book is not currently borrowed by you"
+      });
     }
 
-    // Get the book
-    const book = await Book.findByPk(bookId);
-
-    if (!book) {
-      return res.status(404).json({ error: "Book not found" });
-    }
-
-    // Calculate any late fees
-    const dueDate = new Date(transaction.rental_expiry);
-    const today = new Date();
+    const book = transaction.Book;
+    const returnDate = new Date();
+    const isLate = returnDate > transaction.rental_end_date;
+    
+    // Calculate late fee if applicable
     let lateFee = 0;
-
-    if (today > dueDate) {
-      const daysLate = Math.ceil((today - dueDate) / (1000 * 60 * 60 * 24));
-      lateFee = daysLate * 1.00; // $1 per day late
+    if (isLate) {
+      const daysLate = Math.ceil((returnDate - transaction.rental_end_date) / (1000 * 60 * 60 * 24));
+      lateFee = daysLate * (book.rental_price * 0.5); // 50% of daily rental price per day late
     }
 
     // Update transaction and book copies in a transaction
     await sequelize.transaction(async (t) => {
       // Update transaction
       await transaction.update({
-        returned_at: today,
-        late_fee: lateFee
+        actual_return_date: returnDate,
+        status: isLate ? 'OVERDUE' : 'COMPLETED',
+        late_fee: lateFee,
+        late_fee_paid: lateFee === 0 // Mark as paid if no late fee
       }, { transaction: t });
 
-      // Update available copies
+      // Update book availability
       await book.update({
         no_of_copies_available: book.no_of_copies_available + 1
       }, { transaction: t });
     });
 
-    res.json({ 
+    res.json({
       message: "Book returned successfully",
-      lateFee: lateFee > 0 ? `$${lateFee.toFixed(2)}` : null
+      details: {
+        returnDate,
+        isLate,
+        lateFee,
+        availableCopies: book.no_of_copies_available + 1
+      }
     });
   } catch (error) {
     logger.error(`Error returning book: ${error.message}`);
-    res.status(500).json({ error: "Failed to return book" });
+    res.status(500).json({ 
+      error: "Failed to return book",
+      details: error.message 
+    });
   }
 };
 

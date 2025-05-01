@@ -16,7 +16,32 @@ block content
                 button#starBtn.action-button(onclick='toggleStar()')
                   i.far.fa-star
             if user
-              button#borrowReturnBtn.borrow-button.w-full.py-2.mb-2 Borrow
+              #borrowSection
+                if !bookData.userBorrowed
+                  .mb-4
+                    label.block.text-sm.font-medium.text-gray-700.mb-2 Rental Duration
+                    select#rentalDuration.w-full.p-2.border.rounded-md
+                      option(value="7") 7 days
+                      option(value="14" selected) 14 days
+                      option(value="21") 21 days
+                      option(value="30") 30 days
+                  .mb-4
+                    p.text-sm.text-gray-600
+                      | Rental Price: 
+                      span#rentalPrice.font-medium
+                    p.text-sm.text-gray-600
+                      | Total for selected duration: 
+                      span#totalPrice.font-medium
+                  button#borrowBtn.borrow-button.w-full.py-2.mb-2 Borrow
+                else
+                  .mb-4
+                    p.text-sm.text-gray-600
+                      | Due Date: 
+                      span#dueDate.font-medium
+                    p.text-sm.text-gray-600
+                      | Days Remaining: 
+                      span#daysRemaining.font-medium
+                  button#returnBtn.return-button.w-full.py-2.mb-2 Return
               #lateFeeAlert.bg-yellow-100.text-yellow-800.px-4.py-2.rounded-md.text-sm.hidden
 
       // Right Column - Book Details
@@ -63,6 +88,9 @@ block content
               li.flex.justify-between
                 span.text-gray-600 Available Copies
                 span#availableCopies.font-medium
+              li.flex.justify-between
+                span.text-gray-600 Daily Rental Price
+                span#dailyRentalPrice.font-medium
 
 block scripts
   script.
@@ -86,6 +114,7 @@ block scripts
         document.getElementById('pages').textContent = bookData.number_of_pages;
         document.getElementById('totalCopies').textContent = bookData.no_of_copies;
         document.getElementById('availableCopies').textContent = bookData.no_of_copies_available;
+        document.getElementById('dailyRentalPrice').textContent = `$${bookData.rental_price.toFixed(2)}`;
         
         if (bookData.image) {
           document.getElementById('bookImage').src = bookData.image;
@@ -105,12 +134,108 @@ block scripts
         updateLikeButton(bookData.isLiked);
         updateStarButton(bookData.isStarred);
         
-        // Update borrow/return button
-        updateBorrowReturnButton(bookData.userBorrowed);
+        // Update borrow/return section
+        updateBorrowReturnSection(bookData);
+        
+        // Set up rental duration change handler
+        const rentalDuration = document.getElementById('rentalDuration');
+        if (rentalDuration) {
+          rentalDuration.addEventListener('change', updateRentalPrice);
+          updateRentalPrice(); // Initial calculation
+        }
         
       } catch (error) {
         console.error('Error fetching book details:', error);
       }
+    }
+    
+    function updateRentalPrice() {
+      const duration = parseInt(document.getElementById('rentalDuration').value);
+      const dailyPrice = bookData.rental_price;
+      const totalPrice = dailyPrice * duration;
+      
+      document.getElementById('rentalPrice').textContent = `$${dailyPrice.toFixed(2)}`;
+      document.getElementById('totalPrice').textContent = `$${totalPrice.toFixed(2)}`;
+    }
+    
+    function updateBorrowReturnSection(bookData) {
+      const borrowSection = document.getElementById('borrowSection');
+      if (!borrowSection) return;
+      
+      if (bookData.userBorrowed) {
+        const dueDate = new Date(bookData.rental_end_date);
+        const today = new Date();
+        const daysRemaining = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+        
+        document.getElementById('dueDate').textContent = dueDate.toLocaleDateString();
+        document.getElementById('daysRemaining').textContent = daysRemaining;
+        
+        if (daysRemaining < 0) {
+          document.getElementById('daysRemaining').classList.add('text-red-600');
+        }
+      }
+    }
+    
+    async function borrowBook() {
+      try {
+        const duration = parseInt(document.getElementById('rentalDuration').value);
+        const response = await fetch(`/user/books/${bookData.book_id}/borrow`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ rental_duration: duration })
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+          bookData.no_of_copies_available--;
+          bookData.userBorrowed = true;
+          document.getElementById('availableCopies').textContent = bookData.no_of_copies_available;
+          updateBorrowReturnSection(bookData);
+          showToast(result.message);
+        } else {
+          showToast(result.error, 'error');
+        }
+      } catch (error) {
+        console.error('Error borrowing book:', error);
+        showToast('Failed to borrow book', 'error');
+      }
+    }
+    
+    async function returnBook() {
+      try {
+        const response = await fetch(`/user/books/${bookData.book_id}/return`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+          bookData.no_of_copies_available++;
+          bookData.userBorrowed = false;
+          document.getElementById('availableCopies').textContent = bookData.no_of_copies_available;
+          updateBorrowReturnSection(bookData);
+          
+          if (result.details.lateFee > 0) {
+            const lateFeeAlert = document.getElementById('lateFeeAlert');
+            lateFeeAlert.textContent = `Late Fee: $${result.details.lateFee.toFixed(2)}`;
+            lateFeeAlert.classList.remove('hidden');
+          }
+          
+          showToast(result.message);
+        } else {
+          showToast(result.error, 'error');
+        }
+      } catch (error) {
+        console.error('Error returning book:', error);
+        showToast('Failed to return book', 'error');
+      }
+    }
+    
+    function showToast(message, type = 'success') {
+      // Implement toast notification
+      alert(message);
     }
     
     function updateLikeButton(isLiked) {
@@ -125,89 +250,6 @@ block scripts
       const icon = starBtn.querySelector('i');
       icon.className = isStarred ? 'fas fa-star text-yellow-500' : 'far fa-star';
       starBtn.classList.toggle('active', isStarred);
-    }
-    
-    function updateBorrowReturnButton(isBorrowed) {
-      const btn = document.getElementById('borrowReturnBtn');
-      if (isBorrowed) {
-        btn.textContent = 'Return';
-        btn.onclick = returnBook;
-      } else {
-        btn.textContent = 'Borrow';
-        btn.onclick = borrowBook;
-      }
-      btn.disabled = !bookData.no_of_copies_available && !isBorrowed;
-      btn.classList.toggle('opacity-50', btn.disabled);
-    }
-    
-    async function toggleLike() {
-      try {
-        const response = await fetch(`/books/${bookData.book_id}/like`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' }
-        });
-        const result = await response.json();
-        updateLikeButton(result.liked);
-      } catch (error) {
-        console.error('Error toggling like:', error);
-      }
-    }
-    
-    async function toggleStar() {
-      try {
-        const response = await fetch(`/books/${bookData.book_id}/star`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' }
-        });
-        const result = await response.json();
-        updateStarButton(result.starred);
-      } catch (error) {
-        console.error('Error toggling star:', error);
-      }
-    }
-    
-    async function borrowBook() {
-      try {
-        const response = await fetch(`/books/${bookData.book_id}/borrow`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' }
-        });
-        const result = await response.json();
-        if (response.ok) {
-          bookData.no_of_copies_available--;
-          document.getElementById('availableCopies').textContent = bookData.no_of_copies_available;
-          updateBorrowReturnButton(true);
-        } else {
-          alert(result.error);
-        }
-      } catch (error) {
-        console.error('Error borrowing book:', error);
-      }
-    }
-    
-    async function returnBook() {
-      try {
-        const response = await fetch(`/books/${bookData.book_id}/return`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' }
-        });
-        const result = await response.json();
-        if (response.ok) {
-          bookData.no_of_copies_available++;
-          document.getElementById('availableCopies').textContent = bookData.no_of_copies_available;
-          updateBorrowReturnButton(false);
-          
-          if (result.lateFee) {
-            const lateFeeAlert = document.getElementById('lateFeeAlert');
-            lateFeeAlert.textContent = `Late Fee: ${result.lateFee}`;
-            lateFeeAlert.classList.remove('hidden');
-          }
-        } else {
-          alert(result.error);
-        }
-      } catch (error) {
-        console.error('Error returning book:', error);
-      }
     }
     
     // Initialize
