@@ -1,18 +1,18 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Profile picture upload functionality
-    const profilePictureContainer = document.querySelector('.profile-picture-container');
-    const profilePictureInput = document.querySelector('#profile_picture');
+    // Profile Picture Upload
+    const profilePicInput = document.getElementById('profile_picture');
     const profilePicture = document.querySelector('.profile-picture');
     const uploadOverlay = document.querySelector('.upload-overlay');
 
-    if (profilePictureContainer && profilePictureInput) {
-        profilePictureContainer.addEventListener('click', () => {
-            profilePictureInput.click();
-        });
+    if (uploadOverlay) {
+        uploadOverlay.addEventListener('click', () => profilePicInput.click());
+    }
 
-        profilePictureInput.addEventListener('change', (e) => {
+    if (profilePicInput) {
+        profilePicInput.addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (file) {
+                // Show preview
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     profilePicture.src = e.target.result;
@@ -20,6 +20,190 @@ document.addEventListener('DOMContentLoaded', function() {
                 reader.readAsDataURL(file);
             }
         });
+    }
+
+    // Edit Profile Form
+    const editProfileBtn = document.querySelector('.edit-profile-btn');
+    const editProfileModal = document.getElementById('edit-profile-modal');
+    const editProfileForm = document.getElementById('edit-profile-form');
+    const cancelBtn = document.querySelector('.cancel-btn');
+
+    if (editProfileBtn) {
+        editProfileBtn.addEventListener('click', () => {
+            editProfileModal.classList.remove('hidden');
+        });
+    }
+
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', () => {
+            editProfileModal.classList.add('hidden');
+        });
+    }
+
+    if (editProfileForm) {
+        editProfileForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(editProfileForm);
+            
+            try {
+                const response = await fetch('/profile', {
+                    method: 'PUT',
+                    body: formData
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // Update UI with new data
+                    document.querySelector('.profile-info p').textContent = formData.get('bio');
+                    editProfileModal.classList.add('hidden');
+                    
+                    // Show success message
+                    showNotification('Profile updated successfully', 'success');
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                showNotification(error.message, 'error');
+            }
+        });
+    }
+
+    // Change Password Form
+    const changePasswordForm = document.getElementById('change-password-form');
+    
+    if (changePasswordForm) {
+        changePasswordForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(changePasswordForm);
+            const data = {
+                currentPassword: formData.get('current_password'),
+                newPassword: formData.get('new_password'),
+                confirmPassword: formData.get('confirm_password')
+            };
+
+            // Validate passwords match
+            if (data.newPassword !== data.confirmPassword) {
+                showNotification('New passwords do not match', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/profile/change-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    changePasswordForm.reset();
+                    showNotification('Password updated successfully', 'success');
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                showNotification(error.message, 'error');
+            }
+        });
+    }
+
+    // Borrowing History
+    const borrowingHistoryContainer = document.getElementById('borrowing-history');
+    let currentPage = 1;
+
+    async function loadBorrowingHistory(page = 1) {
+        try {
+            const response = await fetch(`/profile/borrowing-history?page=${page}`);
+            const data = await response.json();
+            
+            if (response.ok) {
+                // Update UI with borrowing history
+                borrowingHistoryContainer.innerHTML = data.transactions.map(tx => `
+                    <div class="book-transaction ${tx.status}">
+                        <div class="book-info">
+                            <img src="${tx.book.image || '/images/default-book.jpg'}" alt="${tx.book.title}">
+                            <div>
+                                <h3>${tx.book.title}</h3>
+                                <p>${tx.book.author}</p>
+                            </div>
+                        </div>
+                        <div class="transaction-info">
+                            <p>Borrowed: ${new Date(tx.borrowed_at).toLocaleDateString()}</p>
+                            <p>Due: ${new Date(tx.due_date).toLocaleDateString()}</p>
+                            ${tx.returned_at ? 
+                                `<p>Returned: ${new Date(tx.returned_at).toLocaleDateString()}</p>` : 
+                                ''
+                            }
+                            ${tx.late_fee ? 
+                                `<p class="late-fee">Late Fee: $${tx.late_fee.toFixed(2)}</p>` : 
+                                ''
+                            }
+                            <span class="status-badge ${tx.status}">${tx.status}</span>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Update pagination
+                updatePagination(data.pagination);
+            } else {
+                throw new Error(data.error);
+            }
+        } catch (error) {
+            showNotification(error.message, 'error');
+        }
+    }
+
+    function updatePagination(pagination) {
+        const paginationContainer = document.querySelector('.pagination');
+        if (!paginationContainer) return;
+
+        currentPage = pagination.current_page;
+        
+        paginationContainer.innerHTML = `
+            <button class="prev-btn" ${!pagination.has_prev ? 'disabled' : ''}>
+                Previous
+            </button>
+            <span>Page ${pagination.current_page} of ${pagination.total_pages}</span>
+            <button class="next-btn" ${!pagination.has_next ? 'disabled' : ''}>
+                Next
+            </button>
+        `;
+
+        // Add event listeners to pagination buttons
+        const prevBtn = paginationContainer.querySelector('.prev-btn');
+        const nextBtn = paginationContainer.querySelector('.next-btn');
+
+        if (prevBtn && pagination.has_prev) {
+            prevBtn.addEventListener('click', () => loadBorrowingHistory(currentPage - 1));
+        }
+        if (nextBtn && pagination.has_next) {
+            nextBtn.addEventListener('click', () => loadBorrowingHistory(currentPage + 1));
+        }
+    }
+
+    // Load initial borrowing history
+    if (borrowingHistoryContainer) {
+        loadBorrowingHistory();
+    }
+
+    // Notification Helper
+    function showNotification(message, type) {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.classList.add('fade-out');
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
     }
 
     // Genre management
@@ -44,94 +228,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (e.target.classList.contains('remove-genre')) {
                 e.target.closest('.genre-tag').remove();
             }
-        });
-    }
-
-    // Modal functionality
-    const editProfileBtn = document.querySelector('.edit-profile-btn');
-    const modal = document.querySelector('.modal');
-    const closeModalBtn = document.querySelector('.close-modal');
-    const cancelBtn = document.querySelector('.cancel-btn');
-    const saveBtn = document.querySelector('.save-btn');
-
-    if (editProfileBtn && modal) {
-        editProfileBtn.addEventListener('click', () => {
-            modal.style.display = 'block';
-        });
-
-        const closeModal = () => {
-            modal.style.display = 'none';
-        };
-
-        if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
-        if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
-        if (saveBtn) saveBtn.addEventListener('click', () => {
-            // Handle profile update
-            const formData = new FormData();
-            formData.append('bio', document.querySelector('#bio').value);
-            
-            // Handle reading preferences
-            const preferences = {};
-            document.querySelectorAll('.preference-item input').forEach(input => {
-                const key = input.name.match(/\[(.*?)\]/)[1];
-                preferences[key] = input.value;
-            });
-            formData.append('reading_preferences', JSON.stringify(preferences));
-            
-            // Handle favorite genres
-            const genres = Array.from(document.querySelectorAll('.genre-tag span'))
-                .map(span => span.textContent.trim());
-            formData.append('favorite_genres', JSON.stringify(genres));
-            
-            if (profilePictureInput.files[0]) {
-                formData.append('profile_picture', profilePictureInput.files[0]);
-            }
-
-            fetch('/api/profile/update', {
-                method: 'PUT',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Update the profile information on the page
-                    document.querySelector('.bio').textContent = data.profile.bio;
-                    
-                    // Update reading preferences
-                    const preferencesContainer = document.querySelector('.preferences-grid');
-                    preferencesContainer.innerHTML = '';
-                    Object.entries(data.profile.reading_preferences).forEach(([key, value]) => {
-                        const preferenceItem = document.createElement('div');
-                        preferenceItem.className = 'preference-item';
-                        preferenceItem.innerHTML = `
-                            <span class="label">${key}</span>
-                            <span class="value">${value}</span>
-                        `;
-                        preferencesContainer.appendChild(preferenceItem);
-                    });
-                    
-                    // Update genres
-                    const genresContainer = document.querySelector('.genres-container');
-                    genresContainer.innerHTML = '';
-                    data.profile.favorite_genres.forEach(genre => {
-                        const genreTag = document.createElement('div');
-                        genreTag.className = 'genre-tag';
-                        genreTag.innerHTML = `
-                            <span>${genre}</span>
-                            <button class="remove-genre">×</button>
-                        `;
-                        genresContainer.appendChild(genreTag);
-                    });
-
-                    closeModal();
-                } else {
-                    alert('Failed to update profile: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while updating the profile');
-            });
         });
     }
 
@@ -165,8 +261,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Close modal when clicking outside
     window.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            modal.style.display = 'none';
+        if (e.target === editProfileModal) {
+            editProfileModal.classList.add('hidden');
         }
     });
 }); 

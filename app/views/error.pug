@@ -1,0 +1,27 @@
+extends layout
+
+block content
+  .container.py-5
+    .row.justify-content-center
+      .col-md-8.text-center
+        .error-container.bg-light.p-5.rounded.shadow-sm
+          if error.status === 404
+            i.bi.bi-exclamation-triangle.text-warning.display-1
+            h1.mt-4.text-danger 404 - Not Found
+          else if error.status === 403
+            i.bi.bi-shield-exclamation.text-danger.display-1
+            h1.mt-4.text-danger 403 - Forbidden
+          else
+            i.bi.bi-exclamation-circle.text-danger.display-1
+            h1.mt-4.text-danger #{error.status || 500} - Error
+
+          .error-message.mt-4
+            h2.text-muted #{message || 'Something went wrong'}
+            if error.stack && process.env.NODE_ENV === 'development'
+              pre.bg-dark.text-light.p-3.mt-4.rounded
+                code #{error.stack}
+
+          .mt-4
+            a.btn.btn-primary(href='/') Back to Home
+            if error.status === 404
+              a.btn.btn-outline-primary.ms-2(href='javascript:history.back()') Go Back

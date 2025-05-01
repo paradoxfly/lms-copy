@@ -211,6 +211,66 @@ exports.borrowBook = async (req, res) => {
   }
 };
 
+exports.returnBook = async (req, res) => {
+  try {
+    const { bookId } = req.params;
+    const userId = req.session.user.id;
+
+    // Find the transaction
+    const transaction = await Transaction.findOne({
+      where: {
+        user_id: userId,
+        book_id: bookId,
+        transaction_type: 'rental',
+        returned_at: null
+      }
+    });
+
+    if (!transaction) {
+      return res.status(404).json({ error: "No active rental found for this book" });
+    }
+
+    // Get the book
+    const book = await Book.findByPk(bookId);
+
+    if (!book) {
+      return res.status(404).json({ error: "Book not found" });
+    }
+
+    // Calculate any late fees
+    const dueDate = new Date(transaction.rental_expiry);
+    const today = new Date();
+    let lateFee = 0;
+
+    if (today > dueDate) {
+      const daysLate = Math.ceil((today - dueDate) / (1000 * 60 * 60 * 24));
+      lateFee = daysLate * 1.00; // $1 per day late
+    }
+
+    // Update transaction and book copies in a transaction
+    await sequelize.transaction(async (t) => {
+      // Update transaction
+      await transaction.update({
+        returned_at: today,
+        late_fee: lateFee
+      }, { transaction: t });
+
+      // Update available copies
+      await book.update({
+        no_of_copies_available: book.no_of_copies_available + 1
+      }, { transaction: t });
+    });
+
+    res.json({ 
+      message: "Book returned successfully",
+      lateFee: lateFee > 0 ? `$${lateFee.toFixed(2)}` : null
+    });
+  } catch (error) {
+    logger.error(`Error returning book: ${error.message}`);
+    res.status(500).json({ error: "Failed to return book" });
+  }
+};
+
 exports.getBorrowedBooks = async (req, res) => {
   try {
     const userId = req.session.user.id;
@@ -229,6 +289,110 @@ exports.getBorrowedBooks = async (req, res) => {
   } catch (error) {
     logger.error(`Error fetching borrowed books: ${error.message}`);
     res.status(500).json({ error: "Failed to fetch borrowed books" });
+  }
+};
+
+exports.searchBooks = async (req, res) => {
+  try {
+    const { query, genre, author, available } = req.query;
+    const whereClause = {};
+
+    // Add search conditions
+    if (query) {
+      whereClause[Op.or] = [
+        { title: { [Op.like]: `%${query}%` } },
+        { author: { [Op.like]: `%${query}%` } },
+        { description: { [Op.like]: `%${query}%` } }
+      ];
+    }
+
+    // Add genre filter
+    if (genre) {
+      whereClause.genre = genre;
+    }
+
+    // Add author filter
+    if (author) {
+      whereClause.author = { [Op.like]: `%${author}%` };
+    }
+
+    // Add availability filter
+    if (available === 'true') {
+      whereClause.no_of_copies_available = { [Op.gt]: 0 };
+    }
+
+    const books = await Book.findAll({
+      where: whereClause,
+      order: [['title', 'ASC']],
+      limit: 50 // Limit results to prevent overwhelming response
+    });
+
+    const booksWithDetails = await Promise.all(books.map(async (book) => {
+      const parsedBook = await parseBook(book);
+      
+      // If user is logged in, check if they liked/starred the book
+      let isLiked = false;
+      let isStarred = false;
+      
+      if (req.session.user) {
+        const userId = req.session.user.id;
+        isLiked = await Like.findOne({ where: { user_id: userId, book_id: book.book_id } });
+        isStarred = await Star.findOne({ where: { user_id: userId, book_id: book.book_id } });
+      }
+
+      return {
+        ...parsedBook,
+        isLiked: !!isLiked,
+        isStarred: !!isStarred
+      };
+    }));
+
+    res.json(booksWithDetails);
+  } catch (error) {
+    logger.error(`Error searching books: ${error.message}`);
+    res.status(500).json({ error: "Failed to search books" });
+  }
+};
+
+exports.getBookDetails = async (req, res) => {
+  try {
+    const { bookId } = req.params;
+    const book = await Book.findByPk(bookId);
+
+    if (!book) {
+      return res.status(404).json({ error: "Book not found" });
+    }
+
+    const parsedBook = await parseBook(book);
+    
+    // If user is logged in, check if they liked/starred the book
+    let isLiked = false;
+    let isStarred = false;
+    let userBorrowed = false;
+    
+    if (req.session.user) {
+      const userId = req.session.user.id;
+      isLiked = await Like.findOne({ where: { user_id: userId, book_id: bookId } });
+      isStarred = await Star.findOne({ where: { user_id: userId, book_id: bookId } });
+      userBorrowed = await Transaction.findOne({
+        where: {
+          user_id: userId,
+          book_id: bookId,
+          transaction_type: 'rental',
+          returned_at: null
+        }
+      });
+    }
+
+    res.json({
+      ...parsedBook,
+      isLiked: !!isLiked,
+      isStarred: !!isStarred,
+      userBorrowed: !!userBorrowed
+    });
+  } catch (error) {
+    logger.error(`Error fetching book details: ${error.message}`);
+    res.status(500).json({ error: "Failed to fetch book details" });
   }
 };
 

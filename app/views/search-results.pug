@@ -1,0 +1,153 @@
+extends layout
+
+block content
+  .container.px-6.py-4
+    // Search Form
+    .mb-8
+      .bg-white.border.rounded-xl.p-4
+        .flex.flex-wrap.gap-4.items-center
+          .flex-1.relative
+            input#searchQuery.w-full.pl-3.pr-10.py-2.rounded-md.border(
+              type='text' 
+              name='query' 
+              placeholder='Search by title, author, or description'
+              value=query
+              style="border-color: #d6dae5;"
+            )
+            i.fas.fa-search.absolute.right-3.top-1/2.-translate-y-1/2.text-gray-400
+          
+          select#genreFilter.px-3.py-2.rounded-md.border.text-gray-700(
+            name='genre'
+            style="border-color: #d6dae5;"
+          )
+            option(value='') All Genres
+            option(value='Fiction') Fiction
+            option(value='Non-Fiction') Non-Fiction
+            option(value='Science') Science
+            option(value='Technology') Technology
+            option(value='History') History
+            option(value='Biography') Biography
+            option(value='Self-Help') Self-Help
+          
+          input#authorFilter.px-3.py-2.rounded-md.border(
+            type='text'
+            name='author'
+            placeholder='Filter by author'
+            value=author
+            style="border-color: #d6dae5;"
+          )
+          
+          .flex.items-center.gap-2
+            input#availableOnly.form-checkbox.h-4.w-4.text-primary(
+              type='checkbox'
+              name='available'
+            )
+            label.text-sm.text-gray-600(for='availableOnly') Available Only
+
+    // Results Section
+    #resultsCount.text-lg.font-semibold.mb-4
+    
+    // Loading Spinner
+    #loadingSpinner.hidden.flex.justify-center.py-8
+      .animate-spin.rounded-full.h-8.w-8.border-b-2.border-primary
+    
+    // Results Grid
+    #searchResults.grid.grid-cols-1.md:grid-cols-2.lg:grid-cols-3.xl:grid-cols-4.gap-4
+
+block scripts
+  script.
+    document.addEventListener('DOMContentLoaded', function() {
+      const searchForm = document.getElementById('searchForm');
+      const resultsDiv = document.getElementById('searchResults');
+      const loadingSpinner = document.getElementById('loadingSpinner');
+      const resultsCount = document.getElementById('resultsCount');
+
+      async function performSearch() {
+        const formData = new FormData(searchForm);
+        const params = new URLSearchParams();
+        
+        formData.forEach((value, key) => {
+          if (value) params.append(key, value);
+        });
+
+        try {
+          loadingSpinner.classList.remove('hidden');
+          resultsDiv.innerHTML = '';
+          
+          const response = await fetch(`/api/books/search?${params.toString()}`);
+          const books = await response.json();
+          
+          resultsCount.textContent = `Found ${books.length} books`;
+          
+          books.forEach(book => {
+            const bookCard = document.createElement('div');
+            bookCard.className = 'bg-white border rounded-xl overflow-hidden';
+            bookCard.innerHTML = `
+              <div class="p-4 flex gap-4">
+                <div class="flex-shrink-0">
+                  <img class="w-24 h-36 object-cover rounded-md" 
+                       src="${book.image || '/images/default-book.jpg'}" 
+                       alt="${book.title}">
+                </div>
+                <div class="flex flex-col flex-1">
+                  <span class="inline-block px-2 py-1 text-xs rounded-full ${
+                    book.no_of_copies_available > 0 
+                    ? 'bg-green-100 text-green-800' 
+                    : 'bg-red-100 text-red-800'
+                  } mb-2">
+                    ${book.no_of_copies_available > 0 ? 'Available' : 'Not Available'}
+                  </span>
+                  <h3 class="text-sm font-semibold mb-1">${book.title}</h3>
+                  <p class="text-xs text-gray-500 mb-1">${book.author}</p>
+                  <p class="text-xs text-gray-500 mb-2">
+                    ${book.genre}
+                  </p>
+                  <div class="flex items-center gap-2 mt-auto">
+                    <button onclick="toggleLike(${book.book_id})" 
+                            class="action-button ${book.isLiked ? 'text-red-500' : ''}">
+                      <i class="fa${book.isLiked ? 's' : 'r'} fa-heart"></i>
+                    </button>
+                    <button onclick="toggleStar(${book.book_id})" 
+                            class="action-button ${book.isStarred ? 'text-yellow-500' : ''}">
+                      <i class="fa${book.isStarred ? 's' : 'r'} fa-star"></i>
+                    </button>
+                    <a href="/books/${book.book_id}" 
+                       class="ml-auto borrow-button text-xs py-1 px-3">
+                      Details
+                    </a>
+                  </div>
+                </div>
+              </div>
+            `;
+            resultsDiv.appendChild(bookCard);
+          });
+        } catch (error) {
+          console.error('Error:', error);
+          resultsDiv.innerHTML = '<div class="text-center text-red-500">Error loading results</div>';
+        } finally {
+          loadingSpinner.classList.add('hidden');
+        }
+      }
+
+      // Event listeners
+      document.getElementById('searchQuery').addEventListener('input', debounce(performSearch, 300));
+      document.getElementById('authorFilter').addEventListener('input', debounce(performSearch, 300));
+      document.getElementById('genreFilter').addEventListener('change', performSearch);
+      document.getElementById('availableOnly').addEventListener('change', performSearch);
+
+      // Debounce helper
+      function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+          const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+          };
+          clearTimeout(timeout);
+          timeout = setTimeout(later, wait);
+        };
+      }
+
+      // Initial search
+      performSearch();
+    }); 
