@@ -24,21 +24,7 @@ html(lang="en")
             img(src="https://placehold.co/40x40/dccdbe/ffffff?text=U" alt="User")#profile-picture
     .flex.h-full
       // Sidebar
-      .sidebar.flex.flex-col.items-center.py-6.text-white
-        .flex.flex-col.items-center.gap-8
-          button.p-2.rounded-md.bg-white.bg-opacity-20(onclick="window.location.href='/user/dashboard'")
-            i.fas.fa-home
-          button.p-2.rounded-md(onclick="window.location.href='/user/books'")
-            i.fas.fa-book-open
-          button.p-2.rounded-md(onclick="window.location.href='/user/likes'")
-            i.fas.fa-heart
-          button.p-2.rounded-md(onclick="window.location.href='/user/starred'")
-            i.fas.fa-star
-          //- .border-b.border-white.border-opacity-20.w-8.my-2
-          //- button.p-2.rounded-md
-          //-   i.fas.fa-cog
-          //- button.p-2.rounded-md
-          //-   i.fas.fa-user
+      include partials/sidebar.pug
 
       // Main Content
       .flex-1.overflow-auto.h-full
@@ -353,3 +339,4 @@ html(lang="en")
 
     script(src="/js/utils.js")
     script(src="/js/user-dashboard.js")
+    script(src="/js/sidebar.js")

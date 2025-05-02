@@ -1,0 +1,55 @@
+//- Settings / Profile Page
+extends layout
+
+block content
+  .h-screen.bg-gray-50.font-inter
+    // Top Navbar
+    .top-navbar.flex.items-center.px-8.py-4.bg-white.shadow-md
+      h1.logo-text.text-2xl.font-bold.tracking-tight BookOrbit
+      h1.text-xl.font-semibold.pl-6.flex-1 Settings
+      .flex.items-center.gap-4
+        button.relative.bg-transparent.border-0
+          i.fas.fa-bell.text-gray-400.text-xl
+        .w-10.h-10.rounded-full.overflow-hidden.bg-gray-200.flex.items-center.justify-center
+          i.fas.fa-user.text-gray-500
+    .flex.h-full
+      // Sidebar
+      include partials/sidebar.pug
+      // Main Content
+      .flex-1.flex.flex-row.bg-gray-50
+        // Settings Menu
+        .w-64.bg-white.rounded-xl.shadow-md.mt-10.ml-10.p-6.flex.flex-col.gap-2
+          h2.text-lg.font-semibold.mb-4 Settings
+          button.bg-indigo-100.text-indigo-700.font-semibold.rounded-md.px-4.py-2.text-left Profile
+          button.bg-white.text-gray-400.font-semibold.rounded-md.px-4.py-2.text-left.cursor-not-allowed(disabled) Cards
+          button.bg-white.text-gray-400.font-semibold.rounded-md.px-4.py-2.text-left.cursor-not-allowed(disabled) Subscription
+          button.bg-white.text-gray-400.font-semibold.rounded-md.px-4.py-2.text-left.cursor-not-allowed(disabled) My books
+          button.bg-white.text-gray-400.font-semibold.rounded-md.px-4.py-2.text-left.cursor-not-allowed(disabled) Fines
+          button.bg-white.text-gray-400.font-semibold.rounded-md.px-4.py-2.text-left.cursor-not-allowed(disabled) General settings
+        // Profile Section
+        .flex-1.mt-10.ml-10.bg-white.rounded-xl.shadow-md.p-10
+          h2.text-xl.font-semibold.mb-6 Profile
+          .flex.items-center.gap-6.mb-8
+            .w-20.h-20.rounded-full.overflow-hidden.bg-gray-200.flex.items-center.justify-center
+              i.fas.fa-user.text-4xl.text-gray-500
+            .flex.flex-col
+              span.text-lg.font-bold#profileName
+              span.text-sm.text-gray-400#profileUsername
+              span.text-sm.text-gray-500#profileEmail
+          .flex.gap-4.mb-8
+            button#editProfileBtn(type="button" class="bg-blue-600 text-white font-semibold rounded-lg shadow-md px-6 py-2 hover:bg-blue-700") Edit
+            button#deleteAccountBtn(type="button" class="bg-red-100 text-red-700 font-semibold rounded-lg shadow-md px-6 py-2 hover:bg-red-200") Delete Account
+          // Profile Details Table
+          table.w-full.text-left
+            tbody
+              tr
+                td.font-semibold.py-2 Name
+                td#profileNameCell.py-2
+              tr
+                td.font-semibold.py-2 Email
+                td#profileEmailCell.py-2
+              tr
+                td.font-semibold.py-2 Username
+                td#profileUsernameCell.py-2
+  script(src="/js/settings.js")
+  script(src="/js/sidebar.js") 

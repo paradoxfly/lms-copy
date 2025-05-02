@@ -22,16 +22,7 @@ html(lang="en")
 
     .flex.h-full
       // Sidebar
-      .sidebar.flex.flex-col.items-center.py-6.text-white
-        .flex.flex-col.items-center.gap-8
-          button.p-2.rounded-md(onclick="window.location.href='/user/dashboard'")
-            i.fas.fa-home
-          button.p-2.rounded-md(onclick="window.location.href='/user/books'")
-            i.fas.fa-book-open
-          button.p-2.rounded-md(onclick="window.location.href='/user/likes'")
-            i.fas.fa-heart
-          button.p-2.rounded-md.bg-white.bg-opacity-20(onclick="window.location.href='/user/starred'")
-            i.fas.fa-star
+      include partials/sidebar.pug
 
       // Main Content
       .flex-1.overflow-auto.h-full
@@ -46,4 +37,5 @@ html(lang="en")
           //- Books will be populated here via JavaScript
 
     script(src="/js/utils.js")
-    script(src="/js/starred-books.js") 
+    script(src="/js/starred-books.js")
+    script(src="/js/sidebar.js") 
