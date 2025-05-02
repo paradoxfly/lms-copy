@@ -307,4 +307,93 @@ function createToastContainer() {
 }
 
 // Initialize page when DOM is loaded
-document.addEventListener('DOMContentLoaded', fetchBookDetails); 
+document.addEventListener('DOMContentLoaded', function() {
+  fetchBookDetails();
+  const borrowBtn = document.getElementById('borrowBtn');
+  if (borrowBtn) {
+    borrowBtn.addEventListener('click', borrowBook);
+  }
+  const buyBtn = document.getElementById('buyBtn');
+  if (buyBtn) {
+    buyBtn.addEventListener('click', buyBook);
+  }
+});
+
+async function borrowBook() {
+  if (!bookData) return;
+  try {
+    // Default rental duration to 14 days (or use a select if present)
+    let rentalDuration = 14;
+    const rentalDurationSelect = document.getElementById('rentalDuration');
+    if (rentalDurationSelect) {
+      rentalDuration = parseInt(rentalDurationSelect.value);
+    }
+    const response = await fetch(`/books/${bookData.book_id}/borrow`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ rental_duration: rentalDuration })
+    });
+    const result = await response.json();
+    if (response.ok) {
+      showToast(result.message);
+      // Optionally, refresh book details to update UI
+      fetchBookDetails();
+    } else {
+      throw new Error(result.error);
+    }
+  } catch (error) {
+    console.error('Error borrowing book:', error);
+    showToast(error.message || 'Failed to borrow book', 'error');
+  }
+}
+
+async function buyBook() {
+  if (!bookData) return;
+  
+  // Show confirmation modal
+  const modal = document.getElementById('buyConfirmationModal');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  
+  // Update confirmation message with book title
+  const confirmMessage = modal.querySelector('p');
+  confirmMessage.textContent = `Are you sure you want to purchase "${bookData.title}"?`;
+  
+  // Set up modal buttons
+  const cancelBtn = document.getElementById('cancelBuyBtn');
+  const confirmBtn = document.getElementById('confirmBuyBtn');
+  
+  // Handle cancel
+  cancelBtn.onclick = () => {
+    modal.classList.remove('flex');
+    modal.classList.add('hidden');
+  };
+  
+  // Handle confirm
+  confirmBtn.onclick = async () => {
+    try {
+      const response = await fetch(`/user/books/${bookData.book_id}/buy`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const result = await response.json();
+      
+      if (response.ok) {
+        showToast(result.message || 'Book purchased successfully');
+        // Close modal
+        modal.classList.remove('flex');
+        modal.classList.add('hidden');
+        // Refresh book details
+        fetchBookDetails();
+      } else {
+        throw new Error(result.error || 'Failed to purchase book');
+      }
+    } catch (error) {
+      console.error('Error buying book:', error);
+      showToast(error.message || 'Failed to buy book', 'error');
+      // Close modal on error
+      modal.classList.remove('flex');
+      modal.classList.add('hidden');
+    }
+  };
+} 
