@@ -360,79 +360,115 @@ exports.getBorrowedBooks = async (req, res) => {
   try {
     const userId = req.session.user.id;
     const transactions = await Transaction.findAll({
-      where: { user_id: userId, transaction_type: "rental" },
+      where: {
+        user_id: userId,
+        status: {
+          [Op.in]: ['ACTIVE', 'OVERDUE']
+        }
+      },
+      include: [{
+        model: Book,
+        required: true
+      }]
     });
 
-    const books = await Promise.all(
-      transactions.map(async (transaction) => {
-        const book = await Book.findByPk(transaction.book_id);
-        return parseBook(book);
-      })
-    );
+    const borrowedBooks = await Promise.all(transactions.map(async (transaction) => {
+      const parsedBook = await parseBook(transaction.Book);
+      const liked = await Like.findOne({
+        where: { user_id: userId, book_id: transaction.Book.book_id }
+      });
+      const starred = await Star.findOne({
+        where: { user_id: userId, book_id: transaction.Book.book_id }
+      });
+      
+      return {
+        ...parsedBook,
+        isLiked: !!liked,
+        isStarred: !!starred,
+        borrowedOn: transaction.borrowed_date,
+        dueDate: transaction.due_date,
+        status: transaction.status,
+        lateFee: transaction.late_fee || 0
+      };
+    }));
 
-    res.json(books.map((book) => ({ ...book, isBorrowed: true })));
+    res.json(borrowedBooks);
   } catch (error) {
     logger.error(`Error fetching borrowed books: ${error.message}`);
     res.status(500).json({ error: "Failed to fetch borrowed books" });
   }
 };
 
+exports.getNewReads = async (req, res) => {
+  try {
+    const books = await Book.findAll({
+      order: [['created_at', 'DESC']],
+      limit: 10
+    });
+
+    const userId = req.session?.user?.id;
+    const booksWithStatus = await Promise.all(books.map(async (book) => {
+      const parsedBook = await parseBook(book);
+      if (userId) {
+        const liked = await Like.findOne({
+          where: { user_id: userId, book_id: book.book_id }
+        });
+        const starred = await Star.findOne({
+          where: { user_id: userId, book_id: book.book_id }
+        });
+        return {
+          ...parsedBook,
+          isLiked: !!liked,
+          isStarred: !!starred
+        };
+      }
+      return parsedBook;
+    }));
+
+    res.json(booksWithStatus);
+  } catch (error) {
+    logger.error(`Error fetching new reads: ${error.message}`);
+    res.status(500).json({ error: "Failed to fetch new reads" });
+  }
+};
+
 exports.searchBooks = async (req, res) => {
   try {
-    const { query, genre, author, available } = req.query;
+    const { query, author } = req.query;
     const whereClause = {};
-
-    // Add search conditions
+    
     if (query) {
-      whereClause[Op.or] = [
-        { title: { [Op.like]: `%${query}%` } },
-        { author: { [Op.like]: `%${query}%` } },
-        { description: { [Op.like]: `%${query}%` } }
-      ];
+      whereClause.title = { [Op.like]: `%${query}%` };
     }
-
-    // Add genre filter
-    if (genre) {
-      whereClause.genre = genre;
-    }
-
-    // Add author filter
     if (author) {
       whereClause.author = { [Op.like]: `%${author}%` };
     }
 
-    // Add availability filter
-    if (available === 'true') {
-      whereClause.no_of_copies_available = { [Op.gt]: 0 };
-    }
-
     const books = await Book.findAll({
       where: whereClause,
-      order: [['title', 'ASC']],
-      limit: 50 // Limit results to prevent overwhelming response
+      limit: 20
     });
 
-    const booksWithDetails = await Promise.all(books.map(async (book) => {
+    const userId = req.session?.user?.id;
+    const booksWithStatus = await Promise.all(books.map(async (book) => {
       const parsedBook = await parseBook(book);
-      
-      // If user is logged in, check if they liked/starred the book
-      let isLiked = false;
-      let isStarred = false;
-      
-      if (req.session.user) {
-        const userId = req.session.user.id;
-        isLiked = await Like.findOne({ where: { user_id: userId, book_id: book.book_id } });
-        isStarred = await Star.findOne({ where: { user_id: userId, book_id: book.book_id } });
+      if (userId) {
+        const liked = await Like.findOne({
+          where: { user_id: userId, book_id: book.book_id }
+        });
+        const starred = await Star.findOne({
+          where: { user_id: userId, book_id: book.book_id }
+        });
+        return {
+          ...parsedBook,
+          isLiked: !!liked,
+          isStarred: !!starred
+        };
       }
-
-      return {
-        ...parsedBook,
-        isLiked: !!isLiked,
-        isStarred: !!isStarred
-      };
+      return parsedBook;
     }));
 
-    res.json(booksWithDetails);
+    res.json(booksWithStatus);
   } catch (error) {
     logger.error(`Error searching books: ${error.message}`);
     res.status(500).json({ error: "Failed to search books" });
@@ -443,41 +479,78 @@ exports.getBookDetails = async (req, res) => {
   try {
     const { bookId } = req.params;
     const book = await Book.findByPk(bookId);
-
+    
     if (!book) {
+      logger.warn(`Book not found with ID: ${bookId}`);
       return res.status(404).json({ error: "Book not found" });
     }
 
     const parsedBook = await parseBook(book);
+    const userId = req.session?.user?.id;
     
-    // If user is logged in, check if they liked/starred the book
-    let isLiked = false;
-    let isStarred = false;
-    let userBorrowed = false;
-    
-    if (req.session.user) {
-      const userId = req.session.user.id;
-      isLiked = await Like.findOne({ where: { user_id: userId, book_id: bookId } });
-      isStarred = await Star.findOne({ where: { user_id: userId, book_id: bookId } });
-      userBorrowed = await Transaction.findOne({
-        where: {
-          user_id: userId,
-          book_id: bookId,
-          transaction_type: 'rental',
-          returned_at: null
-        }
-      });
+    // Base response without user-specific data
+    let response = {
+      ...parsedBook,
+      rental_price: parseFloat(book.rental_price) || 0,
+      userBorrowed: false,
+      rental_end_date: null,
+      isLiked: false,
+      isStarred: false,
+      transaction_status: null,
+      late_fee: 0
+    };
+
+    if (userId) {
+      // Get user-specific data in parallel
+      const [liked, starred, activeTransaction] = await Promise.all([
+        Like.findOne({
+          where: { user_id: userId, book_id: bookId }
+        }),
+        Star.findOne({
+          where: { user_id: userId, book_id: bookId }
+        }),
+        Transaction.findOne({
+          where: {
+            user_id: userId,
+            book_id: bookId,
+            status: {
+              [Op.in]: ['ACTIVE', 'OVERDUE', 'EXPIRED', 'CANCELLED']
+            }
+          },
+          order: [['created_at', 'DESC']] // Get the most recent transaction
+        })
+      ]);
+
+      // Update response with user-specific data
+      response = {
+        ...response,
+        isLiked: !!liked,
+        isStarred: !!starred,
+        userBorrowed: !!activeTransaction,
+        rental_end_date: activeTransaction?.rental_end_date || null,
+        transaction_status: activeTransaction?.status || null,
+        late_fee: parseFloat(activeTransaction?.late_fee) || 0
+      };
+
+      // Add additional transaction details if available
+      if (activeTransaction) {
+        response.transaction_details = {
+          rental_start_date: activeTransaction.rental_start_date,
+          rental_duration: activeTransaction.rental_duration,
+          payment_status: activeTransaction.payment_status,
+          amount: parseFloat(activeTransaction.amount) || 0
+        };
+      }
     }
 
-    res.json({
-      ...parsedBook,
-      isLiked: !!isLiked,
-      isStarred: !!isStarred,
-      userBorrowed: !!userBorrowed
-    });
+    logger.info(`Successfully fetched details for book: ${bookId}`);
+    res.json(response);
   } catch (error) {
     logger.error(`Error fetching book details: ${error.message}`);
-    res.status(500).json({ error: "Failed to fetch book details" });
+    res.status(500).json({ 
+      error: "Failed to fetch book details",
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 };
 
