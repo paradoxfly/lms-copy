@@ -1,7 +1,7 @@
 const fetchNewReads = async () => {
   try {
     console.log('Fetching new reads...');
-    const response = await fetch("/books/new-reads");
+    const response = await fetch("/user/books/new-reads");
     console.log('Response status:', response.status);
     
     if (!response.ok) {
@@ -29,7 +29,7 @@ const fetchNewReads = async () => {
     books.forEach(book => {
       console.log('Rendering book:', book);
       const bookCard = `
-        <div class="book-card bg-white border rounded-xl overflow-hidden">
+        <div class="book-card bg-white border rounded-xl overflow-hidden cursor-pointer" onclick="window.location.href='/user/books/${book.book_id}'">
           <div class="p-4 flex gap-4">
             <div class="flex-shrink-0">
               <img class="book-cover" src="${book.image || '/images/default-book-cover.jpg'}" alt="${book.title}" onerror="this.src='/images/default-book-cover.jpg'">
@@ -43,20 +43,20 @@ const fetchNewReads = async () => {
                 <span class="read-more">Read more...</span>
               </p>
               <div class="flex items-center gap-2 mt-auto">
-                <button class="action-button" onclick="toggleLike(${book.book_id})">
+                <button class="action-button" onclick="event.stopPropagation(); toggleLike(${book.book_id})">
                   <i class="fa${book.isLiked ? 's' : 'r'} fa-heart"></i>
                 </button>
-                <button class="action-button" onclick="toggleStar(${book.book_id})">
+                <button class="action-button" onclick="event.stopPropagation(); toggleStar(${book.book_id})">
                   <i class="fa${book.isStarred ? 's' : 'r'} fa-star"></i>
                 </button>
               </div>
             </div>
           </div>
           <div class="p-4 pt-0 flex gap-2">
-            <button class="borrow-button flex-1 py-1 text-sm ${book.no_of_copies_available === 0 ? 'disabled' : ''}" onclick="borrowBook(${book.book_id})" ${book.no_of_copies_available === 0 ? 'disabled' : ''}>
+            <button class="borrow-button flex-1 py-1 text-sm ${book.no_of_copies_available === 0 ? 'disabled' : ''}" onclick="event.stopPropagation(); borrowBook(${book.book_id})" ${book.no_of_copies_available === 0 ? 'disabled' : ''}>
               Borrow
             </button>
-            <button class="buy-button flex-1">Buy now</button>
+            <button class="buy-button flex-1" onclick="event.stopPropagation(); buyBook(${book.book_id}, '${book.title}')">Buy now</button>
           </div>
         </div>
       `;
@@ -135,6 +135,55 @@ const borrowBook = async (bookId) => {
     console.error('Error borrowing book:', error);
   }
 };
+
+async function buyBook(bookId, bookTitle) {
+  // Show confirmation modal
+  const modal = document.getElementById('buyConfirmationModal');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  
+  // Update confirmation message with book title
+  const confirmMessage = modal.querySelector('p');
+  confirmMessage.textContent = `Are you sure you want to purchase "${bookTitle}"?`;
+  
+  // Set up modal buttons
+  const cancelBtn = document.getElementById('cancelBuyBtn');
+  const confirmBtn = document.getElementById('confirmBuyBtn');
+  
+  // Handle cancel
+  cancelBtn.onclick = () => {
+    modal.classList.remove('flex');
+    modal.classList.add('hidden');
+  };
+  
+  // Handle confirm
+  confirmBtn.onclick = async () => {
+    try {
+      const response = await fetch(`/user/books/${bookId}/buy`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const result = await response.json();
+      
+      if (response.ok) {
+        showToast(result.message || 'Book purchased successfully');
+        // Close modal
+        modal.classList.remove('flex');
+        modal.classList.add('hidden');
+        // Refresh the books display
+        fetchNewReads();
+      } else {
+        throw new Error(result.error || 'Failed to purchase book');
+      }
+    } catch (error) {
+      console.error('Error buying book:', error);
+      showToast(error.message || 'Failed to buy book', 'error');
+      // Close modal on error
+      modal.classList.remove('flex');
+      modal.classList.add('hidden');
+    }
+  };
+}
 
 // Initialize dashboard
 console.log('Initializing dashboard...');
