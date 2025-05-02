@@ -2,128 +2,72 @@
 extends layout
 
 block content
-  div(class="container mx-auto px-4 sm:px-6 py-8")
-    div#bookDetails(class="flex flex-col lg:flex-row gap-8 min-h-screen")
-      //- Left Column - Book Cover and Actions
-      div(class="w-full lg:w-1/3 space-y-6")
-        //- Book Cover Card
-        div(class="bg-white shadow-lg rounded-xl overflow-hidden")
-          div(class="relative w-full aspect-[3/4] overflow-hidden")
-            img#bookImage(
-              class="w-full h-full object-cover"
-              src="/images/default-book-cover.jpg"
-              alt="Book Cover"
-              onerror="this.src='/images/default-book-cover.jpg'"
-            )
-          div(class="p-6 space-y-4")
-            div(class="flex justify-between items-center")
-              span#availabilityBadge(class="px-4 py-1 text-sm font-medium rounded-full")
-              div(class="flex gap-3")
-                button#likeBtn(
-                  class="action-button transition-colors duration-200"
-                  onclick="toggleLike()"
-                )
-                  i(class="far fa-heart text-xl")
-                button#starBtn(
-                  class="action-button transition-colors duration-200"
-                  onclick="toggleStar()"
-                )
-                  i(class="far fa-star text-xl")
-            
-            if user
-              div#borrowSection(class="mt-6")
-                if bookData && !bookData.userBorrowed
-                  div(class="space-y-4")
-                    div(class="form-group")
-                      label(
-                        class="block text-sm font-medium text-gray-700 mb-2"
-                        for="rentalDuration"
-                      ) Rental Duration
-                      select#rentalDuration(
-                        class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      )
-                        option(value='7') 7 days
-                        option(value='14' selected) 14 days
-                        option(value='21') 21 days
-                        option(value='30') 30 days
-                    div(class="pricing-info bg-gray-50 p-4 rounded-lg")
-                      p(class="text-sm text-gray-600 flex justify-between")
-                        span Daily Rate:
-                        span#rentalPrice(class="font-medium")
-                      p(class="text-sm text-gray-600 flex justify-between mt-2")
-                        span Total Cost:
-                        span#totalPrice(class="font-medium")
-                    button#borrowBtn(
-                      class="w-full py-3 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                    ) Borrow Now
-                else
-                  div(class="space-y-4")
-                    div(class="bg-blue-50 p-4 rounded-lg")
-                      p(class="text-sm text-gray-600 flex justify-between")
-                        span Due Date:
-                        span#dueDate(class="font-medium")
-                      p(class="text-sm text-gray-600 flex justify-between mt-2")
-                        span Days Remaining:
-                        span#daysRemaining(class="font-medium")
-                    button#returnBtn(
-                      class="w-full py-3 px-4 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-                    ) Return Book
-                div#lateFeeAlert(class="mt-4 bg-yellow-50 border-l-4 border-yellow-400 p-4 hidden")
-                  div(class="flex")
-                    div(class="flex-shrink-0")
-                      i(class="fas fa-exclamation-triangle text-yellow-400")
-                    div(class="ml-3")
-                      p(class="text-sm text-yellow-700")
-
-      //- Right Column - Book Details
-      div(class="flex-1 space-y-6")
-        h1#bookTitle(class="text-3xl font-bold text-gray-900 mb-8")
-        
-        //- Author Section
-        div(class="bg-white shadow-lg rounded-xl p-6")
-          h2(class="text-xl font-semibold text-gray-900 mb-4") About the Author
-          p#bookAuthor(class="text-gray-700 font-medium mb-3")
-          p#aboutAuthor(class="text-gray-600 leading-relaxed")
-        
-        //- Description Section
-        div(class="bg-white shadow-lg rounded-xl p-6")
-          h2(class="text-xl font-semibold text-gray-900 mb-4") Description
-          p#bookDescription(class="text-gray-600 leading-relaxed")
-        
-        div(class="grid grid-cols-1 md:grid-cols-2 gap-6")
-          //- Book Details
-          div(class="bg-white shadow-lg rounded-xl p-6")
-            h2(class="text-xl font-semibold text-gray-900 mb-4") Details
-            ul(class="space-y-3")
-              li(class="flex justify-between items-center py-2 border-b border-gray-100")
-                span(class="text-gray-600") ISBN
-                span#isbn(class="font-medium text-gray-900")
-              li(class="flex justify-between items-center py-2 border-b border-gray-100")
-                span(class="text-gray-600") Genre
-                span#genre(class="font-medium text-gray-900")
-              li(class="flex justify-between items-center py-2 border-b border-gray-100")
-                span(class="text-gray-600") Publisher
-                span#publisher(class="font-medium text-gray-900")
-              li(class="flex justify-between items-center py-2 border-b border-gray-100")
-                span(class="text-gray-600") Year
-                span#year(class="font-medium text-gray-900")
-              li(class="flex justify-between items-center py-2")
-                span(class="text-gray-600") Pages
-                span#pages(class="font-medium text-gray-900")
-          
-          //- Availability
-          div(class="bg-white shadow-lg rounded-xl p-6")
-            h2(class="text-xl font-semibold text-gray-900 mb-4") Availability
-            ul(class="space-y-3")
-              li(class="flex justify-between items-center py-2 border-b border-gray-100")
-                span(class="text-gray-600") Total Copies
-                span#totalCopies(class="font-medium text-gray-900")
-              li(class="flex justify-between items-center py-2 border-b border-gray-100")
-                span(class="text-gray-600") Available Copies
-                span#availableCopies(class="font-medium text-gray-900")
-              li(class="flex justify-between items-center py-2")
-                span(class="text-gray-600") Daily Rental Price
-                span#dailyRentalPrice(class="font-medium text-gray-900")
+  .h-screen.bg-gray-50.font-inter
+    // Top Navbar
+    .top-navbar.flex.items-center.px-8.py-4.bg-white.shadow-md
+      h1.logo-text.text-2xl.font-bold.tracking-tight BookOrbit
+      h1.text-xl.font-semibold.pl-6.flex-1 Dashboard
+      .flex.items-center.gap-4
+        button.relative.bg-transparent.border-0
+          i.fas.fa-bell.text-gray-400.text-xl
+        .w-10.h-10.rounded-full.overflow-hidden.bg-gray-200.flex.items-center.justify-center
+          i.fas.fa-user.text-gray-500
+    .flex.h-full
+      // Sidebar
+      .sidebar.flex.flex-col.items-center.py-8.bg-indigo-900.text-white.w-20
+        .flex.flex-col.items-center.gap-8
+          button.p-2.rounded-md.bg-white.bg-opacity-20(onclick="window.location.href='/user/dashboard'")
+            i.fas.fa-home
+          button.p-2.rounded-md(onclick="window.location.href='/user/books'")
+            i.fas.fa-book-open
+          button.p-2.rounded-md(onclick="window.location.href='/user/likes'")
+            i.fas.fa-heart
+          button.p-2.rounded-md(onclick="window.location.href='/user/starred'")
+            i.fas.fa-star
+      // Main Content
+      .flex-1.overflow-auto.h-full
+        .container.mx-auto.px-8.py-10
+          div(class="flex flex-col md:flex-row gap-10")
+            // Book Cover
+            div(class="w-full md:w-1/3 flex justify-center items-start")
+              .bg-white.shadow-lg.rounded-xl.overflow-hidden.p-6.flex.flex-col.items-center
+                img#bookImage.w-56.h-80.object-cover.rounded-lg.shadow-md(src="/images/default-book-cover.jpg" alt="Book Cover")
+                .mt-4
+                  span#availabilityBadge.px-4.py-1.text-sm.font-medium.rounded-full
+            // Book Details
+            .flex-1.space-y-6
+              h1#bookTitle.text-3xl.font-bold.text-gray-900.mb-2
+              h2#bookAuthor.text-lg.font-semibold.text-indigo-700.mb-1
+              .flex.flex-wrap.gap-6.mb-4
+                .flex.flex-col
+                  span.text-xs.text-gray-500 Page count
+                  span#pages.text-base.font-medium.text-gray-900
+                .flex.flex-col
+                  span.text-xs.text-gray-500 Language
+                  span.text-base.font-medium.text-gray-900 English
+                .flex.flex-col
+                  span.text-xs.text-gray-500 Publication date
+                  span#year.text-base.font-medium.text-gray-900
+                .flex.flex-col
+                  span.text-xs.text-gray-500 Publisher
+                  span#publisher.text-base.font-medium.text-gray-900
+              .flex.items-center.gap-2.mb-2
+                i.fas.fa-users.text-indigo-600
+                span.text-sm.text-gray-600 #[span#totalCopies] People borrowed this book
+              // Description
+              .bg-white.shadow-lg.rounded-xl.p-6.mb-2
+                h2.text-xl.font-semibold.text-gray-900.mb-2 Description
+                p#bookDescription.text-gray-700.leading-relaxed
+              // About Author
+              .bg-white.shadow-lg.rounded-xl.p-6.mb-2
+                h2.text-xl.font-semibold.text-gray-900.mb-2 About Author
+                p#aboutAuthor.text-gray-600.leading-relaxed
+              // Action Buttons
+              .flex.gap-4.mt-6
+                button#borrowBtn(type="button" class="py-3 px-8 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors") Borrow now
+                button#buyBtn(type="button" class="py-3 px-8 bg-gray-200 text-gray-800 font-semibold rounded-lg shadow-md hover:bg-gray-300 transition-colors") Buy now
+          // Toast notifications
+          #toast-container
 
 block scripts
   script(src="/js/book-details.js")

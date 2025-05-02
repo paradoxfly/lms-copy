@@ -40,10 +40,40 @@ html(lang="en")
           .relative.w-72
             input.pl-3.pr-10.py-2.rounded-md.border.w-full(type="text" placeholder="Search" style="border-color: #d6dae5;")
             i.fas.fa-search.absolute.right-3.top-search.text-gray-400
+          .flex.items-center.gap-3
+            span.text-sm.text-gray-500 Filter by :
+            button.filter-button Date
+            button.filter-button Author
+            button.filter-button Genre
+            button.borrow-button.px-4.py-1-5.text-sm Borrow now
 
-        // Liked Books Grid
-        .grid.grid-cols-3.gap-4.px-6#my-books
-          //- Books will be populated here via JavaScript
+        // Reading now
+        .px-6.mb-8
+          h2.text-xl.font-bold.mb-4 Reading now
+          .grid.grid-cols-3.gap-4#reading-now-books
+            // JS will populate
+
+        // My Bought books
+        .px-6.mb-8
+          h2.text-xl.font-bold.mb-4 My Bought books
+          .grid.grid-cols-3.gap-4#bought-books
+            // JS will populate
+
+        // My Borrowed books (table)
+        .px-6.mb-8
+          h2.text-xl.font-bold.mb-4 My Borrowed books
+          .overflow-x-auto
+            table.w-full.text-sm.text-left.text-gray-700.bg-white.rounded-lg.shadow-md
+              thead.bg-gray-100
+                tr
+                  th.px-4.py-2 S/N
+                  th.px-4.py-2 Book name
+                  th.px-4.py-2 Date borrowed
+                  th.px-4.py-2 Due date
+                  th.px-4.py-2 Status
+                  th.px-4.py-2 Type
+              tbody#borrowed-books-table
+                // JS will populate
 
     script(src="/js/utils.js")
     script(src="/js/my-books.js") 
