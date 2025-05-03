@@ -97,6 +97,22 @@ html(lang="en")
           .grid.grid-cols-3.gap-4#new-reads
             // Books will be dynamically loaded here
 
+        // Pick of the week Section
+        .px-6.mb-8
+          .flex.justify-between.items-center.mb-4
+            h2.text-xl.font-bold Pick of the week
+          .grid.grid-cols-3.gap-4#pick-of-the-week
+            // Pick of the week cards will be rendered here
+
+
+          // Popular Books Section
+        .px-6.mb-8
+          .flex.justify-between.items-center.mb-4
+            h2.text-xl.font-bold Popular Books
+            a.view-all(href="/user/popular-books-list") See All...
+          .grid.grid-cols-3.gap-4#popular-books
+            // Popular books cards will be rendered here
+
     // Buy Confirmation Modal
     #buyConfirmationModal.fixed.inset-0.bg-gray-600.bg-opacity-50.hidden.items-center.justify-center.z-50
       .bg-white.rounded-lg.p-8.max-w-md.w-full.mx-4

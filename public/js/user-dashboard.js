@@ -427,6 +427,63 @@ const fetchPickOfTheWeek = async () => {
   }
 };
 
+const fetchPopularBooks = async () => {
+  try {
+    const response = await fetch('/user/popular-books?limit=5');
+    const data = await response.json();
+    const books = data.books || [];
+    const popularContainer = document.getElementById('popular-books');
+    if (!popularContainer) return;
+    popularContainer.innerHTML = '';
+    if (!Array.isArray(books) || books.length === 0) {
+      popularContainer.innerHTML = '<p class="text-center text-gray-500 col-span-3">No popular books found</p>';
+      return;
+    }
+    books.forEach(book => {
+      const bookCard = document.createElement('div');
+      bookCard.className = 'book-card bg-white border rounded-xl overflow-hidden cursor-pointer relative';
+      bookCard.onclick = () => { window.location.href = `/user/books/${book.book_id}`; };
+      bookCard.innerHTML = `
+        <div class="p-4 flex gap-4">
+          <div class="flex-shrink-0">
+            <img class="book-cover" src="${book.image || '/images/default-book-cover.jpg'}" alt="${book.title}" onerror="this.src='/images/default-book-cover.jpg'">
+          </div>
+          <div class="flex flex-col flex-1">
+            <span class="available-badge">${book.no_of_copies_available > 0 ? 'Available' : 'Not Available'}</span>
+            <h3 class="text-sm font-semibold mb-1">${book.title}</h3>
+            <p class="text-xs text-gray-500 mb-2">${book.author}</p>
+            <p class="text-xs text-gray-500 mb-1">
+              ${book.description ? book.description.substring(0, 100) + '...' : 'No description available'}
+              <span class="read-more">Read more...</span>
+            </p>
+            <div class="flex items-center gap-2 mt-auto">
+              <button class="action-button star-btn" title="Star" onclick="event.stopPropagation(); toggleStar(${book.book_id})">
+                <i class="fas fa-star text-yellow-500"></i> <span>${book.starCount}</span>
+              </button>
+              <button class="action-button like-btn" title="Like" onclick="event.stopPropagation(); toggleLike(${book.book_id})">
+                <i class="far fa-heart"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="p-4 pt-0 flex gap-2">
+          <button class="borrow-button flex-1 py-1 text-sm ${book.no_of_copies_available === 0 ? 'disabled' : ''}" onclick="event.stopPropagation(); borrowBook(${book.book_id})" ${book.no_of_copies_available === 0 ? 'disabled' : ''}>
+            Borrow
+          </button>
+          <button class="buy-button flex-1" onclick="event.stopPropagation(); buyBook(${book.book_id}, '${book.title}')">Buy now</button>
+        </div>
+      `;
+      popularContainer.appendChild(bookCard);
+    });
+  } catch (error) {
+    console.error('Error fetching popular books:', error);
+    const popularContainer = document.getElementById('popular-books');
+    if (popularContainer) {
+      popularContainer.innerHTML = '<p class="text-center text-red-500 col-span-3">Error loading popular books. Please try again.</p>';
+    }
+  }
+};
+
 // Initialize dashboard
 console.log('Initializing dashboard...');
 fetchNewReads();
@@ -434,4 +491,5 @@ fetchRecentlyBorrowedBooks();
 fetchCurrentlyReadingBooks();
 fetchPendingReturns();
 fetchPickOfTheWeek();
+fetchPopularBooks();
 initializeSearchAndFilters();

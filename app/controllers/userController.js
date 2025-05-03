@@ -505,7 +505,7 @@ exports.searchBooks = async (req, res) => {
     const { query, filter } = req.query;
     let whereClause = {};
     let orderClause = [];
-
+    
     // Build search query
     if (query) {
       whereClause = {
@@ -941,5 +941,61 @@ exports.getPickOfTheWeek = async (req, res) => {
   } catch (error) {
     logger.error(`Error fetching pick of the week: ${error.message}`);
     res.status(500).json({ error: "Failed to fetch pick of the week" });
+  }
+};
+
+exports.getPopularBooks = async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 12;
+    const page = parseInt(req.query.page) || 1;
+    const offset = (page - 1) * limit;
+
+    // Query stars, group by book, count stars
+    const stars = await Star.findAll({
+      attributes: [
+        'book_id',
+        [Sequelize.fn('COUNT', Sequelize.col('star_id')), 'starCount']
+      ],
+      group: ['book_id'],
+      order: [[Sequelize.literal('starCount'), 'DESC']],
+      limit,
+      offset
+    });
+
+    const bookIds = stars.map(star => star.book_id);
+    const books = await Book.findAll({
+      where: { book_id: bookIds },
+    });
+
+    // Map star counts to books
+    const booksWithStars = books.map(book => {
+      const starEntry = stars.find(s => s.book_id === book.book_id);
+      return {
+        book_id: book.book_id,
+        title: book.title,
+        author: book.author,
+        genre: book.genre,
+        description: book.description,
+        image: book.cover_image,
+        no_of_copies_available: book.no_of_copies_available,
+        starCount: starEntry ? parseInt(starEntry.get('starCount')) : 0
+      };
+    });
+
+    // For pagination, get total count
+    const totalStars = await Star.count({
+      distinct: true,
+      col: 'book_id'
+    });
+
+    res.json({
+      books: booksWithStars,
+      total: totalStars,
+      page,
+      pageSize: limit
+    });
+  } catch (error) {
+    logger.error(`Error fetching popular books: ${error.message}`);
+    res.status(500).json({ error: "Failed to fetch popular books" });
   }
 };

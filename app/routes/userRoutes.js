@@ -117,4 +117,12 @@ router.get('/pending-returns', ensureAuthenticated, userController.getPendingRet
 // Pick of the week (top 5 books by new likes last week)
 router.get('/pick-of-the-week', ensureAuthenticated, userController.getPickOfTheWeek);
 
+// Popular books (ranked by star count, supports limit and pagination)
+router.get('/popular-books', ensureAuthenticated, userController.getPopularBooks);
+
+// Popular books list
+router.get('/popular-books-list', ensureAuthenticated, (req, res) => {
+  res.render('popular-books', { user: req.session.user });
+});
+
 module.exports = router;
