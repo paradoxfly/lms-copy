@@ -1,6 +1,7 @@
 const express = require('express');
 const { ensureAuthenticated, ensureUser } = require('../middlewares/authMiddleware');
 const userController = require('../controllers/userController');
+const Book = require('../models/Book');
 
 const router = express.Router();
 
@@ -43,25 +44,19 @@ router.post("/books/:bookId/return", ensureAuthenticated, userController.returnB
 // Get borrowed books route
 router.get("/borrowed-books", ensureAuthenticated, userController.getBorrowedBooks);
 
-// Search routes
-router.get("/books/search", (req, res) => {
-  res.render('search-results', { 
-    user: req.session.user,
-    query: req.query.query || '',
-    author: req.query.author || ''
-  });
-});
+// Book routes
+router.get("/books/new-reads", userController.getNewReads);
 
+// Move the search route here, before /books/:bookId
+router.get('/books/search', ensureAuthenticated, userController.searchBooks);
+
+router.get("/api/books/:bookId", userController.getBookDetails);
 router.get("/books/:bookId", (req, res) => {
   res.render('book-details', { 
     user: req.session.user,
     bookId: req.params.bookId
   });
 });
-
-// API routes
-router.get("/api/books/search", userController.searchBooks);
-router.get("/api/books/:bookId", userController.getBookDetails);
 
 // Profile routes
 const profileController = require('../controllers/profileController');
@@ -73,5 +68,41 @@ router.get('/profile/:userId', ensureAuthenticated, profileController.getProfile
 router.put('/profile', ensureAuthenticated, upload.single('profile_picture'), profileController.updateProfile);
 router.post('/profile/change-password', ensureAuthenticated, profileController.changePassword);
 router.get('/profile/borrowing-history', ensureAuthenticated, profileController.getBorrowingHistory);
+
+// Debug route - remove in production
+router.get("/debug/books", async (req, res) => {
+  try {
+    const books = await Book.findAll();
+    res.json({
+      count: books.length,
+      books: books.map(book => ({
+        id: book.book_id,
+        title: book.title,
+        author: book.author
+      }))
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// New POST route for buying a book
+router.post("/books/:bookId/buy", ensureAuthenticated, userController.buyBook);
+
+router.get('/settings', ensureAuthenticated, userController.getSettingsPage);
+router.get('/profile', ensureAuthenticated, userController.getProfile);
+router.post('/profile/update', ensureAuthenticated, userController.updateProfile);
+router.post('/profile/password', ensureAuthenticated, userController.updatePassword);
+router.delete('/profile', ensureAuthenticated, userController.deleteAccount);
+router.post('/logout', ensureAuthenticated, userController.logout);
+
+// Render search results page
+router.get('/search-results', ensureAuthenticated, (req, res) => {
+  res.render('searchResult', {
+    user: req.session.user,
+    query: req.query.query || '',
+    filters: req.query.filter || []
+  });
+});
 
 module.exports = router;

@@ -2,10 +2,11 @@ const logger = require("../utils/logger");
 const Book = require("../models/Book");
 const Like = require("../models/Like");
 const Star = require("../models/Star");
-const { Op } = require("sequelize");
+const { Op, Sequelize } = require("sequelize");
 const { parseBook } = require("../utils/parseData");
 const Transaction = require("../models/Transaction");
 const sequelize = require("../services/db");
+const User = require("../models/User");
 
 // Render the user dashboard
 exports.dashboard = (req, res) => {
@@ -362,8 +363,9 @@ exports.getBorrowedBooks = async (req, res) => {
     const transactions = await Transaction.findAll({
       where: {
         user_id: userId,
+        transaction_type: { [Op.in]: ['RENTAL', 'PURCHASE'] },
         status: {
-          [Op.in]: ['ACTIVE', 'OVERDUE']
+          [Op.in]: ['ACTIVE', 'OVERDUE', 'COMPLETED']
         }
       },
       include: [{
@@ -388,6 +390,7 @@ exports.getBorrowedBooks = async (req, res) => {
         borrowedOn: transaction.borrowed_date,
         dueDate: transaction.due_date,
         status: transaction.status,
+        transactionType: transaction.transaction_type,
         lateFee: transaction.late_fee || 0
       };
     }));
@@ -432,46 +435,75 @@ exports.getNewReads = async (req, res) => {
   }
 };
 
+// Search books with filters
 exports.searchBooks = async (req, res) => {
   try {
-    const { query, author } = req.query;
-    const whereClause = {};
-    
+    const { query, filter } = req.query;
+    let whereClause = {};
+    let orderClause = [];
+
+    // Build search query
     if (query) {
-      whereClause.title = { [Op.like]: `%${query}%` };
-    }
-    if (author) {
-      whereClause.author = { [Op.like]: `%${author}%` };
+      whereClause = {
+        [Op.or]: [
+          { title: { [Op.like]: `%${query}%` } },
+          { author: { [Op.like]: `%${query}%` } },
+          { genre: { [Op.like]: `%${query}%` } }
+        ]
+      };
     }
 
+    // Apply filters
+    if (filter) {
+      const filters = Array.isArray(filter) ? filter : [filter];
+      
+      filters.forEach(f => {
+        switch (f) {
+          case 'date':
+            orderClause.push([Sequelize.col('year_of_publication'), 'DESC']);
+            break;
+          case 'author':
+            orderClause.push([Sequelize.col('author'), 'ASC']);
+            break;
+          case 'genre':
+            orderClause.push([Sequelize.col('genre'), 'ASC']);
+            break;
+        }
+      });
+    }
+
+    // If no filters are applied, default to sorting by publication date
+    if (orderClause.length === 0) {
+      orderClause.push([Sequelize.col('year_of_publication'), 'DESC']);
+    }
+
+    // TEMP: Test simple query
     const books = await Book.findAll({
       where: whereClause,
-      limit: 20
+      order: orderClause,
+      limit: 10
     });
 
-    const userId = req.session?.user?.id;
-    const booksWithStatus = await Promise.all(books.map(async (book) => {
-      const parsedBook = await parseBook(book);
-      if (userId) {
-        const liked = await Like.findOne({
-          where: { user_id: userId, book_id: book.book_id }
-        });
-        const starred = await Star.findOne({
-          where: { user_id: userId, book_id: book.book_id }
-        });
-        return {
-          ...parsedBook,
-          isLiked: !!liked,
-          isStarred: !!starred
-        };
-      }
-      return parsedBook;
+    // Format response
+    const formattedBooks = books.map(book => ({
+      book_id: book.book_id,
+      title: book.title,
+      author: book.author,
+      description: book.description,
+      genre: book.genre,
+      year_of_publication: book.year_of_publication, // use the correct column name!
+      image: book.cover_image,
+      no_of_copies_available: book.no_of_copies_available,
+      isLiked: false,
+      isStarred: false
     }));
 
-    res.json(booksWithStatus);
+    res.set('Cache-Control', 'no-store');
+    res.json(formattedBooks);
+    return;
   } catch (error) {
-    logger.error(`Error searching books: ${error.message}`);
-    res.status(500).json({ error: "Failed to search books" });
+    console.error('Error searching books:', error);
+    res.status(500).json({ error: 'Failed to search books' });
   }
 };
 
@@ -552,6 +584,131 @@ exports.getBookDetails = async (req, res) => {
       details: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
+};
+
+exports.buyBook = async (req, res) => {
+  try {
+    const { bookId } = req.params;
+    const userId = req.session.user.id;
+
+    // Check if the book exists
+    const book = await Book.findByPk(bookId);
+    if (!book) {
+      return res.status(404).json({ error: "Book not found" });
+    }
+
+    // Check if user already purchased this book
+    const existingPurchase = await Transaction.findOne({
+      where: {
+        user_id: userId,
+        book_id: bookId,
+        transaction_type: 'PURCHASE',
+        payment_status: 'COMPLETED'
+      }
+    });
+    if (existingPurchase) {
+      return res.status(400).json({ error: "You have already purchased this book." });
+    }
+
+    // Create a purchase transaction
+    await Transaction.create({
+      user_id: userId,
+      book_id: bookId,
+      transaction_type: 'PURCHASE',
+      amount: book.purchase_price || 0,
+      payment_status: 'COMPLETED',
+      status: 'COMPLETED'
+    });
+
+    res.json({ message: "Book purchased successfully!" });
+  } catch (error) {
+    logger.error(`Error purchasing book: ${error.message}`);
+    res.status(500).json({ error: "Failed to purchase book" });
+  }
+};
+
+// Render the settings page
+exports.getSettingsPage = (req, res) => {
+  res.render("settings", { user: req.session.user, title: "Settings" });
+};
+
+// Get current user profile
+exports.getProfile = async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+    const user = await User.findByPk(userId, {
+      attributes: ["first_name", "last_name", "email", "username"]
+    });
+    if (!user) return res.status(404).json({ error: "User not found" });
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch profile" });
+  }
+};
+
+// Update name/email
+exports.updateProfile = async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+    const { first_name, last_name, email } = req.body;
+    if (!first_name || !last_name || !email) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+    const user = await User.findByPk(userId);
+    if (!user) return res.status(404).json({ error: "User not found" });
+    user.first_name = first_name;
+    user.last_name = last_name;
+    user.email = email;
+    await user.save();
+    res.json({ message: "Profile updated successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to update profile" });
+  }
+};
+
+// Update password
+exports.updatePassword = async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ error: "New passwords do not match" });
+    }
+    const user = await User.findByPk(userId);
+    if (!user) return res.status(404).json({ error: "User not found" });
+    const isMatch = await user.comparePassword(currentPassword);
+    if (!isMatch) {
+      return res.status(400).json({ error: "Current password is incorrect" });
+    }
+    user.password = newPassword;
+    await user.save();
+    res.json({ message: "Password updated successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to update password" });
+  }
+};
+
+// Delete account
+exports.deleteAccount = async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+    await User.destroy({ where: { user_id: userId } });
+    req.session.destroy(() => {
+      res.json({ message: "Account deleted successfully" });
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to delete account" });
+  }
+};
+
+// Logout
+exports.logout = (req, res) => {
+  req.session.destroy(() => {
+    res.json({ message: "Logged out successfully" });
+  });
 };
 
 // Add more user-specific controller methods here
