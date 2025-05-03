@@ -777,3 +777,86 @@ exports.logout = (req, res) => {
 
 // Add more user-specific controller methods here
 // Example: View books, borrow books, etc.
+
+exports.getRecentlyBorrowedBooks = async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const transactions = await Transaction.findAll({
+      where: {
+        user_id: userId,
+        transaction_type: 'RENTAL', // Only rentals, not purchases
+        status: {
+          [Op.in]: ['ACTIVE', 'OVERDUE', 'COMPLETED']
+        },
+        rental_start_date: {
+          [Op.gte]: thirtyDaysAgo
+        }
+      },
+      include: [{ model: Book, required: true }]
+    });
+
+    const borrowedBooks = await Promise.all(transactions.map(async (transaction) => {
+      const parsedBook = await parseBook(transaction.Book);
+      const liked = await Like.findOne({
+        where: { user_id: userId, book_id: transaction.Book.book_id }
+      });
+      const starred = await Star.findOne({
+        where: { user_id: userId, book_id: transaction.Book.book_id }
+      });
+      return {
+        ...parsedBook,
+        isLiked: !!liked,
+        isStarred: !!starred,
+        borrowedOn: transaction.rental_start_date,
+        dueDate: transaction.rental_end_date,
+        status: transaction.status,
+        transactionType: transaction.transaction_type,
+        lateFee: transaction.late_fee || 0
+      };
+    }));
+
+    res.json(borrowedBooks);
+  } catch (error) {
+    logger.error(`Error fetching recently borrowed books: ${error.message}`);
+    res.status(500).json({ error: "Failed to fetch recently borrowed books" });
+  }
+};
+
+exports.getCurrentlyReadingBooks = async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+    // Active rentals
+    const activeRentals = await Transaction.findAll({
+      where: {
+        user_id: userId,
+        transaction_type: 'RENTAL',
+        status: 'ACTIVE'
+      },
+      include: [{ model: Book, required: true }]
+    });
+    // Completed purchases
+    const purchases = await Transaction.findAll({
+      where: {
+        user_id: userId,
+        transaction_type: 'PURCHASE',
+        payment_status: 'COMPLETED'
+      },
+      include: [{ model: Book, required: true }]
+    });
+    // Combine and deduplicate by book_id
+    const allBooks = [...activeRentals, ...purchases];
+    const seen = new Set();
+    const uniqueBooks = allBooks.filter(trx => {
+      if (seen.has(trx.book_id)) return false;
+      seen.add(trx.book_id);
+      return true;
+    });
+    res.json({ count: uniqueBooks.length, books: uniqueBooks.map(trx => trx.Book) });
+  } catch (error) {
+    logger.error(`Error fetching currently reading books: ${error.message}`);
+    res.status(500).json({ error: "Failed to fetch currently reading books" });
+  }
+};

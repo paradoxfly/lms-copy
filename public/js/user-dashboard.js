@@ -345,8 +345,22 @@ const performSearch = async () => {
   }
 };
 
+const fetchCurrentlyReadingBooks = async () => {
+  try {
+    const response = await fetch('/user/currently-reading');
+    const data = await response.json();
+    const currentlyReadingElem = document.querySelector('.currently-reading-icon')?.parentElement?.parentElement?.querySelector('h2');
+    if (currentlyReadingElem && data && typeof data.count === 'number') {
+      currentlyReadingElem.textContent = `${data.count} Book${data.count !== 1 ? 's' : ''}`;
+    }
+  } catch (error) {
+    console.error('Error fetching currently reading books:', error);
+  }
+};
+
 // Initialize dashboard
 console.log('Initializing dashboard...');
 fetchNewReads();
 fetchRecentlyBorrowedBooks();
+fetchCurrentlyReadingBooks();
 initializeSearchAndFilters();

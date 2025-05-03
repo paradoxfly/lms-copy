@@ -44,6 +44,9 @@ router.post("/books/:bookId/return", ensureAuthenticated, userController.returnB
 // Get borrowed books route
 router.get("/borrowed-books", ensureAuthenticated, userController.getBorrowedBooks);
 
+// Recently borrowed books (last 30 days, rentals only)
+router.get('/borrowed-books', ensureAuthenticated, userController.getRecentlyBorrowedBooks);
+
 // Book routes
 router.get("/books/new-reads", userController.getNewReads);
 
@@ -104,5 +107,8 @@ router.get('/search-results', ensureAuthenticated, (req, res) => {
     filters: req.query.filter || []
   });
 });
+
+// Currently reading books (active rentals + purchases)
+router.get('/currently-reading', ensureAuthenticated, userController.getCurrentlyReadingBooks);
 
 module.exports = router;
