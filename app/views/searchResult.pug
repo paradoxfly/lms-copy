@@ -1,0 +1,91 @@
+//- searchResult.pug
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title BookOrbit - Search Results
+    link(href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet")
+    link(href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet")
+    link(href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet")
+    link(href="https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,100..900;1,100..900&family=Euphoria+Script&display=swap" rel="stylesheet")
+    link(href="/css/reusable.css" rel="stylesheet")
+    link(href="/css/user-dashboard.css" rel="stylesheet")
+    
+  body.h-screen
+  .top-navbar
+    h1.logo-text BookOrbit
+    h1.text-xl.font-semibold.pl-3 Search Results
+    .flex.items-center.gap-4.ml-auto
+      .w-8.h-8.rounded-full.overflow-hidden(style="background-color: #dccdbe;")
+        img(src="https://placehold.co/40x40/dccdbe/ffffff?text=U" alt="User")#profile-picture
+  .flex.h-full
+    // Sidebar
+    include partials/sidebar.pug
+    // Main Content
+    .flex-1.overflow-auto.h-full
+      .px-6.py-4
+        // Search and Filters
+        .flex.justify-between.items-center.mb-4
+          .relative.w-72
+            input#searchInput.pl-3.pr-10.py-2.rounded-md.border.w-full(type="text" placeholder="Search by title, author, genre..." style="border-color: #d6dae5;" value=query)
+            i.fas.fa-search.absolute.right-3.top-search.text-gray-400
+          .flex.items-center.gap-3
+            span.text-sm.text-gray-500 Filter by :
+            button.filter-button(data-filter="date" class=(filters && filters.includes('date') ? 'active' : '')) Date
+            button.filter-button(data-filter="author" class=(filters && filters.includes('author') ? 'active' : '')) Author
+            button.filter-button(data-filter="genre" class=(filters && filters.includes('genre') ? 'active' : '')) Genre
+            button#searchButton.search-button.px-4.py-1-5.text-sm(
+              class="bg-blue-200 text-blue-900 rounded-md shadow-md transition-colors duration-200 hover:bg-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
+              type="button"
+            ) Search now
+        h2.text-2xl.font-bold.mb-2 Search Results
+        if query
+          p.text-gray-600.mb-4 Results for: 
+            span.font-semibold #{query}
+        .grid.grid-cols-3.gap-4#search-results-container
+          //- Results will be rendered here by JS
+  // Toast notifications
+  #toast-container
+  script(src="/js/search-results.js")
+  script.
+    document.addEventListener('DOMContentLoaded', function() {
+      const searchInput = document.getElementById('searchInput');
+      const searchButton = document.getElementById('searchButton');
+      const filterButtons = document.querySelectorAll('.filter-button');
+      // Retain filter state from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const context = urlParams.get('context') || 'all';
+      // Set up filter button active state
+      filterButtons.forEach(btn => {
+        if (urlParams.getAll('filter').includes(btn.dataset.filter)) {
+          btn.classList.add('active');
+        }
+        btn.addEventListener('click', () => {
+          btn.classList.toggle('active');
+        });
+      });
+      // Search button click
+      searchButton.addEventListener('click', () => {
+        const query = searchInput.value.trim();
+        const params = new URLSearchParams();
+        if (query) params.append('query', query);
+        document.querySelectorAll('.filter-button.active').forEach(btn => {
+          params.append('filter', btn.dataset.filter);
+        });
+        window.location.href = `/user/search-results?context=${context}&${params.toString()}`;
+      });
+      // Enter key
+      searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          const query = searchInput.value.trim();
+          const params = new URLSearchParams();
+          if (query) params.append('query', query);
+          document.querySelectorAll('.filter-button.active').forEach(btn => {
+            params.append('filter', btn.dataset.filter);
+          });
+          window.location.href = `/user/search-results?context=${context}&${params.toString()}`;
+        }
+      });
+    });
+  script(src="/js/sidebar.js") 

@@ -79,36 +79,68 @@ exports.toggleStar = async (req, res) => {
 exports.getLikedBooks = async (req, res) => {
   try {
     const userId = req.session.user.id;
-    const likes = await Like.findAll({
-      where: { user_id: userId },
-      include: [
-        {
-          model: Book,
-          required: true,
-          on: {
-            book_id: { [Op.col]: "Like.book_id" },
-          },
-        },
-      ],
+    const { query, filter } = req.query;
+
+    // Build where clause for search
+    let whereClause = {};
+    if (query) {
+      whereClause = {
+        [Op.or]: [
+          { title: { [Op.like]: `%${query}%` } },
+          { author: { [Op.like]: `%${query}%` } },
+          { genre: { [Op.like]: `%${query}%` } }
+        ]
+      };
+    }
+
+    // Build order clause for filters
+    let orderClause = [];
+    if (filter) {
+      const filters = Array.isArray(filter) ? filter : [filter];
+      filters.forEach(f => {
+        switch (f) {
+          case 'date':
+            orderClause.push(['year_of_publication', 'DESC']);
+            break;
+          case 'author':
+            orderClause.push(['author', 'ASC']);
+            break;
+          case 'genre':
+            orderClause.push(['genre', 'ASC']);
+            break;
+        }
+      });
+    }
+    if (orderClause.length === 0) {
+      orderClause.push(['year_of_publication', 'DESC']);
+    }
+
+    // Use the new association to get only liked books
+    const user = await User.findByPk(userId);
+    const likedBooks = await user.getLikedBooks({
+      where: whereClause,
+      order: orderClause
     });
 
-    const books = await Promise.all(likes.map((like) => parseBook(like.Book)));
-
-    const booksWithImage = [];
-
-    for (const book of books) {
+    // Add isLiked/isStarred status
+    const booksWithStatus = await Promise.all(likedBooks.map(async (book) => {
       const starred = await Star.findOne({
         where: { user_id: userId, book_id: book.book_id },
       });
-
-      booksWithImage.push({
-        ...book,
+      return {
+        book_id: book.book_id,
+        title: book.title,
+        author: book.author,
+        genre: book.genre,
+        description: book.description,
+        image: book.cover_image,
+        no_of_copies_available: book.no_of_copies_available,
         isLiked: true,
-        isStarred: !!starred,
-      });
-    }
+        isStarred: !!starred
+      };
+    }));
 
-    res.json(booksWithImage);
+    res.json(booksWithStatus);
   } catch (error) {
     logger.error(`Error fetching liked books: ${error.message}`);
     res.status(500).json({ error: "Failed to fetch liked books" });
@@ -118,36 +150,68 @@ exports.getLikedBooks = async (req, res) => {
 exports.getStarredBooks = async (req, res) => {
   try {
     const userId = req.session.user.id;
-    const stars = await Star.findAll({
-      where: { user_id: userId },
-      include: [
-        {
-          model: Book,
-          required: true,
-          on: {
-            book_id: { [Op.col]: "Star.book_id" },
-          },
-        },
-      ],
+    const { query, filter } = req.query;
+
+    // Build where clause for search
+    let whereClause = {};
+    if (query) {
+      whereClause = {
+        [Op.or]: [
+          { title: { [Op.like]: `%${query}%` } },
+          { author: { [Op.like]: `%${query}%` } },
+          { genre: { [Op.like]: `%${query}%` } }
+        ]
+      };
+    }
+
+    // Build order clause for filters
+    let orderClause = [];
+    if (filter) {
+      const filters = Array.isArray(filter) ? filter : [filter];
+      filters.forEach(f => {
+        switch (f) {
+          case 'date':
+            orderClause.push(['year_of_publication', 'DESC']);
+            break;
+          case 'author':
+            orderClause.push(['author', 'ASC']);
+            break;
+          case 'genre':
+            orderClause.push(['genre', 'ASC']);
+            break;
+        }
+      });
+    }
+    if (orderClause.length === 0) {
+      orderClause.push(['year_of_publication', 'DESC']);
+    }
+
+    // Use the new association to get only starred books
+    const user = await User.findByPk(userId);
+    const starredBooks = await user.getStarredBooks({
+      where: whereClause,
+      order: orderClause
     });
 
-    const books = await Promise.all(stars.map((star) => parseBook(star.Book)));
-
-    const booksWithImage = [];
-
-    for (const book of books) {
+    // Add isLiked/isStarred status
+    const booksWithStatus = await Promise.all(starredBooks.map(async (book) => {
       const liked = await Like.findOne({
         where: { user_id: userId, book_id: book.book_id },
       });
-
-      booksWithImage.push({
-        ...book,
+      return {
+        book_id: book.book_id,
+        title: book.title,
+        author: book.author,
+        genre: book.genre,
+        description: book.description,
+        image: book.cover_image,
+        no_of_copies_available: book.no_of_copies_available,
         isLiked: !!liked,
-        isStarred: true,
-      });
-    }
+        isStarred: true
+      };
+    }));
 
-    res.json(booksWithImage);
+    res.json(booksWithStatus);
   } catch (error) {
     logger.error(`Error fetching starred books: ${error.message}`);
     res.status(500).json({ error: "Failed to fetch starred books" });

@@ -6,6 +6,8 @@ const Transaction = require('../models/Transaction');
 const bcrypt = require('bcryptjs');
 const logger = require('../utils/logger');
 const seedUsers = require('../scripts/seedUsers');
+const Like = require('../models/Like');
+const Star = require('../models/Star');
 
 async function initializeDatabase() {
     try {
@@ -40,6 +42,37 @@ async function initializeDatabase() {
 
         // Seed sample users
         await seedUsers();
+
+        // Add associations after all models are imported
+        Like.belongsTo(User, { foreignKey: 'user_id' });
+        Like.belongsTo(Book, { foreignKey: 'book_id' });
+        User.belongsToMany(Book, {
+            through: Like,
+            as: 'LikedBooks',
+            foreignKey: 'user_id',
+            otherKey: 'book_id'
+        });
+        Book.belongsToMany(User, {
+            through: Like,
+            as: 'Likers',
+            foreignKey: 'book_id',
+            otherKey: 'user_id'
+        });
+        // StarredBooks association
+        Star.belongsTo(User, { foreignKey: 'user_id' });
+        Star.belongsTo(Book, { foreignKey: 'book_id' });
+        User.belongsToMany(Book, {
+            through: Star,
+            as: 'StarredBooks',
+            foreignKey: 'user_id',
+            otherKey: 'book_id'
+        });
+        Book.belongsToMany(User, {
+            through: Star,
+            as: 'Starrers',
+            foreignKey: 'book_id',
+            otherKey: 'user_id'
+        });
 
     } catch (error) {
         logger.error('Error initializing database:', error);

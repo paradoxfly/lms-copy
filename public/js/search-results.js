@@ -2,22 +2,38 @@ document.addEventListener('DOMContentLoaded', () => {
   const container = document.getElementById('search-results-container');
   const searchInput = document.getElementById('searchInput');
 
-  // Parse query and filters from URL
+  // Parse query, filters, and context from URL
   const urlParams = new URLSearchParams(window.location.search);
-  // Always get the latest value from the input if present
   const query = searchInput ? searchInput.value.trim() : (urlParams.get('query') || '');
   const filters = urlParams.getAll('filter');
+  const context = urlParams.get('context') || 'all';
 
   // Build API params
   const apiParams = new URLSearchParams();
   if (query) apiParams.append('query', query);
   filters.forEach(f => apiParams.append('filter', f));
 
+  // Determine endpoint based on context
+  let endpoint;
+  switch (context) {
+    case 'liked':
+      endpoint = '/user/liked-books';
+      break;
+    case 'starred':
+      endpoint = '/user/starred-books';
+      break;
+    case 'borrowed':
+      endpoint = '/user/my-books'; // Adjust if you have a different endpoint
+      break;
+    default:
+      endpoint = '/user/books/search';
+  }
+
   // Fetch and render results
   async function fetchResults() {
     container.innerHTML = '<div class="col-span-3 flex justify-center"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div></div>';
     try {
-      const response = await fetch(`/user/books/search?${apiParams.toString()}`, { cache: 'no-store' });
+      const response = await fetch(`${endpoint}?${apiParams.toString()}`, { cache: 'no-store' });
       if (response.status === 401 || response.status === 403) {
         container.innerHTML = '<p class="text-center text-red-500 col-span-3">You must be logged in to search for books.</p>';
         return;

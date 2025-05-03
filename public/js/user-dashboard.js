@@ -208,7 +208,6 @@ const initializeSearchAndFilters = () => {
 
   // Handle search button click
   searchButton.addEventListener('click', () => {
-    // Always get the latest value from the input
     const query = searchInput.value.trim();
     const params = new URLSearchParams();
     if (query) {
@@ -219,7 +218,7 @@ const initializeSearchAndFilters = () => {
         params.append('filter', key);
       }
     });
-    window.location.href = `/user/search-results?${params.toString()}`;
+    window.location.href = `/user/search-results?context=all&${params.toString()}`;
   });
 
   // Handle Enter key in search input
@@ -235,7 +234,7 @@ const initializeSearchAndFilters = () => {
           params.append('filter', key);
         }
       });
-      window.location.href = `/user/search-results?${params.toString()}`;
+      window.location.href = `/user/search-results?context=all&${params.toString()}`;
     }
   });
 

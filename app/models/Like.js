@@ -46,7 +46,4 @@ const Like = sequelize.define(
   }
 );
 
-Like.belongsTo(User, { foreignKey: 'user_id' });
-Like.belongsTo(Book, { foreignKey: 'book_id' });
-
 module.exports = Like; 

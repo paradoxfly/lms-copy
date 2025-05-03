@@ -1,6 +1,8 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../services/db'); // Import the Sequelize instance
 const bcrypt = require('bcryptjs');
+const Like = require('./Like');
+const Book = require('./Book');
 
 const User = sequelize.define('User', {
     user_id: {
