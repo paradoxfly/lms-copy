@@ -885,3 +885,61 @@ exports.getPendingReturns = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch pending returns" });
   }
 };
+
+exports.getPickOfTheWeek = async (req, res) => {
+  try {
+    // Calculate last week's Monday and Sunday
+    const now = new Date();
+    const dayOfWeek = now.getDay(); // 0 (Sun) - 6 (Sat)
+    // Find last Monday (subtract days since last Monday)
+    const lastMonday = new Date(now);
+    lastMonday.setDate(now.getDate() - ((dayOfWeek + 6) % 7) - 7);
+    lastMonday.setHours(0, 0, 0, 0);
+    // Find last Sunday (lastMonday + 6 days)
+    const lastSunday = new Date(lastMonday);
+    lastSunday.setDate(lastMonday.getDate() + 6);
+    lastSunday.setHours(23, 59, 59, 999);
+
+    // Query likes from last week, group by book, count likes
+    const likes = await Like.findAll({
+      where: {
+        created_at: {
+          [Op.between]: [lastMonday, lastSunday]
+        }
+      },
+      attributes: [
+        'book_id',
+        [Sequelize.fn('COUNT', Sequelize.col('like_id')), 'likeCount']
+      ],
+      group: ['book_id'],
+      order: [[Sequelize.literal('likeCount'), 'DESC']],
+      limit: 5
+    });
+
+    // Get book details for each
+    const bookIds = likes.map(like => like.book_id);
+    const books = await Book.findAll({
+      where: { book_id: bookIds },
+    });
+
+    // Map like counts to books
+    const booksWithLikes = books.map(book => {
+      const likeEntry = likes.find(l => l.book_id === book.book_id);
+      return {
+        book_id: book.book_id,
+        title: book.title,
+        author: book.author,
+        genre: book.genre,
+        description: book.description,
+        image: book.cover_image,
+        no_of_copies_available: book.no_of_copies_available,
+        likeCount: likeEntry ? parseInt(likeEntry.get('likeCount')) : 0
+      };
+    });
+
+    res.json(booksWithLikes);
+  } catch (error) {
+    logger.error(`Error fetching pick of the week: ${error.message}`);
+    res.status(500).json({ error: "Failed to fetch pick of the week" });
+  }
+};

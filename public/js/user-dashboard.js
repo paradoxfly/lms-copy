@@ -371,10 +371,67 @@ const fetchPendingReturns = async () => {
   }
 };
 
+const fetchPickOfTheWeek = async () => {
+  try {
+    const response = await fetch('/user/pick-of-the-week');
+    const books = await response.json();
+    const pickContainer = document.getElementById('pick-of-the-week');
+    if (!pickContainer) return;
+    pickContainer.innerHTML = '';
+    if (!Array.isArray(books) || books.length === 0) {
+      pickContainer.innerHTML = '<p class="text-center text-gray-500 col-span-3">No picks for this week</p>';
+      return;
+    }
+    books.forEach(book => {
+      const bookCard = document.createElement('div');
+      bookCard.className = 'book-card bg-white border rounded-xl overflow-hidden cursor-pointer relative';
+      bookCard.onclick = () => { window.location.href = `/user/books/${book.book_id}`; };
+      bookCard.innerHTML = `
+        <div class="p-4 flex gap-4">
+          <div class="flex-shrink-0">
+            <img class="book-cover" src="${book.image || '/images/default-book-cover.jpg'}" alt="${book.title}" onerror="this.src='/images/default-book-cover.jpg'">
+          </div>
+          <div class="flex flex-col flex-1">
+            <span class="available-badge">${book.no_of_copies_available > 0 ? 'Available' : 'Not Available'}</span>
+            <h3 class="text-sm font-semibold mb-1">${book.title}</h3>
+            <p class="text-xs text-gray-500 mb-2">${book.author}</p>
+            <p class="text-xs text-gray-500 mb-1">
+              ${book.description ? book.description.substring(0, 100) + '...' : 'No description available'}
+              <span class="read-more">Read more...</span>
+            </p>
+            <div class="flex items-center gap-2 mt-auto">
+              <button class="action-button like-btn" title="Like" onclick="event.stopPropagation(); toggleLike(${book.book_id})">
+                <i class="fas fa-heart text-red-500"></i> <span>${book.likeCount}</span>
+              </button>
+              <button class="action-button star-btn" title="Star" onclick="event.stopPropagation(); toggleStar(${book.book_id})">
+                <i class="far fa-star"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="p-4 pt-0 flex gap-2">
+          <button class="borrow-button flex-1 py-1 text-sm ${book.no_of_copies_available === 0 ? 'disabled' : ''}" onclick="event.stopPropagation(); borrowBook(${book.book_id})" ${book.no_of_copies_available === 0 ? 'disabled' : ''}>
+            Borrow
+          </button>
+          <button class="buy-button flex-1" onclick="event.stopPropagation(); buyBook(${book.book_id}, '${book.title}')">Buy now</button>
+        </div>
+      `;
+      pickContainer.appendChild(bookCard);
+    });
+  } catch (error) {
+    console.error('Error fetching pick of the week:', error);
+    const pickContainer = document.getElementById('pick-of-the-week');
+    if (pickContainer) {
+      pickContainer.innerHTML = '<p class="text-center text-red-500 col-span-3">Error loading pick of the week. Please try again.</p>';
+    }
+  }
+};
+
 // Initialize dashboard
 console.log('Initializing dashboard...');
 fetchNewReads();
 fetchRecentlyBorrowedBooks();
 fetchCurrentlyReadingBooks();
 fetchPendingReturns();
+fetchPickOfTheWeek();
 initializeSearchAndFilters();

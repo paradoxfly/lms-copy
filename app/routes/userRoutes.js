@@ -114,4 +114,7 @@ router.get('/currently-reading', ensureAuthenticated, userController.getCurrentl
 // Pending returns (active or overdue rentals)
 router.get('/pending-returns', ensureAuthenticated, userController.getPendingReturns);
 
+// Pick of the week (top 5 books by new likes last week)
+router.get('/pick-of-the-week', ensureAuthenticated, userController.getPickOfTheWeek);
+
 module.exports = router;
