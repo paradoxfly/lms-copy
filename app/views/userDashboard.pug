@@ -31,30 +31,32 @@ html(lang="en")
         // Search and Filters
         .px-6.py-4.flex.justify-between.items-center
           .relative.w-72
-            input.pl-3.pr-10.py-2.rounded-md.border.w-full(type="text" placeholder="Search" style="border-color: #d6dae5;")
+            input#searchInput.pl-3.pr-10.py-2.rounded-md.border.w-full(type="text" placeholder="Search by title, author, genre..." style="border-color: #d6dae5;")
             i.fas.fa-search.absolute.right-3.top-search.text-gray-400
           
           .flex.items-center.gap-3
             span.text-sm.text-gray-500 Filter by :
             
-            button.filter-button
+            button.filter-button(data-filter="date")
               span Date
               i.fas.fa-calendar(style="color: #5252fc;")
             
-            button.filter-button
+            button.filter-button(data-filter="author")
               span Author
               i.fas.fa-chevron-down
             
-            button.filter-button
+            button.filter-button(data-filter="genre")
               span Genre
               i.fas.fa-chevron-down
             
-            button.borrow-button.px-4.py-1-5.text-sm Borrow now
+            button#searchButton.search-button.px-4.py-1-5.text-sm(
+              class="bg-blue-200 text-blue-900 rounded-md shadow-md transition-colors duration-200 hover:bg-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
+            ) Search now
 
         // Book Status Cards
         .grid.grid-cols-3.gap-4.px-6.mb-8
           // Recently Borrowed Card
-          .book-card.bg-white.border.overflow-hidden
+          .book-card.bg-white.border.overflow-hidden.cursor-pointer#recently-borrowed-card(onclick="showRecentlyBorrowedModal()")
             .flex.flex-row.items-center.gap-3.p-4.pb-2
               .w-10.h-10.rounded-full.flex.items-center.justify-center.recently-borrowed-icon
                 i.fas.fa-book
@@ -62,8 +64,8 @@ html(lang="en")
               button.ml-auto.action-button
                 i.fas.fa-ellipsis-v
             .p-4.pt-0
-              h2.text-2xl.font-bold#recently-borrowed-books 
-          
+              h2.text-2xl.font-bold#recently-borrowed-books
+
           // Currently Reading Card
           .book-card.bg-white.border.overflow-hidden
             .flex.flex-row.items-center.gap-3.p-4.pb-2
@@ -107,6 +109,44 @@ html(lang="en")
     // Toast notifications
     #toast-container
 
+    // Recently Borrowed Modal
+    .fixed.inset-0.bg-black.bg-opacity-40.flex.items-center.justify-center.z-50.hidden#recentlyBorrowedModal
+      .bg-white.rounded-lg.shadow-lg.w-full.max-w-md.p-6.relative
+        button.absolute.top-2.right-2.text-gray-500.text-xl.font-bold(onclick="hideRecentlyBorrowedModal()") &times;
+        h2.text-xl.font-bold.mb-4 Recently Borrowed Books (Last 30 Days)
+        ul#recently-borrowed-list.space-y-2
+          //- List items will be populated by JS
+        p.text-gray-500.text-center.mt-4#recently-borrowed-empty.hidden No recently borrowed books found.
+
     script(src="/js/utils.js")
     script(src="/js/user-dashboard.js")
     script(src="/js/sidebar.js")
+    script.
+      function showRecentlyBorrowedModal() {
+        const modal = document.getElementById('recentlyBorrowedModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        // Fetch and populate the list
+        fetch('/user/borrowed-books').then(res => res.json()).then(data => {
+          const list = document.getElementById('recently-borrowed-list');
+          const emptyMsg = document.getElementById('recently-borrowed-empty');
+          list.innerHTML = '';
+          if (!Array.isArray(data) || data.length === 0) {
+            emptyMsg.classList.remove('hidden');
+            return;
+          }
+          emptyMsg.classList.add('hidden');
+          data.forEach(book => {
+            const li = document.createElement('li');
+            li.className = 'flex justify-between items-center p-2 rounded hover:bg-gray-100 cursor-pointer';
+            li.onclick = () => { window.location.href = `/user/books/${book.book_id}`; };
+            li.innerHTML = `<span class='font-medium'>${book.title}</span><span class='text-xs text-gray-500'>${new Date(book.borrowedOn).toLocaleDateString()}</span>`;
+            list.appendChild(li);
+          });
+        });
+      }
+      function hideRecentlyBorrowedModal() {
+        const modal = document.getElementById('recentlyBorrowedModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
