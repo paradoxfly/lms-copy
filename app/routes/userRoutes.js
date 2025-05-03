@@ -111,4 +111,7 @@ router.get('/search-results', ensureAuthenticated, (req, res) => {
 // Currently reading books (active rentals + purchases)
 router.get('/currently-reading', ensureAuthenticated, userController.getCurrentlyReadingBooks);
 
+// Pending returns (active or overdue rentals)
+router.get('/pending-returns', ensureAuthenticated, userController.getPendingReturns);
+
 module.exports = router;

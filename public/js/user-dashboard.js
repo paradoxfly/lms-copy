@@ -358,9 +358,23 @@ const fetchCurrentlyReadingBooks = async () => {
   }
 };
 
+const fetchPendingReturns = async () => {
+  try {
+    const response = await fetch('/user/pending-returns');
+    const data = await response.json();
+    const pendingReturnsElem = document.querySelector('.pending-returns-icon')?.parentElement?.parentElement?.querySelector('h2');
+    if (pendingReturnsElem && data && typeof data.count === 'number') {
+      pendingReturnsElem.textContent = `${data.count} Book${data.count !== 1 ? 's' : ''}`;
+    }
+  } catch (error) {
+    console.error('Error fetching pending returns:', error);
+  }
+};
+
 // Initialize dashboard
 console.log('Initializing dashboard...');
 fetchNewReads();
 fetchRecentlyBorrowedBooks();
 fetchCurrentlyReadingBooks();
+fetchPendingReturns();
 initializeSearchAndFilters();

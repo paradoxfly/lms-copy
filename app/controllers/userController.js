@@ -860,3 +860,28 @@ exports.getCurrentlyReadingBooks = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch currently reading books" });
   }
 };
+
+exports.getPendingReturns = async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+    const transactions = await Transaction.findAll({
+      where: {
+        user_id: userId,
+        transaction_type: 'RENTAL',
+        status: { [Op.in]: ['ACTIVE', 'OVERDUE'] }
+      },
+      include: [{ model: Book, required: true }]
+    });
+    // Deduplicate by book_id
+    const seen = new Set();
+    const uniqueBooks = transactions.filter(trx => {
+      if (seen.has(trx.book_id)) return false;
+      seen.add(trx.book_id);
+      return true;
+    });
+    res.json({ count: uniqueBooks.length, books: uniqueBooks.map(trx => trx.Book) });
+  } catch (error) {
+    logger.error(`Error fetching pending returns: ${error.message}`);
+    res.status(500).json({ error: "Failed to fetch pending returns" });
+  }
+};
