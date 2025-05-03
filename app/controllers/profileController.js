@@ -111,7 +111,7 @@ exports.getProfile = async (req, res) => {
                     transaction_type: 'rental'
                 },
                 include: [{ model: Book }],
-                order: [['borrowed_at', 'DESC']]
+                order: [['rental_start_date', 'DESC']]
             })
         ]);
 
@@ -119,7 +119,7 @@ exports.getProfile = async (req, res) => {
         const readingStats = {
             totalBooksRead: borrowedBooks.length,
             booksReadThisMonth: borrowedBooks.filter(tx => {
-                const borrowedDate = new Date(tx.borrowed_at);
+                const borrowedDate = new Date(tx.rental_start_date);
                 const thisMonth = new Date();
                 return borrowedDate.getMonth() === thisMonth.getMonth() &&
                        borrowedDate.getFullYear() === thisMonth.getFullYear();
@@ -141,7 +141,7 @@ exports.getProfile = async (req, res) => {
                 starred_books: starredBooks.map(star => star.Book),
                 borrowed_books: borrowedBooks.map(tx => ({
                     ...tx.Book.dataValues,
-                    borrowed_at: tx.borrowed_at,
+                    borrowed_at: tx.rental_start_date,
                     returned_at: tx.returned_at,
                     due_date: tx.rental_expiry
                 })),
@@ -266,7 +266,7 @@ exports.getBorrowingHistory = async (req, res) => {
                 transaction_type: 'rental'
             },
             include: [{ model: Book }],
-            order: [['borrowed_at', 'DESC']],
+            order: [['rental_start_date', 'DESC']],
             limit,
             offset
         });
@@ -282,7 +282,7 @@ exports.getBorrowingHistory = async (req, res) => {
                     author: sanitizeHtml(tx.Book.author),
                     image: tx.Book.image
                 },
-                borrowed_at: tx.borrowed_at,
+                borrowed_at: tx.rental_start_date,
                 returned_at: tx.returned_at,
                 due_date: tx.rental_expiry,
                 late_fee: tx.late_fee,

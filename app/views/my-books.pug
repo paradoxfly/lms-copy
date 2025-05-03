@@ -29,14 +29,14 @@ html(lang="en")
         // Search and Filters
         .px-6.py-4.flex.justify-between.items-center
           .relative.w-72
-            input.pl-3.pr-10.py-2.rounded-md.border.w-full(type="text" placeholder="Search" style="border-color: #d6dae5;")
+            input#searchInput.pl-3.pr-10.py-2.rounded-md.border.w-full(type="text" placeholder="Search by title, author, genre..." style="border-color: #d6dae5;")
             i.fas.fa-search.absolute.right-3.top-search.text-gray-400
           .flex.items-center.gap-3
             span.text-sm.text-gray-500 Filter by :
-            button.filter-button Date
-            button.filter-button Author
-            button.filter-button Genre
-            button.borrow-button.px-4.py-1-5.text-sm Borrow now
+            button.filter-button(data-filter="date") Date
+            button.filter-button(data-filter="author") Author
+            button.filter-button(data-filter="genre") Genre
+            button#searchButton.search-button.px-4.py-1-5.text-sm(class="bg-blue-200 text-blue-900 rounded-md shadow-md transition-colors duration-200 hover:bg-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50") Search now
 
         // Reading now
         .px-6.mb-8

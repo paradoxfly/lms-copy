@@ -14,10 +14,10 @@ if (missingEnvVars.length > 0) {
 // Create a Sequelize instance
 const sequelize = new Sequelize(
     process.env.DB_NAME || 'bookorbit',
-    process.env.DB_USER || 'root',
-    process.env.DB_PASSWORD || 'rootpassword',
+    process.env.DB_USER || 'bookorbit_user',
+    process.env.DB_PASSWORD || 'password',
     {
-        host: process.env.DB_HOST || 'localhost',
+        host: process.env.DB_HOST || 'db',
         port: process.env.DB_PORT || 3306,
         dialect: 'mysql',
         pool: {

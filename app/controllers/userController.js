@@ -789,7 +789,7 @@ exports.getRecentlyBorrowedBooks = async (req, res) => {
         user_id: userId,
         transaction_type: 'RENTAL', // Only rentals, not purchases
         status: {
-          [Op.in]: ['ACTIVE', 'OVERDUE', 'COMPLETED']
+          [Op.in]: ['ACTIVE', 'OVERDUE']
         },
         rental_start_date: {
           [Op.gte]: thirtyDaysAgo

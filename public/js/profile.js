@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                         </div>
                         <div class="transaction-info">
-                            <p>Borrowed: ${new Date(tx.borrowed_at).toLocaleDateString()}</p>
+                            <p>Borrowed: ${new Date(tx.rental_start_date).toLocaleDateString()}</p>
                             <p>Due: ${new Date(tx.due_date).toLocaleDateString()}</p>
                             ${tx.returned_at ? 
                                 `<p>Returned: ${new Date(tx.returned_at).toLocaleDateString()}</p>` : 
