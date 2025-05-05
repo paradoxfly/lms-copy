@@ -355,67 +355,54 @@ exports.returnBook = async (req, res) => {
     const { bookId } = req.params;
     const userId = req.session.user.id;
 
-    // Find the active transaction for this book
+    // Find the active or overdue transaction for this book
     const transaction = await Transaction.findOne({
       where: {
         user_id: userId,
         book_id: bookId,
-        status: {
-          [Op.in]: ['ACTIVE', 'OVERDUE']
-        }
+        status: { [Op.in]: ['ACTIVE', 'OVERDUE'] },
+        transaction_type: 'RENTAL'
       },
       include: [Book]
     });
 
     if (!transaction) {
-      return res.status(404).json({ 
-        error: "No active borrow found",
-        details: "This book is not currently borrowed by you"
-      });
+      return res.status(404).json({ error: 'No active borrow found for this book.' });
     }
 
     const book = transaction.Book;
-    const returnDate = new Date();
-    const isLate = returnDate > transaction.rental_end_date;
-    
-    // Calculate late fee if applicable
+    const now = new Date();
     let lateFee = 0;
-    if (isLate) {
-      const daysLate = Math.ceil((returnDate - transaction.rental_end_date) / (1000 * 60 * 60 * 24));
-      lateFee = daysLate * (book.rental_price * 0.5); // 50% of daily rental price per day late
+    let newStatus = 'COMPLETED';
+    if (transaction.rental_end_date && now > transaction.rental_end_date) {
+      const daysLate = Math.ceil((now - transaction.rental_end_date) / (1000 * 60 * 60 * 24));
+      lateFee = daysLate * (book.rental_price * 0.5);
+      newStatus = 'OVERDUE';
     }
 
-    // Update transaction and book copies in a transaction
     await sequelize.transaction(async (t) => {
-      // Update transaction
       await transaction.update({
-        actual_return_date: returnDate,
-        status: isLate ? 'OVERDUE' : 'COMPLETED',
+        actual_return_date: now,
+        status: newStatus,
         late_fee: lateFee,
-        late_fee_paid: lateFee === 0 // Mark as paid if no late fee
+        late_fee_paid: lateFee === 0,
       }, { transaction: t });
-
-      // Update book availability
       await book.update({
         no_of_copies_available: book.no_of_copies_available + 1
       }, { transaction: t });
     });
 
     res.json({
-      message: "Book returned successfully",
+      message: 'Book returned successfully.',
       details: {
-        returnDate,
-        isLate,
         lateFee,
-        availableCopies: book.no_of_copies_available + 1
+        status: newStatus,
+        returnDate: now
       }
     });
   } catch (error) {
     logger.error(`Error returning book: ${error.message}`);
-    res.status(500).json({ 
-      error: "Failed to return book",
-      details: error.message 
-    });
+    res.status(500).json({ error: 'Failed to return book', details: error.message });
   }
 };
 

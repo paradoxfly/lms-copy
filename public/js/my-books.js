@@ -41,6 +41,7 @@ const fetchMyBooks = async () => {
       }
       const borrowedDateObj = parseDate(book.borrowedOn);
       const dueDateObj = parseDate(book.dueDate);
+      const canReturn = ['ACTIVE', 'OVERDUE'].includes(book.status);
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td class="px-4 py-2">${idx + 1}</td>
@@ -53,8 +54,30 @@ const fetchMyBooks = async () => {
         <td class="px-4 py-2">
           <span class="inline-block px-2 py-1 rounded-full text-xs font-semibold ${typeBadgeClass(book.transactionType)}">${book.transactionType === 'RENTAL' ? 'Borrowed' : 'Purchased'}</span>
         </td>
+        <td class="px-4 py-2">
+          ${canReturn ? `<button class='return-btn px-3 py-1 bg-yellow-100 text-yellow-800 rounded hover:bg-yellow-200 transition' data-book-id='${book.book_id}'>Return</button>` : ''}
+        </td>
       `;
       borrowedBooksTable.appendChild(tr);
+    });
+    // Add event listeners for return buttons
+    borrowedBooksTable.querySelectorAll('.return-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const bookId = btn.getAttribute('data-book-id');
+        if (!confirm('Are you sure you want to return this book?')) return;
+        try {
+          const response = await fetch(`/user/books/${bookId}/return`, { method: 'POST' });
+          const result = await response.json();
+          if (response.ok) {
+            showToast(result.message || 'Book returned successfully');
+            fetchMyBooks();
+          } else {
+            showToast(result.error || 'Failed to return book', 'error');
+          }
+        } catch (error) {
+          showToast(error.message || 'Failed to return book', 'error');
+        }
+      });
     });
   };
   

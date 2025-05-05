@@ -132,6 +132,31 @@ async function fetchBookDetails() {
     // Update borrow/return section
     updateBorrowReturnSection(bookData);
     
+    // Show Return button if user has an active or overdue borrow
+    const returnBtn = document.getElementById('returnBtn');
+    if (returnBtn) {
+      if (bookData.transaction_status === 'ACTIVE' || bookData.transaction_status === 'OVERDUE') {
+        returnBtn.classList.remove('hidden');
+        returnBtn.onclick = async () => {
+          if (!confirm('Are you sure you want to return this book?')) return;
+          try {
+            const response = await fetch(`/user/books/${bookData.book_id}/return`, { method: 'POST' });
+            const result = await response.json();
+            if (response.ok) {
+              showToast(result.message || 'Book returned successfully');
+              fetchBookDetails();
+            } else {
+              showToast(result.error || 'Failed to return book', 'error');
+            }
+          } catch (error) {
+            showToast(error.message || 'Failed to return book', 'error');
+          }
+        };
+      } else {
+        returnBtn.classList.add('hidden');
+      }
+    }
+    
     // Set up rental duration change handler
     const rentalDuration = document.getElementById('rentalDuration');
     if (rentalDuration) {
