@@ -449,8 +449,8 @@ exports.getBorrowedBooks = async (req, res) => {
         ...parsedBook,
         isLiked: !!liked,
         isStarred: !!starred,
-        borrowedOn: transaction.borrowed_date,
-        dueDate: transaction.due_date,
+        borrowedOn: transaction.rental_start_date || null,
+        dueDate: transaction.rental_end_date || null,
         status: transaction.status,
         transactionType: transaction.transaction_type,
         lateFee: transaction.late_fee || 0
@@ -808,8 +808,8 @@ exports.getRecentlyBorrowedBooks = async (req, res) => {
         ...parsedBook,
         isLiked: !!liked,
         isStarred: !!starred,
-        borrowedOn: transaction.rental_start_date,
-        dueDate: transaction.rental_end_date,
+        borrowedOn: transaction.rental_start_date || null,
+        dueDate: transaction.rental_end_date || null,
         status: transaction.status,
         transactionType: transaction.transaction_type,
         lateFee: transaction.late_fee || 0

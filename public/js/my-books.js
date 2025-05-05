@@ -31,12 +31,22 @@ const fetchMyBooks = async () => {
     const borrowedBooksTable = document.getElementById('borrowed-books-table');
     borrowedBooksTable.innerHTML = '';
     borrowedBooks.forEach((book, idx) => {
+      const parseDate = (d) => d ? new Date(d.replace(' ', 'T')) : null;
+      const isOverdue = book.status === 'OVERDUE' && book.dueDate;
+      let overdueText = '';
+      if (isOverdue) {
+        const dueDateObj = parseDate(book.dueDate);
+        const daysLate = dueDateObj ? Math.ceil((Date.now() - dueDateObj) / (1000 * 60 * 60 * 24)) : 0;
+        overdueText = `<span class='text-xs text-red-600' title='Overdue by ${daysLate} day(s)'> (Overdue by ${daysLate} day${daysLate !== 1 ? 's' : ''})</span>`;
+      }
+      const borrowedDateObj = parseDate(book.borrowedOn);
+      const dueDateObj = parseDate(book.dueDate);
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td class="px-4 py-2">${idx + 1}</td>
         <td class="px-4 py-2">${book.title}</td>
-        <td class="px-4 py-2">${book.borrowedOn ? new Date(book.borrowedOn).toLocaleDateString() : '-'}</td>
-        <td class="px-4 py-2">${book.dueDate ? new Date(book.dueDate).toLocaleDateString() : '-'}</td>
+        <td class="px-4 py-2">${borrowedDateObj ? borrowedDateObj.toLocaleDateString() : '-'}</td>
+        <td class="px-4 py-2">${dueDateObj ? dueDateObj.toLocaleDateString() : '-'}${overdueText}</td>
         <td class="px-4 py-2">
           <span class="inline-block px-2 py-1 rounded-full text-xs font-semibold ${statusBadgeClass(book.status)}">${book.status}</span>
         </td>

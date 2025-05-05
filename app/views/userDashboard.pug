@@ -153,10 +153,24 @@ html(lang="en")
           }
           emptyMsg.classList.add('hidden');
           data.forEach(book => {
+            const parseDate = (d) => d ? new Date(d.replace(' ', 'T')) : null;
+            const isOverdue = book.status === 'OVERDUE' && book.dueDate;
+            let overdueText = '';
+            if (isOverdue) {
+              const dueDateObj = parseDate(book.dueDate);
+              const daysLate = dueDateObj ? Math.ceil((Date.now() - dueDateObj) / (1000 * 60 * 60 * 24)) : 0;
+              overdueText = `<span class='text-xs text-red-600 ml-2' title='Overdue by ${daysLate} day(s)'> (Overdue by ${daysLate} day${daysLate !== 1 ? 's' : ''})</span>`;
+            }
+            const borrowed = book.borrowedOn ? parseDate(book.borrowedOn) : null;
+            const due = book.dueDate ? parseDate(book.dueDate) : null;
             const li = document.createElement('li');
-            li.className = 'flex justify-between items-center p-2 rounded hover:bg-gray-100 cursor-pointer';
+            li.className = 'flex flex-col gap-1 p-2 rounded hover:bg-gray-100 cursor-pointer';
             li.onclick = () => { window.location.href = `/user/books/${book.book_id}`; };
-            li.innerHTML = `<span class='font-medium'>${book.title}</span><span class='text-xs text-gray-500'>${new Date(book.borrowedOn).toLocaleDateString()}</span>`;
+            li.innerHTML = `
+              <span class='font-medium'>${book.title}</span>
+              <span class='text-xs text-gray-500'>Borrowed: ${borrowed ? borrowed.toLocaleDateString() : '-'}</span>
+              <span class='text-xs text-gray-500'>Due: ${due ? due.toLocaleDateString() : '-'}${overdueText}</span>
+            `;
             list.appendChild(li);
           });
         });
