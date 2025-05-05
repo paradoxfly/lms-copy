@@ -311,7 +311,7 @@ document.addEventListener('DOMContentLoaded', function() {
   fetchBookDetails();
   const borrowBtn = document.getElementById('borrowBtn');
   if (borrowBtn) {
-    borrowBtn.addEventListener('click', borrowBook);
+    borrowBtn.addEventListener('click', openBorrowModal);
   }
   const buyBtn = document.getElementById('buyBtn');
   if (buyBtn) {
@@ -319,31 +319,65 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-async function borrowBook() {
-  if (!bookData) return;
+function openBorrowModal() {
+  const modal = document.getElementById('borrowModal');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  const borrowDate = document.getElementById('borrowDate');
+  const returnDate = document.getElementById('returnDate');
+  borrowDate.value = new Date().toISOString().split('T')[0];
+  returnDate.value = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+  updateDurationAndPrice();
+  borrowDate.addEventListener('change', updateDurationAndPrice);
+  returnDate.addEventListener('change', updateDurationAndPrice);
+  document.getElementById('cancelBorrowBtn').addEventListener('click', closeBorrowModal);
+  document.getElementById('confirmBorrowBtn').addEventListener('click', confirmBorrow);
+}
+
+function closeBorrowModal() {
+  const modal = document.getElementById('borrowModal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+}
+
+function updateDurationAndPrice() {
+  const borrowDate = new Date(document.getElementById('borrowDate').value);
+  const returnDate = new Date(document.getElementById('returnDate').value);
+  const duration = Math.ceil((returnDate - borrowDate) / (1000 * 60 * 60 * 24));
+  const dailyPrice = parseFloat(bookData.rental_price) || 0;
+  const totalPrice = dailyPrice * duration;
+  document.getElementById('duration').textContent = duration;
+  document.getElementById('totalPrice').textContent = totalPrice.toFixed(2);
+}
+
+async function confirmBorrow() {
+  const borrowDate = document.getElementById('borrowDate').value;
+  const returnDate = document.getElementById('returnDate').value;
+  const duration = parseInt(document.getElementById('duration').textContent);
+  if (duration < 1 || duration > 30) {
+    showToast('Invalid rental duration. Must be between 1 and 30 days.', 'error');
+    return;
+  }
   try {
-    // Default rental duration to 14 days (or use a select if present)
-    let rentalDuration = 14;
-    const rentalDurationSelect = document.getElementById('rentalDuration');
-    if (rentalDurationSelect) {
-      rentalDuration = parseInt(rentalDurationSelect.value);
-    }
-    const response = await fetch(`/books/${bookData.book_id}/borrow`, {
+    const response = await fetch(`/user/books/${bookData.book_id}/borrow`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ rental_duration: rentalDuration })
+      body: JSON.stringify({ rental_start_date: borrowDate, rental_end_date: returnDate })
     });
     const result = await response.json();
     if (response.ok) {
+      bookData.no_of_copies_available--;
+      bookData.userBorrowed = true;
+      document.getElementById('availableCopies').textContent = bookData.no_of_copies_available;
+      updateBorrowReturnSection(bookData);
       showToast(result.message);
-      // Optionally, refresh book details to update UI
-      fetchBookDetails();
+      closeBorrowModal();
     } else {
-      throw new Error(result.error);
+      showToast(result.error, 'error');
     }
   } catch (error) {
     console.error('Error borrowing book:', error);
-    showToast(error.message || 'Failed to borrow book', 'error');
+    showToast('Failed to borrow book', 'error');
   }
 }
 

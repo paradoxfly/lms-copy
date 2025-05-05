@@ -87,6 +87,25 @@ html(lang="en")
               .flex.justify-end.gap-4
                 button#cancelBuyBtn(class="py-2 px-4 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors") Cancel
                 button#confirmBuyBtn(class="py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors") Confirm Purchase
+          // Borrow Modal
+          #borrowModal.fixed.inset-0.bg-gray-600.bg-opacity-50.hidden.items-center.justify-center.z-50
+            .bg-white.rounded-lg.p-8.max-w-md.w-full.mx-4
+              h3.text-xl.font-semibold.text-gray-900.mb-4 Borrow Book
+              p.text-gray-600.mb-4 Please select your borrow and return dates:
+              .mb-4
+                label.block.text-sm.font-medium.text-gray-700 Borrow Date
+                input#borrowDate.w-full.mt-1.p-2.border.rounded(type="date" min=new Date().toISOString().split('T')[0])
+              .mb-4
+                label.block.text-sm.font-medium.text-gray-700 Return Date
+                input#returnDate.w-full.mt-1.p-2.border.rounded(type="date" min=new Date().toISOString().split('T')[0])
+              .mb-4
+                p.text-sm.text-gray-600 Duration: <span id="duration">0</span> days
+                p.text-sm.text-gray-600 Total Price: $<span id="totalPrice">0.00</span>
+              .mb-4.p-2.bg-yellow-50.text-yellow-700.rounded
+                p.text-sm A 50p/day fine will be incurred and will be automatically charged to wallet.
+              .flex.justify-end.gap-4
+                button#cancelBorrowBtn.py-2.px-4.bg-gray-200.text-gray-800.rounded-lg.hover:bg-gray-300.transition-colors Cancel
+                button#confirmBorrowBtn.py-2.px-4.bg-blue-600.text-white.rounded-lg.hover:bg-blue-700.transition-colors Confirm Borrow
           // Toast notifications
           #toast-container
 

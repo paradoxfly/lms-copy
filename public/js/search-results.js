@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
               </div>
             </div>
             <div class="p-4 pt-0 flex gap-2">
-              <button class="borrow-button flex-1 py-1 text-sm ${book.no_of_copies_available === 0 ? 'disabled' : ''}" onclick="event.stopPropagation(); borrowBook(${book.book_id})" ${book.no_of_copies_available === 0 ? 'disabled' : ''}>
+              <button class="borrow-button flex-1 py-1 text-sm ${book.no_of_copies_available === 0 ? 'disabled' : ''}" onclick="event.stopPropagation(); borrowBook(${book.book_id}, ${book.rental_price})" ${book.no_of_copies_available === 0 ? 'disabled' : ''}>
                 Borrow
               </button>
               <button class="buy-button flex-1" onclick="event.stopPropagation(); buyBook(${book.book_id}, '${book.title}')">Buy now</button>
@@ -87,5 +87,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
   fetchResults();
 });
+
+window.borrowBook = async (bookId, rentalPrice = 0) => {
+  const modalResult = await window.showBorrowModal({ dailyPrice: rentalPrice, maxDuration: 30 });
+  if (!modalResult) return;
+  try {
+    const response = await fetch(`/user/books/${bookId}/borrow`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(modalResult)
+    });
+    const data = await response.json();
+    if (response.ok) {
+      showToast(data.message || 'Book borrowed successfully');
+      fetchResults();
+    } else {
+      showToast(data.error || 'Failed to borrow book', 'error');
+    }
+  } catch (error) {
+    showToast(error.message || 'Failed to borrow book', 'error');
+  }
+};
 
 // Reuse like/star/borrow/buy logic if needed (import or duplicate as needed) 

@@ -222,14 +222,29 @@ exports.borrowBook = async (req, res) => {
   try {
     const { bookId } = req.params;
     const userId = req.session.user.id;
-    const { rental_duration = 14 } = req.body; // Default 14 days if not specified
+    const { rental_start_date, rental_end_date } = req.body;
 
-    // Validate rental duration
-    if (rental_duration < 1 || rental_duration > 30) {
-      return res.status(400).json({ 
-        error: "Invalid rental duration",
-        details: "Rental duration must be between 1 and 30 days"
-      });
+    // Validate dates
+    const startDate = new Date(rental_start_date);
+    const endDate = new Date(rental_end_date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+      return res.status(400).json({ error: "Invalid date format" });
+    }
+
+    if (startDate < today) {
+      return res.status(400).json({ error: "Borrow date cannot be in the past" });
+    }
+
+    if (endDate <= startDate) {
+      return res.status(400).json({ error: "Return date must be after borrow date" });
+    }
+
+    const rentalDuration = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+    if (rentalDuration < 1 || rentalDuration > 30) {
+      return res.status(400).json({ error: "Rental duration must be between 1 and 30 days" });
     }
 
     // Get the book and check availability
@@ -252,10 +267,7 @@ exports.borrowBook = async (req, res) => {
     });
 
     if (overdueBooks > 0) {
-      return res.status(400).json({ 
-        error: "Cannot borrow new books",
-        details: "You have overdue books that need to be returned"
-      });
+      return res.status(400).json({ error: "Cannot borrow new books", details: "You have overdue books that need to be returned" });
     }
 
     // Check if user has reached borrowing limit (max 5 books)
@@ -268,10 +280,7 @@ exports.borrowBook = async (req, res) => {
     });
 
     if (activeBorrows >= 5) {
-      return res.status(400).json({ 
-        error: "Borrowing limit reached",
-        details: "You can only borrow up to 5 books at a time"
-      });
+      return res.status(400).json({ error: "Borrowing limit reached", details: "You can only borrow up to 5 books at a time" });
     }
 
     // Check if user already has this book
@@ -286,18 +295,10 @@ exports.borrowBook = async (req, res) => {
     });
 
     if (existingTransaction) {
-      return res.status(400).json({ 
-        error: "Already borrowed",
-        details: "You have already borrowed this book"
-      });
+      return res.status(400).json({ error: "Already borrowed", details: "You have already borrowed this book" });
     }
 
-    // Calculate rental dates and fees
-    const rentalStartDate = new Date();
-    const rentalEndDate = new Date(rentalStartDate);
-    rentalEndDate.setDate(rentalEndDate.getDate() + rental_duration);
-    
-    const rentalAmount = book.rental_price * rental_duration;
+    const rentalAmount = book.rental_price * rentalDuration;
 
     // Create transaction and update book copies in a transaction
     await sequelize.transaction(async (t) => {
@@ -308,9 +309,9 @@ exports.borrowBook = async (req, res) => {
           book_id: bookId,
           transaction_type: "RENTAL",
           amount: rentalAmount,
-          rental_duration,
-          rental_start_date: rentalStartDate,
-          rental_end_date: rentalEndDate,
+          rental_duration: rentalDuration,
+          rental_start_date: startDate,
+          rental_end_date: endDate,
           status: 'ACTIVE',
           payment_status: 'COMPLETED' // Assuming payment is handled separately
         },
@@ -326,7 +327,7 @@ exports.borrowBook = async (req, res) => {
       );
 
       // Schedule email notification for due date
-      const dueDateNotification = new Date(rentalEndDate);
+      const dueDateNotification = new Date(endDate);
       dueDateNotification.setDate(dueDateNotification.getDate() - 1); // Notify 1 day before
       
       // TODO: Implement email notification system
@@ -337,18 +338,15 @@ exports.borrowBook = async (req, res) => {
       message: "Book borrowed successfully",
       details: {
         bookId,
-        rentalStartDate,
-        rentalEndDate,
+        rentalStartDate: startDate,
+        rentalEndDate: endDate,
         rentalAmount,
         availableCopies: book.no_of_copies_available - 1
       }
     });
   } catch (error) {
     logger.error(`Error borrowing book: ${error.message}`);
-    res.status(500).json({ 
-      error: "Failed to borrow book",
-      details: error.message 
-    });
+    res.status(500).json({ error: "Failed to borrow book", details: error.message });
   }
 };
 

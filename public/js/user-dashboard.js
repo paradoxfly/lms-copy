@@ -53,7 +53,7 @@ const fetchNewReads = async () => {
             </div>
           </div>
           <div class="p-4 pt-0 flex gap-2">
-            <button class="borrow-button flex-1 py-1 text-sm ${book.no_of_copies_available === 0 ? 'disabled' : ''}" onclick="event.stopPropagation(); borrowBook(${book.book_id})" ${book.no_of_copies_available === 0 ? 'disabled' : ''}>
+            <button class="borrow-button flex-1 py-1 text-sm ${book.no_of_copies_available === 0 ? 'disabled' : ''}" onclick="event.stopPropagation(); borrowBook(${book.book_id}, ${book.rental_price})" ${book.no_of_copies_available === 0 ? 'disabled' : ''}>
               Borrow
             </button>
             <button class="buy-button flex-1" onclick="event.stopPropagation(); buyBook(${book.book_id}, '${book.title}')">Buy now</button>
@@ -120,19 +120,26 @@ const toggleStar = async (bookId) => {
   }
 };
 
-const borrowBook = async (bookId) => {
+const borrowBook = async (bookId, rentalPrice = 0) => {
   try {
-    console.log('Borrowing book:', bookId);
+    const modalResult = await window.showBorrowModal({ dailyPrice: rentalPrice, maxDuration: 30 });
+    if (!modalResult) return; // User cancelled
     const response = await fetch(`/user/books/${bookId}/borrow`, {
-      method: 'POST'
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(modalResult)
     });
     const data = await response.json();
-    if (data.success) {
+    if (response.ok) {
       fetchNewReads(); // Refresh the books display
       fetchRecentlyBorrowedBooks(); // Update borrowed books count
+      showToast(data.message || 'Book borrowed successfully');
+    } else {
+      showToast(data.error || 'Failed to borrow book', 'error');
     }
   } catch (error) {
     console.error('Error borrowing book:', error);
+    showToast(error.message || 'Failed to borrow book', 'error');
   }
 };
 
@@ -329,7 +336,7 @@ const performSearch = async () => {
             </div>
           </div>
           <div class="p-4 pt-0 flex gap-2">
-            <button class="borrow-button flex-1 py-1 text-sm ${book.no_of_copies_available === 0 ? 'disabled' : ''}" onclick="event.stopPropagation(); borrowBook(${book.book_id})" ${book.no_of_copies_available === 0 ? 'disabled' : ''}>
+            <button class="borrow-button flex-1 py-1 text-sm ${book.no_of_copies_available === 0 ? 'disabled' : ''}" onclick="event.stopPropagation(); borrowBook(${book.book_id}, ${book.rental_price})" ${book.no_of_copies_available === 0 ? 'disabled' : ''}>
               Borrow
             </button>
             <button class="buy-button flex-1" onclick="event.stopPropagation(); buyBook(${book.book_id}, '${book.title}')">Buy now</button>
@@ -410,7 +417,7 @@ const fetchPickOfTheWeek = async () => {
           </div>
         </div>
         <div class="p-4 pt-0 flex gap-2">
-          <button class="borrow-button flex-1 py-1 text-sm ${book.no_of_copies_available === 0 ? 'disabled' : ''}" onclick="event.stopPropagation(); borrowBook(${book.book_id})" ${book.no_of_copies_available === 0 ? 'disabled' : ''}>
+          <button class="borrow-button flex-1 py-1 text-sm ${book.no_of_copies_available === 0 ? 'disabled' : ''}" onclick="event.stopPropagation(); borrowBook(${book.book_id}, ${book.rental_price})" ${book.no_of_copies_available === 0 ? 'disabled' : ''}>
             Borrow
           </button>
           <button class="buy-button flex-1" onclick="event.stopPropagation(); buyBook(${book.book_id}, '${book.title}')">Buy now</button>
@@ -467,7 +474,7 @@ const fetchPopularBooks = async () => {
           </div>
         </div>
         <div class="p-4 pt-0 flex gap-2">
-          <button class="borrow-button flex-1 py-1 text-sm ${book.no_of_copies_available === 0 ? 'disabled' : ''}" onclick="event.stopPropagation(); borrowBook(${book.book_id})" ${book.no_of_copies_available === 0 ? 'disabled' : ''}>
+          <button class="borrow-button flex-1 py-1 text-sm ${book.no_of_copies_available === 0 ? 'disabled' : ''}" onclick="event.stopPropagation(); borrowBook(${book.book_id}, ${book.rental_price})" ${book.no_of_copies_available === 0 ? 'disabled' : ''}>
             Borrow
           </button>
           <button class="buy-button flex-1" onclick="event.stopPropagation(); buyBook(${book.book_id}, '${book.title}')">Buy now</button>

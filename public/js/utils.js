@@ -140,3 +140,84 @@ const showToast = (message, type = "success") => {
     toast.remove();
   }, 5000);
 };
+
+/**
+ * Show a borrow modal and return a Promise with {rental_start_date, rental_end_date} or null if cancelled.
+ * @param {Object} options - { dailyPrice: number, maxDuration: number }
+ * @returns {Promise<{rental_start_date: string, rental_end_date: string} | null>}
+ */
+window.showBorrowModal = function({ dailyPrice = 0, maxDuration = 30 } = {}) {
+  return new Promise((resolve) => {
+    // Remove any existing modal
+    const existing = document.getElementById('global-borrow-modal');
+    if (existing) existing.remove();
+
+    // Create modal
+    const modal = document.createElement('div');
+    modal.id = 'global-borrow-modal';
+    modal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50';
+    modal.innerHTML = `
+      <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+        <h3 class="text-xl font-semibold text-gray-900 mb-4">Borrow Book</h3>
+        <p class="text-gray-600 mb-4">Please select your borrow and return dates:</p>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700">Borrow Date</label>
+          <input id="modalBorrowDate" class="w-full mt-1 p-2 border rounded" type="date">
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700">Return Date</label>
+          <input id="modalReturnDate" class="w-full mt-1 p-2 border rounded" type="date">
+        </div>
+        <div class="mb-4">
+          <p class="text-sm text-gray-600">Duration: <span id="modalDuration">0</span> days</p>
+          <p class="text-sm text-gray-600">Total Price: $<span id="modalTotalPrice">0.00</span></p>
+        </div>
+        <div class="mb-4 p-2 bg-yellow-50 text-yellow-700 rounded">
+          <p class="text-sm">A 50p/day fine will be incurred and will be automatically charged to wallet.</p>
+        </div>
+        <div class="flex justify-end gap-4">
+          <button id="modalCancelBorrowBtn" class="py-2 px-4 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors">Cancel</button>
+          <button id="modalConfirmBorrowBtn" class="py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">Confirm Borrow</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    // Set default dates
+    const todayStr = new Date().toISOString().split('T')[0];
+    const defaultReturn = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const borrowDateInput = document.getElementById('modalBorrowDate');
+    const returnDateInput = document.getElementById('modalReturnDate');
+    borrowDateInput.value = todayStr;
+    borrowDateInput.min = todayStr;
+    returnDateInput.value = defaultReturn;
+    returnDateInput.min = todayStr;
+
+    function updateDurationAndPrice() {
+      const borrowDate = new Date(borrowDateInput.value);
+      const returnDate = new Date(returnDateInput.value);
+      const duration = Math.ceil((returnDate - borrowDate) / (1000 * 60 * 60 * 24));
+      document.getElementById('modalDuration').textContent = duration;
+      document.getElementById('modalTotalPrice').textContent = (dailyPrice * duration).toFixed(2);
+    }
+    borrowDateInput.addEventListener('change', updateDurationAndPrice);
+    returnDateInput.addEventListener('change', updateDurationAndPrice);
+    updateDurationAndPrice();
+
+    document.getElementById('modalCancelBorrowBtn').onclick = () => {
+      modal.remove();
+      resolve(null);
+    };
+    document.getElementById('modalConfirmBorrowBtn').onclick = () => {
+      const borrowDate = borrowDateInput.value;
+      const returnDate = returnDateInput.value;
+      const duration = Math.ceil((new Date(returnDate) - new Date(borrowDate)) / (1000 * 60 * 60 * 24));
+      if (duration < 1 || duration > maxDuration) {
+        showToast('Invalid rental duration. Must be between 1 and 30 days.', 'error');
+        return;
+      }
+      modal.remove();
+      resolve({ rental_start_date: borrowDate, rental_end_date: returnDate });
+    };
+  });
+};
